@@ -10,6 +10,7 @@
 		"test": "playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "release": "bumpp && npm publish",
 		"lint": "eslint ."
 	},
 	"exports": {
@@ -33,6 +34,7 @@
 		"@sveltejs/package": "^2.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
+		"bumpp": "^9.1.1",
 		"copy-to-clipboard": "^3.3.3",
 		"eslint": "^8.28.0",
 		"eslint-plugin-svelte": "^2.30.0",
