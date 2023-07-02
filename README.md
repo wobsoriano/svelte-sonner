@@ -127,19 +127,17 @@ toast.success('Toast has been updated', {
 
 You can use `toast.custom` to render an unstyled toast with custom jsx while maintaining the functionality.
 
-```jsx
-toast.custom(t => (
-  <div>
-    This is a custom component <button onClick={() => toast.dismiss(t)}>close</button>
-  </div>
-))
+```js
+import HeadlessToast from './HeadlessToast.svelte'
+
+toast.custom(HeadlessToast)
 ```
 
 ### Theme
 
 You can change the theme using the `theme` prop. Default theme is light.
 
-```jsx
+```svelte
 <Toaster theme="dark" />
 ```
 
@@ -147,9 +145,9 @@ You can change the theme using the `theme` prop. Default theme is light.
 
 You can change the position through the `position` prop on the `<Toaster />` component. Default is `bottom-right`.
 
-```jsx
-// Available positions
-// top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+```svelte
+<!-- Available positions -->
+<!-- top-left, top-center, top-right, bottom-left, bottom-center, bottom-right -->
 
 <Toaster position="top-center" />
 ```
@@ -158,7 +156,7 @@ You can change the position through the `position` prop on the `<Toaster />` com
 
 Toasts can also be expanded by default through the `expand` prop. You can also change the amount of visible toasts which is 3 by default.
 
-```jsx
+```svelte
 <Toaster expand visibleToasts={9} />
 ```
 
@@ -166,7 +164,7 @@ Toasts can also be expanded by default through the `expand` prop. You can also c
 
 You can style your toasts globally with the `toastOptions` prop in the `Toaster` component.
 
-```jsx
+```svelte
 <Toaster
   toastOptions={{ style: { background: 'red' }, class: 'my-toast', descriptionClass: 'my-toast-description' }}
 />
@@ -188,7 +186,7 @@ toast('Event has been created', {
 
 Add a close button to all toasts that shows on hover by adding the `closeButton` prop.
 
-```jsx
+```svelte
 <Toaster closeButton />
 ```
 
@@ -196,7 +194,7 @@ Add a close button to all toasts that shows on hover by adding the `closeButton`
 
 You can make error and success state more colorful by adding the `richColors` prop.
 
-```jsx
+```svelte
 <Toaster richColors />
 ```
 
@@ -204,7 +202,7 @@ You can make error and success state more colorful by adding the `richColors` pr
 
 Offset from the edges of the screen.
 
-```jsx
+```svelte
 <Toaster offset="80px" />
 ```
 
@@ -212,7 +210,7 @@ Offset from the edges of the screen.
 
 To remove a toast programmatically use `toast.dismiss(id)`.
 
-```jsx
+```js
 const toastId = toast('Event has been created')
 
 toast.dismiss(toastId)
@@ -220,7 +218,7 @@ toast.dismiss(toastId)
 
 You can also use the dismiss method without the id to dismiss all toasts.
 
-```jsx
+```js
 // Removes all toasts
 
 toast.dismiss()
@@ -230,11 +228,11 @@ toast.dismiss()
 
 You can change the duration of each toast by using the `duration` property, or change the duration of all toasts like this:
 
-```jsx
+```svelte
 <Toaster duration={10000} />
 ```
 
-```jsx
+```js
 toast('Event has been created', {
   duration: 10000,
 })
@@ -249,7 +247,7 @@ toast('Event has been created', {
 
 You can pass `onDismiss` and `onAutoClose` callbacks. `onDismiss` gets fired when either the close button gets clicked or the toast is swiped. `onAutoClose` fires when the toast disappears automatically after it's timeout (`duration` prop).
 
-```jsx
+```js
 toast('Event has been created', {
   onDismiss: t => console.log(`Toast with id ${t.id} has been dismissed`),
   onAutoClose: t => console.log(`Toast with id ${t.id} has been closed automatically`),
@@ -260,7 +258,7 @@ toast('Event has been created', {
 
 You can focus on the toast area by pressing ⌥/alt + T. You can override it by providing an array of event.code values for each key.
 
-```jsx
+```svelte
 <Toaster hotkey={['KeyC']} />
 ```
 
