@@ -1,6 +1,6 @@
 {
 	"name": "svelte-sonner",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -10,7 +10,7 @@
 		"test": "playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "release": "bumpp && npm publish",
+		"release": "bumpp && npm publish",
 		"lint": "eslint ."
 	},
 	"exports": {
