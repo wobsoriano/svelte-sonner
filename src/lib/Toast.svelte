@@ -1,8 +1,9 @@
 <script lang="ts">
-import { createEventDispatcher, onDestroy, onMount } from "svelte";
+import { afterUpdate, createEventDispatcher, onDestroy, onMount, tick } from "svelte";
 import type { ToastT, Position, HeightT, Style } from "./types";
 import Loader from "./assets/Loader.svelte";
 import Icon from "./assets/Icon.svelte";
+import { useEffect } from './useEffect'
 
 // Default lifetime of a toasts (in ms)
 const TOAST_LIFETIME = 4000
@@ -81,41 +82,43 @@ const deleteToast = () => {
 
 let timeoutId: ReturnType<typeof setTimeout>
 
-function pauseOrStartTimer() {
-  if ((toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY) {
-    return
-  }
-    
-  // Pause the timer on each hover
-  const pauseTimer = () => {
-    if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
-      // Get the elapsed time since the timer started
-      const elapsedTime = new Date().getTime() - closeTimerStartTimeRef
+function isLoadingOrInfiniteDuration() {
+  return (toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY
+}
 
-      closeTimerRemainingTimeRef = closeTimerRemainingTimeRef - elapsedTime
-    }
+// Pause the timer on each hover
+const pauseTimer = () => {
+  if (isLoadingOrInfiniteDuration()) return
 
-    lastCloseTimerStartTimeRef = new Date().getTime()
+  if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
+    // Get the elapsed time since the timer started
+    const elapsedTime = new Date().getTime() - closeTimerStartTimeRef
+
+    closeTimerRemainingTimeRef = closeTimerRemainingTimeRef - elapsedTime
   }
 
-  const startTimer = () => {
-    closeTimerStartTimeRef = new Date().getTime()
-    // Let the toast know it has started
-    timeoutId = setTimeout(() => {
-      toast.onAutoClose?.(toast)
-      deleteToast()
-    }, closeTimerRemainingTimeRef)
-  }
+  lastCloseTimerStartTimeRef = new Date().getTime()
+}
+
+const startTimer = () => {
+  if (isLoadingOrInfiniteDuration()) return
+
+  closeTimerStartTimeRef = new Date().getTime()
+  // Let the toast know it has started
+  timeoutId = setTimeout(() => {
+    toast.onAutoClose?.(toast)
+    deleteToast()
+  }, closeTimerRemainingTimeRef)
+}
+
+$: {
+  clearTimeout(timeoutId)
 
   if (expanded || interacting) {
     pauseTimer()
   } else {
     startTimer()
   }
-}
-
-$: {
-  pauseOrStartTimer()
 }
 
 onMount(() => {
@@ -129,7 +132,6 @@ onMount(() => {
 })
 
 onDestroy(() => {
-  clearTimeout(timeoutId)
 
   dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
 })

@@ -100,11 +100,11 @@ onDestroy(() => {
   }
 })
 
-function removeToast(event) {
+function removeToast(event: CustomEvent<ToastT>) {
   toasts = toasts.filter(({ id }) => id !== event.detail.id)
 }
 
-function setHeights(event) {
+function setHeights(event: CustomEvent<HeightT[]>) {
   heights = event.detail
 }
 </script>
