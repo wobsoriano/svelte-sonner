@@ -127,6 +127,16 @@ toast.success('Toast has been updated', {
 
 You can use `toast.custom` to render an unstyled toast with custom jsx while maintaining the functionality.
 
+```svelte
+<script>
+export let id
+</script>
+
+ <div>
+  This is a custom component <button on:click={() => toast.dismiss(id)}>close</button>
+</div>
+```
+
 ```js
 import HeadlessToast from './HeadlessToast.svelte'
 
