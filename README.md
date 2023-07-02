@@ -125,7 +125,7 @@ toast.success('Toast has been updated', {
 
 ### Headless
 
-You can use `toast.custom` to render an unstyled toast with custom jsx while maintaining the functionality.
+You can use `toast.custom` to render an unstyled toast with custom component while maintaining the functionality.
 
 ```svelte
 <script>
@@ -182,7 +182,7 @@ You can style your toasts globally with the `toastOptions` prop in the `Toaster`
 
 ### Styling for individual toast
 
-```jsx
+```js
 toast('Event has been created', {
   style: {
     background: 'red',
