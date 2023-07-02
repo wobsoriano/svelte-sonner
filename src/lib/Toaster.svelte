@@ -1,7 +1,7 @@
 <script lang="ts">
 import './styles.css'
 import { onDestroy, onMount } from "svelte";
-import type { HeightT, Position, Style, ToastT, ToastToDismiss } from "./types";
+import type { HeightT, Position, ToastT, ToastToDismiss } from "./types";
 import { ToastState } from "./state";
 import Toast from "./Toast.svelte";
 
