@@ -8,6 +8,7 @@ import Installation from '../components/Installation.svelte';
 import Other from '../components/Other.svelte';
 import Position from '../components/Position.svelte';
 import Types from '../components/Types.svelte';
+import Usage from '../components/Usage.svelte';
 
 let expand = false
 let position: PositionType = 'bottom-right'
@@ -20,6 +21,7 @@ let closeButton = false
   <Hero />
   <div class="content">
     <Installation />
+    <Usage />
     <Types />
     <Position {position} on:setPosition={({detail}) => position = detail} />
     <Expand {expand} on:setExpand={({detail}) => expand = detail} />

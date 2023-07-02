@@ -35,6 +35,9 @@ devDependencies:
   eslint-plugin-svelte:
     specifier: ^2.30.0
     version: 2.32.2(eslint@8.44.0)(svelte@4.0.1)
+  highlight.js:
+    specifier: ^11.8.0
+    version: 11.8.0
   publint:
     specifier: ^0.1.9
     version: 0.1.13
@@ -1322,6 +1325,11 @@ packages:
   /has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+    dev: true
+
+  /highlight.js@11.8.0:
+    resolution: {integrity: sha512-MedQhoqVdr0U6SSnWPzfiadUcDHfN/Wzq25AkXiQv9oiOO/sG0S7XkvpFIqWBl9Yq1UYyYOOVORs5UW2XlPyzg==}
+    engines: {node: '>=12.0.0'}
     dev: true
 
   /https-proxy-agent@5.0.1:

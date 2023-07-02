@@ -2,6 +2,7 @@
 import { toast } from "$lib";
 import { createEventDispatcher } from "svelte";
 import Test from "./Test.svelte";
+    import CodeBlock from "./CodeBlock.svelte";
 
 const dispatch = createEventDispatcher()
 
@@ -36,12 +37,9 @@ const allTypes = [
     },
     {
       name: 'Headless',
-      snippet: `toast.custom((t) => (
-  <div>
-    <h1>Custom toast</h1>
-     <button onClick={() => toast.dismiss(t)}>Dismiss</button>
-  </div>
-));`,
+      snippet: `import HeadlessToast from './HeadlessToast.svelte'
+
+toast.custom(HeadlessToast)`,
       action: () => {
         toast.custom(Test)
         dispatch('setCloseButton')
@@ -71,4 +69,11 @@ $: closeButtonActive = activeType?.name?.includes('Close')
       </button>
     {/each}
   </div>
+  <CodeBlock
+    code={`${activeType?.snippet || ''}
+
+    // ...
+    
+    <Toaster ${richColorsActive ? 'richColors ' : ''} ${closeButtonActive ? 'closeButton ' : ''}/>`}
+  />
 </div>

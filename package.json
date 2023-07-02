@@ -38,6 +38,7 @@
 		"copy-to-clipboard": "^3.3.3",
 		"eslint": "^8.28.0",
 		"eslint-plugin-svelte": "^2.30.0",
+		"highlight.js": "^11.8.0",
 		"publint": "^0.1.9",
 		"sass": "^1.63.6",
 		"svelte": "^4.0.0",

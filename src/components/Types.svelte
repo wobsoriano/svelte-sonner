@@ -1,5 +1,6 @@
 <script lang="ts">
 import { toast } from "$lib";
+    import CodeBlock from "./CodeBlock.svelte";
 import Custom from "./Custom.svelte";
 
 const promiseCode = '`${data.name} toast has been added`'
@@ -77,7 +78,9 @@ toast.promise(promise, {
   },
   {
     name: 'Custom',
-    snippet: 'toast(<div>A custom toast with default styling</div>)',
+    snippet: `import Custom from './Custom.svelte'
+
+toast(Custom)`,
     action: () => toast(Custom),
   },
 ]
@@ -102,4 +105,5 @@ let activeType = allTypes[0]
       </button>
     {/each}
   </div>
+  <CodeBlock code={activeType?.snippet} />
 </div>
