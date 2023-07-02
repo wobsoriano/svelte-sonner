@@ -9,6 +9,8 @@ import { createEventDispatcher } from 'svelte';
 hljs.registerLanguage('javascript', javascript)
 hljs.registerLanguage('xml', xml)
 
+let codeElement: HTMLElement
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -46,6 +48,10 @@ $: {
     })
     highlightedCode = result.value
   }
+}
+
+$: if (codeElement) {
+  codeElement.innerHTML = highlightedCode
 }
 
 const onCopy = () => {
@@ -97,9 +103,7 @@ const onCopy = () => {
   <pre class="wrapper">
     <div class={`${$$props.class} root`}>
       <div />
-      <code class={className}>
-        {@html highlightedCode}
-      </code>
+      <code class={className} bind:this={codeElement} />
     </div>
   </pre>
 </div>
