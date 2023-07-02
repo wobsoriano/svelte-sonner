@@ -2,10 +2,10 @@
 import { Toaster } from '$lib';
 import type { Position as PositionType } from '$lib/types';
 import Expand from '../components/Expand.svelte';
-    import Footer from '../components/Footer.svelte';
+import Footer from '../components/Footer.svelte';
 import Hero from '../components/Hero.svelte';
 import Installation from '../components/Installation.svelte';
-    import Other from '../components/Other.svelte';
+import Other from '../components/Other.svelte';
 import Position from '../components/Position.svelte';
 import Types from '../components/Types.svelte';
 

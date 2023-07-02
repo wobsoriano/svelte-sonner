@@ -42,6 +42,8 @@ toast('Event has been created')
 With custom icon and description:
 
 ```js
+import Icon from './Icon.svelte'
+
 toast('Event has been created', {
   description: 'Monday, January 3rd at 6:00pm',
   icon: Icon,
