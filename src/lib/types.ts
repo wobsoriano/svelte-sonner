@@ -12,8 +12,6 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
 
 export type Style = Record<string, unknown>
 
-export type FixMe = unknown
-
 export interface ToastT {
   id: number | string
   title?: string | ComponentType
@@ -37,8 +35,8 @@ export interface ToastT {
   onAutoClose?: (toast: ToastT) => void
   promise?: PromiseT
   style?: Style
-  className?: string
-  descriptionClassName?: string
+  class?: string
+  descriptionClass?: string
 }
 
 export type Position = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center'
@@ -46,28 +44,6 @@ export type Position = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export interface HeightT {
   height: number
   toastId: number | string
-}
-
-interface ToastOptions {
-  className?: string
-  descriptionClassName?: string
-  style?: string
-}
-
-export interface ToasterProps {
-  invert?: boolean
-  theme?: 'light' | 'dark'
-  position?: Position
-  hotkey?: string[]
-  richColors?: boolean
-  expand?: boolean
-  duration?: number
-  visibleToasts?: number
-  closeButton?: boolean
-  toastOptions?: ToastOptions
-  className?: string
-  style?: Style
-  offset?: string | number
 }
 
 export enum SwipeStateTypes {

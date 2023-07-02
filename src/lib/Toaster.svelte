@@ -18,8 +18,8 @@ const TOAST_WIDTH = 356
 const GAP = 14
 
 interface ToastOptions {
-  className?: string
-  descriptionClassName?: string
+  class?: string
+  descriptionClass?: string
   style?: string
 }
 
@@ -140,8 +140,8 @@ function setHeights(event: CustomEvent<HeightT[]>) {
       index={index}
       toast={toast}
       duration={duration}
-      className={toastOptions?.className}
-      descriptionClassName={toastOptions?.descriptionClassName}
+      class={toastOptions?.class}
+      descriptionClass={toastOptions?.descriptionClass}
       invert={Boolean(invert)}
       visibleToasts={visibleToasts}
       closeButton={Boolean(closeButton)}

@@ -1,9 +1,8 @@
 <script lang="ts">
-import { afterUpdate, createEventDispatcher, onDestroy, onMount, tick } from "svelte";
-import type { ToastT, Position, HeightT, Style } from "./types";
-import Loader from "./assets/Loader.svelte";
-import Icon from "./assets/Icon.svelte";
-import { useEffect } from './useEffect'
+import { createEventDispatcher, onDestroy, onMount } from "svelte";
+import type { ToastT, Position, HeightT } from "./types";
+import Loader from "./Loader.svelte";
+import Icon from "./Icon.svelte";
 
 // Default lifetime of a toasts (in ms)
 const TOAST_LIFETIME = 4000
@@ -26,8 +25,8 @@ export let visibleToasts: number
 export let expandByDefault: boolean
 export let closeButton: boolean
 export let interacting: boolean
-export let duration: number
-export let descriptionClassName = ''
+export let duration: number | null
+export let descriptionClass = ''
 
 let mounted = false
 let removed = false
@@ -40,8 +39,8 @@ let toastRef: HTMLLIElement
 $: isFront = index === 0
 $: isVisible = index + 1 <= visibleToasts
 $: toastType = toast.type
-$: toastClassname = toast.className || ''
-$: toastDescriptionClassname = toast.descriptionClassName || ''
+$: toastClass = toast.class || ''
+$: toastDescriptionClass= toast.descriptionClass || ''
 
 // Height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
 $: heightIndex = heights.findIndex(height => height.toastId === toast.id) || 0
@@ -82,13 +81,13 @@ const deleteToast = () => {
 
 let timeoutId: ReturnType<typeof setTimeout>
 
-function isLoadingOrInfiniteDuration() {
+function isPromiseLoadingOrInfiniteDuration() {
   return (toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY
 }
 
 // Pause the timer on each hover
 const pauseTimer = () => {
-  if (isLoadingOrInfiniteDuration()) return
+  if (isPromiseLoadingOrInfiniteDuration()) return
 
   if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
     // Get the elapsed time since the timer started
@@ -101,7 +100,7 @@ const pauseTimer = () => {
 }
 
 const startTimer = () => {
-  if (isLoadingOrInfiniteDuration()) return
+  if (isPromiseLoadingOrInfiniteDuration()) return
 
   closeTimerStartTimeRef = new Date().getTime()
   // Let the toast know it has started
@@ -132,7 +131,7 @@ onMount(() => {
 })
 
 onDestroy(() => {
-
+  clearTimeout(timeoutId)
   dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
 })
 
@@ -206,7 +205,7 @@ function onPointerMove(event: PointerEvent) {
   aria-atomic="true"
   role="status"
   tabIndex={0}
-  class={`${$$props.class} ${toastClassname}`}
+  class={`${$$props.class} ${toastClass}`}
   data-sonner-toast=""
   data-styled={!toast.component}
   data-mounted={mounted}
@@ -283,7 +282,7 @@ function onPointerMove(event: PointerEvent) {
     <div data-content="">
       <div data-title="">{toast.title}</div>
       {#if toast.description}
-        <div data-description="" class={descriptionClassName + toastDescriptionClassname}>
+        <div data-description="" class={descriptionClass + toastDescriptionClass}>
           {toast.description}
         </div>
       {/if}
