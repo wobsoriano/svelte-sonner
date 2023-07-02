@@ -1,5 +1,6 @@
 <script lang="ts">
 import CodeBlock from "./CodeBlock.svelte";
+
 </script>
 
 <div>
@@ -10,7 +11,13 @@ import CodeBlock from "./CodeBlock.svelte";
 import { Toaster, toast } from 'svelte-sonner'
 </script>
 
+<!-- ... -->
+
 <Toaster />
-<button on:click={() => toast('My first toast')}>Give me a toast</button>`}
+<button
+  on:click={() => toast('My first toast')}
+>
+  Give me a toast
+</button>`}
   />
 </div>

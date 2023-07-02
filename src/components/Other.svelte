@@ -70,10 +70,12 @@ $: closeButtonActive = activeType?.name?.includes('Close')
     {/each}
   </div>
   <CodeBlock
-    code={`${activeType?.snippet || ''}
+    code={`<script>
+${activeType?.snippet || ''}
+</script>
 
-    // ...
+<!-- ... -->
     
-    <Toaster ${richColorsActive ? 'richColors ' : ''} ${closeButtonActive ? 'closeButton ' : ''}/>`}
+<Toaster ${richColorsActive ? 'richColors ' : ''} ${closeButtonActive ? 'closeButton ' : ''}/>`}
   />
 </div>
