@@ -126,3 +126,5 @@ export const toast = Object.assign(basicToast, {
   promise: ToastState.promise,
   dismiss: ToastState.dismiss,
 })
+
+export const useEffect = (subscribe: unknown) => ({ subscribe })

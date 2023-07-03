@@ -3,7 +3,7 @@ import { beforeUpdate, createEventDispatcher, onDestroy, onMount } from "svelte"
 import type { ToastT, Position, HeightT } from "./types";
 import Loader from "./Loader.svelte";
 import Icon from "./Icon.svelte";
-import { useEffect } from './utils';
+import { useEffect } from './state';
 
 // Default lifetime of a toasts (in ms)
 const TOAST_LIFETIME = 4000
