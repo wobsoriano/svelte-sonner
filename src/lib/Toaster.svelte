@@ -43,10 +43,8 @@ $: coords = position.split('-')
 let listRef: HTMLOListElement
 $: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
 
-let unsubscribe: () => void
-
 onMount(() => {
-  unsubscribe = ToastState.subscribe((toast) => {
+  return ToastState.subscribe((toast) => {
     if ((toast as ToastToDismiss).dismiss) {
       toasts = toasts.map(t => (t.id === toast.id ? { ...t, delete: true } : t))
       return
@@ -64,10 +62,6 @@ onMount(() => {
       toasts = [toast as any, ...toasts]
     }
   })
-})
-
-onDestroy(() => {
-  unsubscribe?.()
 })
 
 $: if (toasts.length <= 1) {
