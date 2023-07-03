@@ -31,7 +31,7 @@ let copying = 0
 let highlightedCode: string
 $: cannotDetectLanguage = !autodetect && !hljs.getLanguage(language)
 
-$: className = cannotDetectLanguage ? '' : `hljs ${language} ${$$props.class}`
+$: className = cannotDetectLanguage ? '' : `hljs ${language} ${$$props.class ?? ''}`
 $: {
   if (cannotDetectLanguage) {
     highlightedCode = escapeHtml(code)
@@ -100,12 +100,12 @@ const onCopy = () => {
     {/if}
   </button>
 
-  <pre class="wrapper">
-    <div class={`${$$props.class} root`}>
+  <div class="wrapper">
+    <div class={`${className} root`}>
       <div />
-      <code class={className} bind:this={codeElement} />
+      <code bind:this={codeElement} />
     </div>
-  </pre>
+  </div>
 </div>
 
 <style>

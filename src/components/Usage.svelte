@@ -1,6 +1,5 @@
 <script lang="ts">
 import CodeBlock from "./CodeBlock.svelte";
-
 </script>
 
 <div>
