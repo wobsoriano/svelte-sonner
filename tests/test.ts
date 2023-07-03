@@ -53,3 +53,10 @@ test('toast is not removed when hovered', async ({ page }) => {
 	await timeout
 	await expect(page.locator('[data-sonner-toast]')).toHaveCount(1)
 })
+
+test('close a toast from inside a custom component', async ({ page }) => {
+	await page.getByTestId('other-Headless').click()
+	await expect(page.getByText('Event Created')).toHaveCount(1)
+	await page.getByTestId('close-button').click()
+	await expect(page.getByText('Event Created')).toHaveCount(0)
+})

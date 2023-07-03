@@ -59,6 +59,7 @@ $: closeButtonActive = activeType?.name?.includes('Close')
     {#each allTypes as type}
       <button
         class="button"
+        data-testid={`other-${type.name}`}
         data-active={activeType?.name === type.name}
         on:click={() => {
           type.action?.()
