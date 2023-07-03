@@ -64,7 +64,7 @@ toast.promise(promise, {
         () =>
           new Promise((resolve) => {
             setTimeout(() => {
-              resolve({ name: 'Sonner' })
+              resolve({ name: 'Svelte Sonner' })
             }, 2000)
           }),
         {
@@ -95,6 +95,7 @@ let activeType = allTypes[0]
     {#each allTypes as type}
       <button
         class="button"
+        data-testid={type.name}
         data-active={activeType?.name === type.name}
         on:click={() => {
           type.action?.()

@@ -12,6 +12,7 @@ import { toast } from "$lib";
   <p style="margin-top: 0; font-size: 18px">An opinionated toast component for Svelte.</p>
   <div class="buttons">
     <button
+      data-testid="hero-button"
       data-primary=""
       on:click={() => {
         toast('Sonner', {
