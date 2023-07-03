@@ -1,8 +1,9 @@
 <script lang="ts">
-import { createEventDispatcher, onDestroy, onMount } from "svelte";
+import { beforeUpdate, createEventDispatcher, onDestroy, onMount } from "svelte";
 import type { ToastT, Position, HeightT } from "./types";
 import Loader from "./Loader.svelte";
 import Icon from "./Icon.svelte";
+import { useEffect } from './utils';
 
 // Default lifetime of a toasts (in ms)
 const TOAST_LIFETIME = 4000
@@ -81,14 +82,8 @@ const deleteToast = () => {
 
 let timeoutId: ReturnType<typeof setTimeout>
 
-function isPromiseLoadingOrInfiniteDuration() {
-  return (toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY
-}
-
-// Pause the timer on each hover
+// Pause the tmer on each hover
 const pauseTimer = () => {
-  if (isPromiseLoadingOrInfiniteDuration()) return
-
   if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
     // Get the elapsed time since the timer started
     const elapsedTime = new Date().getTime() - closeTimerStartTimeRef
@@ -100,8 +95,6 @@ const pauseTimer = () => {
 }
 
 const startTimer = () => {
-  if (isPromiseLoadingOrInfiniteDuration()) return
-
   closeTimerStartTimeRef = new Date().getTime()
   // Let the toast know it has started
   timeoutId = setTimeout(() => {
@@ -110,15 +103,26 @@ const startTimer = () => {
   }, closeTimerRemainingTimeRef)
 }
 
-$: {
-  clearTimeout(timeoutId)
+$: isPromiseLoadingOrInfiniteDuration = (toast.promise && toastType === 'loading') || toast.duration === Number.POSITIVE_INFINITY
 
-  if (expanded || interacting) {
-    pauseTimer()
-  } else {
-    startTimer()
+
+/**
+ * Hacky useEffect impl.
+ * https://github.com/sveltejs/svelte/issues/5283#issuecomment-678759305
+ */
+let effect
+$: effect = useEffect(() => {
+  if (!isPromiseLoadingOrInfiniteDuration) {
+    if (expanded || interacting) {
+      pauseTimer()
+    } else {
+      startTimer()
+    }
   }
-}
+
+  return () => clearTimeout(timeoutId)
+})
+$: $effect
 
 onMount(() => {
   mounted = true
@@ -131,7 +135,6 @@ onMount(() => {
 })
 
 onDestroy(() => {
-  clearTimeout(timeoutId)
   dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
 })
 
