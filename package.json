@@ -1,5 +1,11 @@
 {
 	"name": "svelte-sonner",
+	"description": "An opinionated toast component for Svelte.",
+	"author": "Robert Soriano <sorianorobertc@gmail.com>",
+	"keywords": [
+    "svelte",
+		"toast"
+  ],
 	"version": "0.0.7",
 	"scripts": {
 		"dev": "vite dev",
