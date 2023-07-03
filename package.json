@@ -3,10 +3,10 @@
 	"description": "An opinionated toast component for Svelte.",
 	"author": "Robert Soriano <sorianorobertc@gmail.com>",
 	"keywords": [
-    "svelte",
+		"svelte",
 		"toast"
-  ],
-	"version": "0.0.7",
+	],
+	"version": "0.0.8",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
