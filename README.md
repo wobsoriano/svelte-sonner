@@ -137,7 +137,7 @@ const dispatch = createEventDispatcher()
 </script>
 
  <div>
-  This is a custom component <button on:click={() => dispatch('deleteToast')}>close</button>
+  This is a custom component <button on:click={() => dispatch('removeToast')}>close</button>
 </div>
 ```
 
