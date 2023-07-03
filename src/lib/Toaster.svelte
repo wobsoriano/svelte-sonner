@@ -74,10 +74,8 @@ $: if (toasts.length <= 1) {
   expanded = false
 }
 
-const abortController = new AbortController()
-
 onMount(() => {
-  document.addEventListener('keydown', (event) => {
+  const handleKeydown = (event: KeyboardEvent) => {
     const isHotkeyPressed = hotkey.every(key => (event as any)[key] || event.code === key)
 
     if (isHotkeyPressed) {
@@ -91,11 +89,13 @@ onMount(() => {
       ) {
         expanded = false
       }
-  }, { signal: abortController.signal })
-})
+  }
 
-onDestroy(() => {
-  abortController.abort()
+  document.addEventListener('keydown', handleKeydown)
+
+  return () => {
+    document.removeEventListener('keydown', handleKeydown)
+  }
 })
 
 function removeToast(event: CustomEvent<ToastT>) {
