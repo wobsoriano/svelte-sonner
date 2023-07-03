@@ -1,5 +1,7 @@
 import type { ComponentType } from "svelte"
 
+export type FixMe = unknown
+
 export type ToastTypes = 'normal' | 'action' | 'success' | 'error' | 'loading'
 
 export type PromiseT<Data = unknown> = Promise<Data> | (() => Promise<Data>)
