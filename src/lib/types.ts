@@ -10,8 +10,6 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
   error: string | ComponentType | ((error: unknown) => ComponentType | string)
 }
 
-export type Style = Record<string, unknown>
-
 export interface ToastT {
   id: number | string
   title?: string | ComponentType
@@ -34,7 +32,7 @@ export interface ToastT {
   onDismiss?: (toast: ToastT) => void
   onAutoClose?: (toast: ToastT) => void
   promise?: PromiseT
-  style?: Style
+  style?: string
   class?: string
   descriptionClass?: string
 }

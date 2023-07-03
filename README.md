@@ -178,7 +178,7 @@ You can style your toasts globally with the `toastOptions` prop in the `Toaster`
 
 ```svelte
 <Toaster
-  toastOptions={{ style: { background: 'red' }, class: 'my-toast', descriptionClass: 'my-toast-description' }}
+  toastOptions={{ style: 'background: red;', class: 'my-toast', descriptionClass: 'my-toast-description' }}
 />
 ```
 
@@ -186,9 +186,7 @@ You can style your toasts globally with the `toastOptions` prop in the `Toaster`
 
 ```js
 toast('Event has been created', {
-  style: {
-    background: 'red',
-  },
+  style: 'background: red;',
   class: 'my-toast',
   descriptionClass: 'my-toast-description',
 })
