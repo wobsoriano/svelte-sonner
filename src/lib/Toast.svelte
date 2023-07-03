@@ -1,5 +1,5 @@
 <script lang="ts">
-import { beforeUpdate, createEventDispatcher, onDestroy, onMount } from "svelte";
+import { createEventDispatcher, onDestroy, onMount } from "svelte";
 import type { ToastT, Position, HeightT } from "./types";
 import Loader from "./Loader.svelte";
 import Icon from "./Icon.svelte";
@@ -71,11 +71,9 @@ const deleteToast = () => {
   // Save the offset for the exit swipe animation
   removed = true
   offsetBeforeRemove = offset
-  // props.setHeights(h => h.filter(height => height.toastId !== props.toast.id))
   dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
 
   setTimeout(() => {
-    // props.removeToast(props.toast)
     dispatch('removeToast', toast)
   }, TIME_BEFORE_UNMOUNT)
 }
@@ -266,9 +264,9 @@ function onPointerMove(event: PointerEvent) {
   {/if}
 
   {#if toast.component}
-    <svelte:component this={toast.component} id={toast.id}></svelte:component>
+    <svelte:component this={toast.component} on:closeToast={deleteToast}></svelte:component>
   {:else if toast.title && typeof toast.title !== 'string'}
-    <svelte:component this={toast.title}></svelte:component>
+    <svelte:component this={toast.title} on:closeToast={deleteToast}></svelte:component>
   {:else}
     {#if toastType || toast.icon || toast.promise}
       <div data-icon="">

@@ -131,11 +131,13 @@ You can use `toast.custom` to render an unstyled toast with custom component whi
 
 ```svelte
 <script>
-export let id
+import { createEventDispatcher } from 'svelte';
+
+const dispatch = createEventDispatcher()
 </script>
 
  <div>
-  This is a custom component <button on:click={() => toast.dismiss(id)}>close</button>
+  This is a custom component <button on:click={() => dispatch('deleteToast')}>close</button>
 </div>
 ```
 
@@ -224,6 +226,16 @@ To remove a toast programmatically use `toast.dismiss(id)`.
 const toastId = toast('Event has been created')
 
 toast.dismiss(toastId)
+```
+
+To remove a toast from inside a custom component, dispatch `closeToast`:
+
+```js
+import { createEventDispatcher } from 'svelte'
+
+const dispatch = createEventDispatcher()
+
+dispatch('removeToast')
 ```
 
 You can also use the dismiss method without the id to dismiss all toasts.
