@@ -74,30 +74,28 @@ $: if (toasts.length <= 1) {
   expanded = false
 }
 
-function handleKeyDown (event: KeyboardEvent) {
-  const isHotkeyPressed = hotkey.every(key => (event as any)[key] || event.code === key)
-
-  if (isHotkeyPressed) {
-    expanded = true
-    listRef?.focus()
-  }
-
-  if (
-      event.code === 'Escape'
-      && (document.activeElement === listRef || listRef?.contains(document.activeElement))
-    ) {
-      expanded = false
-    }
-}
+const abortController = new AbortController()
 
 onMount(() => {
-  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keydown', (event) => {
+    const isHotkeyPressed = hotkey.every(key => (event as any)[key] || event.code === key)
+
+    if (isHotkeyPressed) {
+      expanded = true
+      listRef?.focus()
+    }
+
+    if (
+        event.code === 'Escape'
+        && (document.activeElement === listRef || listRef?.contains(document.activeElement))
+      ) {
+        expanded = false
+      }
+  }, { signal: abortController.signal })
 })
 
 onDestroy(() => {
-  if (typeof document !== 'undefined') {
-    document.removeEventListener('keydown', handleKeyDown)
-  }
+  abortController.abort()
 })
 
 function removeToast(event: CustomEvent<ToastT>) {
