@@ -17,7 +17,7 @@ let closeButton = false
 </script>
 
 <svelte:head>
-  <title>Sonner</title>
+  <title>Svelte Sonner</title>
   <meta content="width=device-width, initial-scale=1" name="viewport" />
   <meta name="description" content="An opinionated toast component for Svelte." />
   <meta name="keywords" content="svelte, toast, notification, web" />
