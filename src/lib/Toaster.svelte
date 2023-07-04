@@ -27,7 +27,7 @@ export let invert = false
 export let theme: 'light' | 'dark' = 'light'
 export let position: Position = 'bottom-right'
 export let hotkey: string[] = ['altKey', 'KeyT']
-export let richColors: boolean
+export let richColors: boolean = false
 export let expand = false
 export let duration: number | null = null
 export let visibleToasts: number = VISIBLE_TOASTS_AMOUNT
