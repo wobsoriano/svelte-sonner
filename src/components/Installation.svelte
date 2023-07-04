@@ -4,7 +4,7 @@ import copy from 'copy-to-clipboard'
 let copying = 0
 
 const onCopy = () => {
-  copy('npm install sonner')
+  copy('npm install svelte-sonner')
   copying++
   setTimeout(() => {
     copying--
