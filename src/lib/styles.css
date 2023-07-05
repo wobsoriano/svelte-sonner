@@ -56,6 +56,8 @@
   touch-action: none;
   will-change: transform, opacity, height;
   transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
+  -webkit-transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
+  -moz-transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
   box-sizing: border-box;
   outline: none;
 }
