@@ -1,3 +1,7 @@
+
+https://github.com/wobsoriano/svelte-sonner/assets/13049130/9ac1e5f8-0dfa-406d-95ae-49e62a84d8bd
+
+
 # svelte-sonner
 
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)
