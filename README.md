@@ -1,6 +1,4 @@
-
-https://github.com/wobsoriano/svelte-sonner/assets/13049130/9ac1e5f8-0dfa-406d-95ae-49e62a84d8bd
-
+https://github.com/wobsoriano/svelte-sonner/assets/13049130/4b9c250f-1431-4130-9c5b-5a4f8b0210c5
 
 # svelte-sonner
 
