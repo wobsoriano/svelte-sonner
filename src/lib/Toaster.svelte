@@ -23,8 +23,24 @@ interface ToastOptions {
   style?: string
 }
 
+function getInitialTheme(t: string) {
+  if (t !== 'system') {
+    return t
+  }
+
+  if (typeof window !== 'undefined') {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark'
+    }
+
+    return 'light'
+  }
+
+  return 'light'
+}
+
 export let invert = false
-export let theme: 'light' | 'dark' = 'light'
+export let theme: 'light' | 'dark' | 'system' = 'light'
 export let position: Position = 'bottom-right'
 export let hotkey: string[] = ['altKey', 'KeyT']
 export let richColors: boolean = false
@@ -39,6 +55,7 @@ let toasts: ToastT[] = []
 let heights: HeightT[] = []
 let expanded = false
 let interacting = false
+let actualTheme = getInitialTheme(theme)
 $: coords = position.split('-')
 let listRef: HTMLOListElement
 $: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
@@ -85,7 +102,11 @@ onMount(() => {
       }
   }
 
-  document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('keydown', handleKeydown);
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
+    actualTheme = matches ? 'dark' : 'light'
+  });
 
   return () => {
     document.removeEventListener('keydown', handleKeydown)
