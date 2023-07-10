@@ -20,7 +20,7 @@ yarn add svelte-sonner
 pnpm add svelte-sonner
 ```
 
-Add `<Toaster />` to your app, it will be the place where all your toasts will be rendered. After that you can use `toast()` from anywhere in your app.
+Add `<Toaster />` to your app, it will be the place where all your toasts will be rendered. After that, you can use `toast()` from anywhere in your app.
 
 ```svelte
 <script>
@@ -280,7 +280,7 @@ toast('Event has been created', {
 
 ## Keyboard focus
 
-You can focus on the toast area by pressing ⌥/alt + T. You can override it by providing an array of event.code values for each key.
+You can focus on the toast area by pressing ⌥/alt + T. You can override it by providing an array of `event.code` values for each key.
 
 ```svelte
 <Toaster hotkey={['KeyC']} />
