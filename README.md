@@ -6,7 +6,7 @@ https://github.com/wobsoriano/svelte-sonner/assets/13049130/4b9c250f-1431-4130-9
 
 An opinionated toast component for Svelte.
 
-Based on the React [implementation](https://sonner.emilkowal.ski/).
+Based on [emilkowalski](https://github.com/emilkowalski)'s React [implementation](https://sonner.emilkowal.ski/).
 
 ## Quick start
 
