@@ -1,8 +1,8 @@
 <script lang="ts">
 import './styles.css'
 import { onMount } from "svelte";
-import type { HeightT, Position, ToastT, ToastToDismiss } from "./types";
-import { ToastState } from "./state";
+import type { HeightT, Position, ToastT, ToastToDismiss } from "./types.js";
+import { ToastState } from "./state.js";
 import Toast from "./Toast.svelte";
 
 // Visible toasts amount
