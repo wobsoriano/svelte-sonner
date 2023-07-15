@@ -1,5 +1,5 @@
 import type { ComponentType } from 'svelte'
-import type { ExternalToast, FixMe, PromiseData, PromiseT, ToastT, ToastToDismiss, ToastTypes } from './types'
+import type { ExternalToast, FixMe, PromiseData, PromiseT, ToastT, ToastToDismiss, ToastTypes } from './types.js'
 
 let toastsCounter = 0
 
