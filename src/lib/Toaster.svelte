@@ -1,6 +1,6 @@
 <script lang="ts">
 import './styles.css'
-import { onMount } from "svelte";
+import { onDestroy, onMount } from "svelte";
 import type { HeightT, Position, ToastT, ToastToDismiss } from "./types.js";
 import { ToastState } from "./state.js";
 import Toast from "./Toast.svelte";
@@ -59,6 +59,8 @@ let actualTheme = getInitialTheme(theme)
 $: coords = position.split('-')
 let listRef: HTMLOListElement
 $: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
+let lastFocusedElementRef: HTMLElement | null = null
+let isFocusWithinRef = false
 
 onMount(() => {
   return ToastState.subscribe((toast) => {
@@ -84,6 +86,14 @@ onMount(() => {
 $: if (toasts.length <= 1) {
   expanded = false
 }
+
+onDestroy(() => {
+  if (listRef && lastFocusedElementRef) {
+    lastFocusedElementRef.focus({ preventScroll: true });
+    lastFocusedElementRef = null;
+    isFocusWithinRef = false;
+  }
+})
 
 onMount(() => {
   const handleKeydown = (event: KeyboardEvent) => {
@@ -120,6 +130,27 @@ function removeToast(event: CustomEvent<ToastT>) {
 function setHeights(event: CustomEvent<HeightT[]>) {
   heights = event.detail
 }
+
+function handleBlur(event: FocusEvent & {
+  currentTarget: EventTarget & HTMLOListElement;
+}) {
+  if (isFocusWithinRef && !event.currentTarget.contains(event.relatedTarget as HTMLElement)) {
+    isFocusWithinRef = false;
+    if (lastFocusedElementRef) {
+      lastFocusedElementRef.focus({ preventScroll: true });
+      lastFocusedElementRef = null;
+    }
+  }
+}
+
+function handleFocus(event: FocusEvent & {
+  currentTarget: EventTarget & HTMLOListElement;
+}) {
+  if (!isFocusWithinRef) {
+    isFocusWithinRef = true;
+    lastFocusedElementRef = event.relatedTarget as HTMLElement;
+  }
+}
 </script>
 
 {#if toasts.length > 0}
@@ -133,6 +164,8 @@ function setHeights(event: CustomEvent<HeightT[]>) {
     data-rich-colors={richColors}
     data-y-position={coords[0]}
     data-x-position={coords[1]}
+    on:blur={handleBlur}
+    on:focus={handleFocus}
     on:mouseenter={() => expanded = true}
     on:mousemove={() => expanded = true}
     on:mouseleave={() => {

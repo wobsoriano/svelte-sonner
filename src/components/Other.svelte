@@ -2,7 +2,7 @@
 import { toast } from "$lib";
 import { createEventDispatcher } from "svelte";
 import Test from "./Test.svelte";
-    import CodeBlock from "./CodeBlock.svelte";
+import CodeBlock from "./CodeBlock.svelte";
 
 const dispatch = createEventDispatcher()
 
