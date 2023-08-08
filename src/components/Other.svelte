@@ -24,6 +24,22 @@ const allTypes = [
       },
     },
     {
+      name: 'Rich Colors Info',
+      snippet: 'toast.info(\'Info\')',
+      action: () => {
+        toast.info('Info')
+        dispatch('setRichColors', true)
+      },
+    },
+    {
+      name: 'Rich Colors Warning',
+      snippet: 'toast.warning(\'Warning\')',
+      action: () => {
+        toast.warning('Warning')
+        dispatch('setRichColors', true)
+      },
+    },
+    {
       name: 'Close Button',
       snippet: `toast('Event has been created', {
   description: 'Monday, January 3rd at 6:00pm',

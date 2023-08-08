@@ -79,6 +79,14 @@ class Observer {
     return this.create({ ...data, type: 'success', message })
   }
 
+  info = (message: string | ComponentType, data?: ExternalToast) => {
+    return this.create({ ...data, type: 'info', message })
+  }
+
+  warning = (message: string | ComponentType, data?: ExternalToast) => {
+    return this.create({ ...data, type: 'warning', message })
+  }
+
   promise = <ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) => {
     const id = this.create({ ...data, promise, type: 'loading', message: data?.loading })
     const p = promise instanceof Promise ? promise : promise()
@@ -120,6 +128,8 @@ const basicToast = toastFunction
 // We use `Object.assign` to maintain the correct types as we would lose them otherwise
 export const toast = Object.assign(basicToast, {
   success: ToastState.success,
+  info: ToastState.info,
+  warning: ToastState.warning,
   error: ToastState.error,
   custom: ToastState.custom,
   message: ToastState.message,
