@@ -27,7 +27,7 @@ const allTypes = [
       name: 'Rich Colors Info',
       snippet: 'toast.info(\'Info\')',
       action: () => {
-        toast.info('Info')
+        toast.info('Event has info')
         dispatch('setRichColors', true)
       },
     },
@@ -35,7 +35,7 @@ const allTypes = [
       name: 'Rich Colors Warning',
       snippet: 'toast.warning(\'Warning\')',
       action: () => {
-        toast.warning('Warning')
+        toast.warning('Event has warnings')
         dispatch('setRichColors', true)
       },
     },

@@ -60,6 +60,22 @@ Renders a checkmark icon in front of the message.
 toast.success('Event has been created')
 ```
 
+### Info
+
+Renders a question mark icon in front of the message.
+
+```js
+toast.success('Event has new information')
+```
+
+### Warning
+
+Renders a warning icon in front of the message.
+
+```js
+toast.success('Event has warning')
+```
+
 ### Error
 
 Renders an error icon in front of the message.
