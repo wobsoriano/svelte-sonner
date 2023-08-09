@@ -1,9 +1,9 @@
 <script lang="ts">
 import './styles.css'
-import { onDestroy, onMount } from "svelte";
-import type { HeightT, Position, ToastT, ToastToDismiss } from "./types.js";
-import { ToastState } from "./state.js";
-import Toast from "./Toast.svelte";
+import { onDestroy, onMount } from 'svelte';
+import type { HeightT, Position, ToastT, ToastToDismiss } from './types.js';
+import { ToastState } from './state.js';
+import Toast from './Toast.svelte';
 
 // Visible toasts amount
 const VISIBLE_TOASTS_AMOUNT = 3

@@ -1,7 +1,7 @@
 <script lang="ts">
-import { toast } from "$lib";
-import { createEventDispatcher } from "svelte";
-    import CodeBlock from "./CodeBlock.svelte";
+import { toast } from '$lib';
+import { createEventDispatcher } from 'svelte';
+    import CodeBlock from './CodeBlock.svelte';
 
 const positions = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'] as const
 

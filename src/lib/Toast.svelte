@@ -1,8 +1,8 @@
 <script lang="ts">
-import { createEventDispatcher, onDestroy, onMount } from "svelte";
-import type { ToastT, Position, HeightT } from "./types.js";
-import Loader from "./Loader.svelte";
-import Icon from "./Icon.svelte";
+import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+import type { ToastT, Position, HeightT } from './types.js';
+import Loader from './Loader.svelte';
+import Icon from './Icon.svelte';
 import { useEffect } from './state.js';
 
 // Default lifetime of a toasts (in ms)

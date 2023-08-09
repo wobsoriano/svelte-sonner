@@ -1,7 +1,7 @@
 <script lang="ts">
-import { toast } from "$lib";
-import { createEventDispatcher } from "svelte";
-    import CodeBlock from "./CodeBlock.svelte";
+import { toast } from '$lib';
+import { createEventDispatcher } from 'svelte';
+    import CodeBlock from './CodeBlock.svelte';
 
 export let expand: boolean;
 
