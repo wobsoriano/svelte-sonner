@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { ToastTypes } from "$lib/types";
+  import type { ToastTypes } from '$lib/types';
 
-  export let type: ToastTypes = "success";
+  export let type: ToastTypes = 'success';
 </script>
 
-{#if type === "success"}
+{#if type === 'success'}
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
@@ -18,7 +18,7 @@
       clip-rule="evenodd"
     />
   </svg>
-{:else if type === "error"}
+{:else if type === 'error'}
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
@@ -32,7 +32,7 @@
       clip-rule="evenodd"
     />
   </svg>
-{:else if type === "info"}
+{:else if type === 'info'}
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
@@ -46,7 +46,7 @@
       clip-rule="evenodd"
     />
   </svg>
-{:else if type === "warning"}
+{:else if type === 'warning'}
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"

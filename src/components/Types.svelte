@@ -1,48 +1,48 @@
 <script lang="ts">
-  import { toast } from "$lib";
-  import CodeBlock from "./CodeBlock.svelte";
-  import Custom from "./Custom.svelte";
+  import { toast } from '$lib';
+  import CodeBlock from './CodeBlock.svelte';
+  import Custom from './Custom.svelte';
 
-  const promiseCode = "`${data.name} toast has been added`";
+  const promiseCode = '`${data.name} toast has been added`';
 
   const allTypes = [
     {
-      name: "Default",
+      name: 'Default',
       snippet: "toast('Event has been created')",
-      action: () => toast("Event has been created"),
+      action: () => toast('Event has been created'),
     },
     {
-      name: "Description",
+      name: 'Description',
       snippet: `toast.message('Event has been created', {
   description: 'Monday, January 3rd at 6:00pm',
 })`,
       action: () =>
-        toast("Event has been created", {
-          description: "Monday, January 3rd at 6:00pm",
+        toast('Event has been created', {
+          description: 'Monday, January 3rd at 6:00pm',
         }),
     },
     {
-      name: "Success",
+      name: 'Success',
       snippet: "toast.success('Event has been created')",
-      action: () => toast.success("Event has been created"),
+      action: () => toast.success('Event has been created'),
     },
     {
-      name: "Info",
+      name: 'Info',
       snippet: "toast.info('Event will be created')",
-      action: () => toast.info("Event will be created"),
+      action: () => toast.info('Event will be created'),
     },
     {
-      name: "Warning",
+      name: 'Warning',
       snippet: "toast.warning('Event has warnings')",
-      action: () => toast.warning("Event has warnings"),
+      action: () => toast.warning('Event has warnings'),
     },
     {
-      name: "Error",
+      name: 'Error',
       snippet: "toast.error('Event has not been created')",
-      action: () => toast.error("Event has not been created"),
+      action: () => toast.error('Event has not been created'),
     },
     {
-      name: "Action",
+      name: 'Action',
       snippet: `toast('Event has been created', {
   action: {
     label: 'Undo',
@@ -50,16 +50,16 @@
   },
 })`,
       action: () =>
-        toast.message("Event has been created", {
+        toast.message('Event has been created', {
           action: {
-            label: "Undo",
+            label: 'Undo',
             // eslint-disable-next-line no-console
-            onClick: () => console.log("Undo"),
+            onClick: () => console.log('Undo'),
           },
         }),
     },
     {
-      name: "Promise",
+      name: 'Promise',
       snippet: `const promise = () => new Promise((resolve) => setTimeout(resolve, 2000));
 
 toast.promise(promise, {
@@ -74,20 +74,20 @@ toast.promise(promise, {
           () =>
             new Promise((resolve) => {
               setTimeout(() => {
-                resolve({ name: "Svelte Sonner" });
+                resolve({ name: 'Svelte Sonner' });
               }, 2000);
             }),
           {
-            loading: "Loading...",
+            loading: 'Loading...',
             success: (data) => {
               return `${data.name} toast has been added`;
             },
-            error: "Error",
+            error: 'Error',
           }
         ),
     },
     {
-      name: "Custom",
+      name: 'Custom',
       snippet: `import Custom from './Custom.svelte'
 
 toast(Custom)`,
