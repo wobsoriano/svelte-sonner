@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ToastTypes } from '$lib/types';
+  import type { ToastTypes } from '$lib/types.js';
 
   export let type: ToastTypes = 'success';
 </script>

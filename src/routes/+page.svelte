@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Toaster } from '$lib';
-import type { Position as PositionType } from '$lib/types';
+import { Toaster } from '$lib/index.js';
+import type { Position as PositionType } from '$lib/types.js';
 import Expand from '../components/Expand.svelte';
 import Footer from '../components/Footer.svelte';
 import Hero from '../components/Hero.svelte';
