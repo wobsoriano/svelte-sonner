@@ -1,5 +1,5 @@
 <script>
-import { toast } from '$lib/index.js';
+import { toast } from '$lib';
 </script>
 
 <div class="wrapper">
