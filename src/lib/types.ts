@@ -10,8 +10,6 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
   loading: string | ComponentType
   success: string | ComponentType | ((data: ToastData) => ComponentType | string)
   info: string | ComponentType | ((data: ToastData) => ComponentType | string)
-  warning: string | ComponentType | ((data: ToastData) => ComponentType | string)
-  error: string | ComponentType | ((error: unknown) => ComponentType | string)
 }
 
 export interface ToastT {
