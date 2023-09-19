@@ -27,7 +27,7 @@ let closeButton = false
   <meta property="og:site_name" content="Svelte Sonner" />
   <meta property="og:url" content="https://svelte-sonner.vercel.app" />
   <meta property="og:image" content="https://og-image.vercel.app/Svelte%20Sonner" />
-  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" href="/favicon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@wobsoriano" />
   <meta name="twitter:description" content="An opinionated toast component for Svelte." />

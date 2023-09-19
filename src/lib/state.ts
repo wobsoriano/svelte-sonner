@@ -1,5 +1,5 @@
 import type { ComponentType } from 'svelte'
-import type { ExternalToast, FixMe, PromiseData, PromiseT, ToastT, ToastToDismiss, ToastTypes } from './types.js'
+import type { ExternalToast, PromiseData, PromiseT, ToastT, ToastToDismiss, ToastTypes } from './types.js'
 
 let toastsCounter = 0
 
@@ -87,18 +87,30 @@ class Observer {
     return this.create({ ...data, type: 'warning', message })
   }
 
+  loading = (message: string | ComponentType, data?: ExternalToast) => {
+    return this.create({ ...data, type: 'loading', message })
+  }
+
   promise = <ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) => {
     const id = this.create({ ...data, promise, type: 'loading', message: data?.loading })
-    const p = promise instanceof Promise ? promise : promise()
-    p.then((promiseData: FixMe) => {
-      // @ts-expect-error: TODO
-      const message = typeof data?.success === 'function' ? data.success(promiseData) : data?.success
-      this.create({ id, type: 'success', message })
-    }).catch((error: FixMe) => {
-      // @ts-expect-error: TODO
-      const message = typeof data?.error === 'function' ? data.error(error) : data?.error
-      this.create({ id, type: 'error', message })
-    })
+    const p = typeof promise === 'function' ? promise() : promise;
+
+    if (data?.success) {
+      p.then((promiseData: ToastData) => {
+          // @ts-expect-error: TODO
+          const message = typeof data?.success === 'function' ? data.success(promiseData) : data?.success
+          this.create({ id, type: 'success', message })
+      })
+    }
+
+    if (data?.error) {
+      p.catch((error: unknown) => {
+          // @ts-expect-error: TODO
+          const message = typeof data?.error === 'function' ? data.error(error) : data?.error
+          this.create({ id, type: 'error', message })
+      });
+    }
+
     return id
   }
 
@@ -135,6 +147,7 @@ export const toast = Object.assign(basicToast, {
   message: ToastState.message,
   promise: ToastState.promise,
   dismiss: ToastState.dismiss,
+  loading: ToastState.loading,
 })
 
 export const useEffect = (subscribe: unknown) => ({ subscribe })
