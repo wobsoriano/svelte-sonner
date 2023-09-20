@@ -78,11 +78,7 @@ toast.promise(promise, {
       action: () =>
         toast.promise<{ name: string }>(
           () => new Promise((resolve, reject) => setTimeout(() => {
-                    if (Math.random() > 0.5) {
-                      resolve({ name: 'Svelte Sonner' });
-                    } else {
-                      reject();
-                    }
+                    resolve({ name: 'Svelte Sonner' });
                   }, 1500)),
           {
             loading: 'Loading...',
