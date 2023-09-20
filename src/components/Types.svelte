@@ -60,31 +60,45 @@
     },
     {
       name: 'Promise',
-      snippet: `const promise = () => new Promise((resolve) => setTimeout(resolve, 2000));
+      snippet: `const promise = new Promise((resolve, reject) => setTimeout(() => {
+  if (Math.random() > 0.5) {
+    resolve({ name: 'Svelte Sonner' });
+  } else {
+    reject();
+  }
+}, 1500));
 
 toast.promise(promise, {
   loading: 'Loading...',
   success: (data) => {
-    return ${promiseCode};
+    return data.name +  " toast has been added";
   },
-  error: 'Error',
+  error: 'Error... :( Try again!',
 });`,
       action: () =>
         toast.promise<{ name: string }>(
-          () =>
-            new Promise((resolve) => {
-              setTimeout(() => {
-                resolve({ name: 'Svelte Sonner' });
-              }, 2000);
-            }),
+          () => new Promise((resolve, reject) => setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                      resolve({ name: 'Svelte Sonner' });
+                    } else {
+                      reject();
+                    }
+                  }, 1500)),
           {
             loading: 'Loading...',
             success: (data) => {
               return `${data.name} toast has been added`;
             },
-            error: 'Error',
+            error: 'Error... :( Try again!',
           }
         ),
+    },
+    {
+      name: 'Loading',
+      snippet: 'toast.loading(\'Loading...\')',
+      action: () => {
+        toast.loading('Loading...')
+      },
     },
     {
       name: 'Custom',
