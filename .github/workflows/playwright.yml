@@ -10,14 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 16
-      - run: npm install pnpm -g
-      - run: pnpm install
-      - run: pnpm build
-      - run: pnpm playwright install --with-deps
-      - run: pnpm test || exit 1
+          bun-version: latest
+      - run: bun install
+      - run: bun run build
+      - run: bun run playwright install --with-deps
+      - run: bun test || exit 1
       - uses: actions/upload-artifact@v3
         if: always()
         with:
