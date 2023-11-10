@@ -1,4 +1,4 @@
-import type { ComponentType } from 'svelte'
+import type { ComponentProps, ComponentType } from 'svelte'
 
 export type FixMe = unknown
 
@@ -12,12 +12,13 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
   error?: string | ComponentType | ((error: unknown) => ComponentType | string)
 }
 
-export interface ToastT {
+export interface ToastT<T extends ComponentType = ComponentType> {
   id: number | string
   title?: string | ComponentType
   type?: ToastTypes
   icon?: ComponentType
-  component?: ComponentType
+  component?: T
+  componentProps?: ComponentProps<InstanceType<T>>
   invert?: boolean
   description?: string | ComponentType
   duration?: number
@@ -59,6 +60,6 @@ export interface ToastToDismiss {
   dismiss: boolean
 }
 
-export type ExternalToast = Omit<ToastT, 'id' | 'type' | 'title'> & {
+export type ExternalToast<T extends ComponentType = ComponentType> = Omit<ToastT<T>, 'id' | 'type' | 'title'> & {
   id?: number | string
 }

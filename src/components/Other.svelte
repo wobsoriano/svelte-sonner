@@ -55,9 +55,17 @@ const allTypes = [
       name: 'Headless',
       snippet: `import HeadlessToast from './HeadlessToast.svelte'
 
-toast.custom(HeadlessToast)`,
+toast.custom(HeadlessToast)
+
+// With props:
+toast.custom(HeadlessToast, {
+  componentProps: {
+    eventName: 'Louvre Museum'
+  }
+})
+`,
       action: () => {
-        toast.custom(Test)
+        toast.custom(Test, { componentProps: { eventName: 'Louvre Museum' } })
         dispatch('setCloseButton')
       },
     },
