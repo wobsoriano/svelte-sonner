@@ -53,7 +53,7 @@ export let offset: string | number | null = null
 let toasts: ToastT[] = []
 $: possiblePositions = Array.from(
   new Set([position, ...toasts.filter((toast) => toast.position).map((toast) => toast.position)].filter(Boolean)),
-)
+) as Position[]
 let heights: HeightT[] = []
 let expanded = false
 let interacting = false
@@ -159,7 +159,7 @@ function handleFocus(event: FocusEvent & {
   aria-label={`Notifications ${hotkeyLabel}`}
   tabIndex={-1}
 >
-  {#each possiblePositions as pos, index}
+  {#each possiblePositions as position, index}
     <ol
       tabIndex={-1}
       bind:this={listRef}
@@ -167,8 +167,8 @@ function handleFocus(event: FocusEvent & {
       data-sonner-toaster
       data-theme={theme}
       data-rich-colors={richColors}
-      data-y-position={pos.split('-')[0]}
-      data-x-position={pos.split('-')[1]}
+      data-y-position={position.split('-')[0]}
+      data-x-position={position.split('-')[1]}
       on:blur={handleBlur}
       on:focus={handleFocus}
       on:mouseenter={() => expanded = true}
@@ -186,7 +186,7 @@ function handleFocus(event: FocusEvent & {
       style:--gap={`${GAP}px`}
       style={$$props.style}
     >
-    {#each toasts.filter((toast) => (!toast.position && index === 0) || toast.position === pos) as toast, index (toast.id)}
+    {#each toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
       <Toast
         index={index}
         toast={toast}
