@@ -264,7 +264,7 @@ function onPointerMove(event: PointerEvent) {
   {/if}
 
   {#if toast.component}
-    <svelte:component this={toast.component} on:closeToast={deleteToast}></svelte:component>
+    <svelte:component this={toast.component} {...toast.componentProps} on:closeToast={deleteToast}></svelte:component>
   {:else if toast.title && typeof toast.title !== 'string'}
     <svelte:component this={toast.title} on:closeToast={deleteToast}></svelte:component>
   {:else}

@@ -114,8 +114,8 @@ class Observer {
     return id
   }
 
-  // We can't provide the toast we just created as a prop as we didn't creat it yet, so we can create a default toast object, I just don't know how to use function in argument when calling()?
-  custom = (component: ComponentType, data?: ExternalToast) => {
+  // We can't provide the toast we just created as a prop as we didn't create it yet, so we can create a default toast object, I just don't know how to use function in argument when calling()?
+  custom = <T extends ComponentType = ComponentType> (component: T, data?: ExternalToast<T>) => {
     const id = data?.id || toastsCounter++
     this.publish({ component, id, ...data })
   }

@@ -1,12 +1,14 @@
 <script lang="ts">
 import { createEventDispatcher } from 'svelte';
 
+export let eventName: string
+
 const dispatch = createEventDispatcher()
 </script>
 
 <div class="headless">
   <p class="headlessTitle">Event Created</p>
-  <p class="headlessDescription">Today at 4:00pm - "Louvre Museum"</p>
+  <p class="headlessDescription">Today at 4:00pm - "{eventName}"</p>
   <button data-testid="close-button" class="headlessClose" on:click={() => dispatch('closeToast')}>
     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
       <path
