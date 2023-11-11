@@ -51,11 +51,13 @@ export let toastOptions: ToastOptions = {}
 export let offset: string | number | null = null
 
 let toasts: ToastT[] = []
+$: possiblePositions = Array.from(
+  new Set([position, ...toasts.filter((toast) => toast.position).map((toast) => toast.position)].filter(Boolean)),
+)
 let heights: HeightT[] = []
 let expanded = false
 let interacting = false
 let actualTheme = getInitialTheme(theme)
-$: coords = position.split('-')
 let listRef: HTMLOListElement
 $: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
 let lastFocusedElementRef: HTMLElement | null = null
@@ -153,55 +155,60 @@ function handleFocus(event: FocusEvent & {
 </script>
 
 {#if toasts.length > 0}
-<section aria-label={`Notifications ${hotkeyLabel}`} tabIndex={-1}>
-  <ol
-    tabIndex={-1}
-    bind:this={listRef}
-    class={$$props.class}
-    data-sonner-toaster
-    data-theme={theme}
-    data-rich-colors={richColors}
-    data-y-position={coords[0]}
-    data-x-position={coords[1]}
-    on:blur={handleBlur}
-    on:focus={handleFocus}
-    on:mouseenter={() => expanded = true}
-    on:mousemove={() => expanded = true}
-    on:mouseleave={() => {
-      if (!interacting) {
-        expanded = false
-      }
-    }}
-    on:pointerdown={() => interacting = true}
-    on:pointerup={() => interacting = false}
-    style:--front-toast-height={`${heights[0]?.height}px`}
-    style:--offset={typeof offset === 'number' ? `${offset}px` : offset || VIEWPORT_OFFSET}
-    style:--width={`${TOAST_WIDTH}px`}
-    style:--gap={`${GAP}px`}
-    style={$$props.style}
-  >
-  {#each toasts as toast, index (toast.id)}
-    <Toast
-      index={index}
-      toast={toast}
-      duration={duration}
-      class={toastOptions?.class}
-      descriptionClass={toastOptions?.descriptionClass}
-      invert={Boolean(invert)}
-      visibleToasts={visibleToasts}
-      closeButton={Boolean(closeButton)}
-      interacting={interacting}
-      position={position}
-      style={toastOptions?.style ?? ''}
-      on:removeToast={removeToast}
-      toasts={toasts}
-      heights={heights}
-      on:setHeights={setHeights}
-      expandByDefault={Boolean(expand)}
-      expanded={expanded}
-    />
+<section
+  aria-label={`Notifications ${hotkeyLabel}`}
+  tabIndex={-1}
+>
+  {#each possiblePositions as pos, index}
+    <ol
+      tabIndex={-1}
+      bind:this={listRef}
+      class={$$props.class}
+      data-sonner-toaster
+      data-theme={theme}
+      data-rich-colors={richColors}
+      data-y-position={pos.split('-')[0]}
+      data-x-position={pos.split('-')[1]}
+      on:blur={handleBlur}
+      on:focus={handleFocus}
+      on:mouseenter={() => expanded = true}
+      on:mousemove={() => expanded = true}
+      on:mouseleave={() => {
+        if (!interacting) {
+          expanded = false
+        }
+      }}
+      on:pointerdown={() => interacting = true}
+      on:pointerup={() => interacting = false}
+      style:--front-toast-height={`${heights[0]?.height}px`}
+      style:--offset={typeof offset === 'number' ? `${offset}px` : offset || VIEWPORT_OFFSET}
+      style:--width={`${TOAST_WIDTH}px`}
+      style:--gap={`${GAP}px`}
+      style={$$props.style}
+    >
+    {#each toasts.filter((toast) => (!toast.position && index === 0) || toast.position === pos) as toast, index (toast.id)}
+      <Toast
+        index={index}
+        toast={toast}
+        duration={duration}
+        class={toastOptions?.class}
+        descriptionClass={toastOptions?.descriptionClass}
+        invert={Boolean(invert)}
+        visibleToasts={visibleToasts}
+        closeButton={Boolean(closeButton)}
+        interacting={interacting}
+        position={position}
+        style={toastOptions?.style ?? ''}
+        on:removeToast={removeToast}
+        toasts={toasts}
+        heights={heights}
+        on:setHeights={setHeights}
+        expandByDefault={Boolean(expand)}
+        expanded={expanded}
+      />
+    {/each}
+    </ol>
   {/each}
-</ol>
 </section>
 {/if}
 

@@ -38,6 +38,7 @@ export interface ToastT<T extends ComponentType = ComponentType> {
   style?: string
   class?: string
   descriptionClass?: string
+  position?: Position;
 }
 
 export type Position = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center'
