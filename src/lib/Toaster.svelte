@@ -125,18 +125,18 @@ $: {
     actualTheme = theme
   }
 
-  if (theme === 'system') {
-    // check if current preference is dark
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      // it's currently dark
-      actualTheme = 'dark'
-    } else {
-      // it's not dark
-      actualTheme = 'light'
-    }
-  }
-
   if (typeof window !== 'undefined') {
+    if (theme === 'system') {
+      // check if current preference is dark
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // it's currently dark
+        actualTheme = 'dark'
+      } else {
+        // it's not dark
+        actualTheme = 'light'
+      }
+    }
+
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
       actualTheme = matches ? 'dark' : 'light'
     });
