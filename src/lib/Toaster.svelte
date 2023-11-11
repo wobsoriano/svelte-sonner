@@ -115,14 +115,33 @@ onMount(() => {
 
   document.addEventListener('keydown', handleKeydown);
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-    actualTheme = matches ? 'dark' : 'light'
-  });
-
   return () => {
     document.removeEventListener('keydown', handleKeydown)
   }
 })
+
+$: {
+  if (theme !== 'system') {
+    actualTheme = theme
+  }
+
+  if (theme === 'system') {
+    // check if current preference is dark
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      // it's currently dark
+      actualTheme = 'dark'
+    } else {
+      // it's not dark
+      actualTheme = 'light'
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
+      actualTheme = matches ? 'dark' : 'light'
+    });
+  }
+}
 
 function removeToast(event: CustomEvent<ToastT>) {
   toasts = toasts.filter(({ id }) => id !== event.detail.id)
@@ -165,7 +184,7 @@ function handleFocus(event: FocusEvent & {
       bind:this={listRef}
       class={$$props.class}
       data-sonner-toaster
-      data-theme={theme}
+      data-theme={actualTheme}
       data-rich-colors={richColors}
       data-y-position={position.split('-')[0]}
       data-x-position={position.split('-')[1]}
