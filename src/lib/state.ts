@@ -118,6 +118,8 @@ class Observer {
   custom = <T extends ComponentType = ComponentType> (component: T, data?: ExternalToast<T>) => {
     const id = data?.id || toastsCounter++
     this.publish({ component, id, ...data })
+
+    return id
   }
 }
 
