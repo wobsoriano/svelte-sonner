@@ -101,7 +101,7 @@ toast.promise(promise, {
       snippet: `import Custom from './Custom.svelte'
 
 toast(Custom)`,
-      action: () => toast(Custom),
+      action: () => toast(Custom, { duration: 1000000 }),
     },
   ];
 

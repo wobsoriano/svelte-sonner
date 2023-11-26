@@ -10,6 +10,7 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
   loading?: string | ComponentType
   success?: string | ComponentType | ((data: ToastData) => ComponentType | string)
   error?: string | ComponentType | ((error: unknown) => ComponentType | string)
+  finally?: () => void | Promise<void>
 }
 
 export interface ToastT<T extends ComponentType = ComponentType> {
@@ -61,6 +62,6 @@ export interface ToastToDismiss {
   dismiss: boolean
 }
 
-export type ExternalToast<T extends ComponentType = ComponentType> = Omit<ToastT<T>, 'id' | 'type' | 'title'> & {
+export type ExternalToast<T extends ComponentType = ComponentType> = Omit<ToastT<T>, 'id' | 'type' | 'title' | 'promise'> & {
   id?: number | string
 }

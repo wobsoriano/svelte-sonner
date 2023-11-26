@@ -256,6 +256,12 @@ const dispatch = createEventDispatcher()
 dispatch('removeToast')
 ```
 
+You can also dismiss all toasts at once by calling `toast.dismiss()` without an id.
+
+```js
+toast.dismiss()
+```
+
 You can also use the dismiss method without the id to dismiss all toasts.
 
 ```js

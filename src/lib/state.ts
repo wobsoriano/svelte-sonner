@@ -31,7 +31,7 @@ class Observer {
     this.toasts = [...this.toasts, data]
   }
 
-  create = (data: ExternalToast & { message?: string | ComponentType; type?: ToastTypes }) => {
+  create = (data: ExternalToast & { message?: string | ComponentType; type?: ToastTypes; promise?: PromiseT }) => {
     const { message, ...rest } = data
     const id = typeof data?.id === 'number' || (data.id && data.id?.length > 0) ? data.id : toastsCounter++
 
@@ -92,32 +92,65 @@ class Observer {
   }
 
   promise = <ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) => {
-    const id = this.create({ ...data, promise, type: 'loading', message: data?.loading })
-    const p = typeof promise === 'function' ? promise() : promise;
-
-    if (data?.success) {
-      p.then((promiseData: ToastData) => {
-          // @ts-expect-error: TODO
-          const message = typeof data?.success === 'function' ? data.success(promiseData) : data?.success
-          this.create({ id, type: 'success', message })
-      })
+    if (!data) {
+      // Nothing to show
+      return
     }
 
-    if (data?.error) {
-      p.catch((error: unknown) => {
-          // @ts-expect-error: TODO
-          const message = typeof data?.error === 'function' ? data.error(error) : data?.error
-          this.create({ id, type: 'error', message })
+    let id: string | number | undefined = undefined;
+    if (data.loading !== undefined) {
+      id = this.create({
+        ...data,
+        promise,
+        type: 'loading',
+        message: data.loading,
       });
     }
 
-    return id
+    const p = promise instanceof Promise ? promise : promise();
+
+    let shouldDismiss = id !== undefined;
+
+    p.then((response) => {
+      // TODO: Clean up TS here, response has incorrect type
+      // @ts-expect-error: Incorrect response type
+      if (response && typeof response.ok === 'boolean' && !response.ok) {
+        shouldDismiss = false;
+        const message =
+        // @ts-expect-error: Incorrect response type
+          typeof data.error === 'function' ? data.error(`HTTP error! status: ${response.status}`) : data.error;
+        this.create({ id, type: 'error', message });
+      } else if (data.success !== undefined) {
+        shouldDismiss = false;
+        // @ts-expect-error: TODO: Better function checking
+        const message = typeof data.success === 'function' ? data.success(response) : data.success;
+        this.create({ id, type: 'success', message });
+      }
+    })
+      .catch((error) => {
+        if (data.error !== undefined) {
+          shouldDismiss = false;
+          // @ts-expect-error: TODO: Better function checking
+          const message = typeof data.error === 'function' ? data.error(error) : data.error;
+          this.create({ id, type: 'error', message });
+        }
+      })
+      .finally(() => {
+        if (shouldDismiss) {
+          // Toast is still in load state (and will be indefinitely — dismiss it)
+          this.dismiss(id);
+          id = undefined;
+        }
+
+        data.finally?.();
+      });
+
+    return id;
   }
 
-  // We can't provide the toast we just created as a prop as we didn't create it yet, so we can create a default toast object, I just don't know how to use function in argument when calling()?
   custom = <T extends ComponentType = ComponentType> (component: T, data?: ExternalToast<T>) => {
     const id = data?.id || toastsCounter++
-    this.publish({ component, id, ...data })
+    this.create({ component, id, ...data })
 
     return id
   }

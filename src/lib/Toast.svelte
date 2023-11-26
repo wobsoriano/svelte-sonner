@@ -270,7 +270,7 @@ function onPointerMove(event: PointerEvent) {
   {:else}
     {#if toastType || toast.icon || toast.promise}
       <div data-icon="">
-        {#if toast.promise || toastType === 'loading'}
+        {#if (toast.promise || toastType === 'loading') && !toast.icon}
           <Loader visible={toastType === 'loading'} />
         {/if}
         {#if toast.icon}
