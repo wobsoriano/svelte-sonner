@@ -1,5 +1,5 @@
 <script lang="ts">
-import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+import { createEventDispatcher, onMount } from 'svelte';
 import type { ToastT, Position, HeightT } from './types.js';
 import Loader from './Loader.svelte';
 import Icon from './Icon.svelte';
@@ -130,10 +130,10 @@ onMount(() => {
   // Add toast height tot heights array after the toast is mounted
   initialHeight = height
   dispatch('setHeights', [{ toastId: toast.id, height }, ...heights])
-})
 
-onDestroy(() => {
-  dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
+  return () => {
+    dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
+  }
 })
 
 $: if (toast.delete) {
