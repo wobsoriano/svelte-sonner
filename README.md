@@ -253,7 +253,7 @@ import { createEventDispatcher } from 'svelte'
 
 const dispatch = createEventDispatcher()
 
-dispatch('removeToast')
+dispatch('closeToast')
 ```
 
 You can also dismiss all toasts at once by calling `toast.dismiss()` without an id.
