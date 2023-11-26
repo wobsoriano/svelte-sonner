@@ -298,6 +298,7 @@ function handleFocus(event: FocusEvent & {
     transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
     box-sizing: border-box;
     outline: none;
+    overflow-wrap: anywhere;
   }
 
   [data-sonner-toast][data-styled='true'] {
