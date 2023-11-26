@@ -131,9 +131,7 @@ onMount(() => {
   initialHeight = height
   dispatch('setHeights', [{ toastId: toast.id, height }, ...heights])
 
-  return () => {
-    dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
-  }
+  return () => dispatch('setHeights', heights.filter(height => height.toastId !== toast.id))
 })
 
 $: if (toast.delete) {
