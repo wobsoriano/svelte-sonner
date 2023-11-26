@@ -20,6 +20,8 @@ interface ToastOptions {
   class?: string
   descriptionClass?: string
   style?: string
+  cancelButtonStyle?: string
+  actionButtonStyle?: string
 }
 
 function getInitialTheme(t: string) {
@@ -218,6 +220,8 @@ function handleFocus(event: FocusEvent & {
         interacting={interacting}
         position={position}
         style={toastOptions?.style ?? ''}
+        cancelButtonStyle={toastOptions?.cancelButtonStyle}
+        actionButtonStyle={toastOptions?.actionButtonStyle}
         on:removeToast={removeToast}
         toasts={toasts}
         heights={heights}

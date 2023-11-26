@@ -26,6 +26,8 @@ export let visibleToasts: number
 export let expandByDefault: boolean
 export let closeButton: boolean
 export let interacting: boolean
+export let cancelButtonStyle = ''
+export let actionButtonStyle = ''
 export let duration: number | null
 export let descriptionClass = ''
 
@@ -290,6 +292,7 @@ function onPointerMove(event: PointerEvent) {
       <button
         data-button
         data-cancel
+        style={cancelButtonStyle}
         on:click={() => {
           deleteToast()
           if (toast.cancel?.onClick) {
@@ -303,6 +306,7 @@ function onPointerMove(event: PointerEvent) {
     {#if toast.action}
       <button
         data-button=""
+        style={actionButtonStyle}
         on:click={(event) => {
           toast.action?.onClick(event)
           if (event.defaultPrevented)

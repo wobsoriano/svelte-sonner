@@ -22,6 +22,8 @@ export interface ToastT<T extends ComponentType = ComponentType> {
   componentProps?: ComponentProps<InstanceType<T>>
   invert?: boolean
   description?: string | ComponentType
+  cancelButtonStyle?: string
+  actionButtonStyle?: string
   duration?: number
   delete?: boolean
   important?: boolean
