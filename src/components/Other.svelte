@@ -27,7 +27,7 @@ const allTypes = [
       name: 'Rich Colors Info',
       snippet: 'toast.info(\'Info\')',
       action: () => {
-        toast.info('Event has info')
+        toast.info('Be at the area 10 minutes before the event time')
         dispatch('setRichColors', true)
       },
     },
@@ -35,7 +35,7 @@ const allTypes = [
       name: 'Rich Colors Warning',
       snippet: 'toast.warning(\'Warning\')',
       action: () => {
-        toast.warning('Event has warnings')
+        toast.warning('Event start time cannot be earlier than 8am')
         dispatch('setRichColors', true)
       },
     },
