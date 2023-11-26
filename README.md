@@ -262,14 +262,6 @@ You can also dismiss all toasts at once by calling `toast.dismiss()` without an 
 toast.dismiss()
 ```
 
-You can also use the dismiss method without the id to dismiss all toasts.
-
-```js
-// Removes all toasts
-
-toast.dismiss()
-```
-
 ### Duration
 
 You can change the duration of each toast by using the `duration` property, or change the duration of all toasts like this:
