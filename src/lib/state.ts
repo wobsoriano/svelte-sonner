@@ -32,6 +32,15 @@ class Observer {
   }
 
   create = (data: ExternalToast & { message?: string | ComponentType; type?: ToastTypes; promise?: PromiseT }) => {
+    /**
+     * If we're not in the browser (e.g. in an SSR context), don't do
+     * anything. This ensures we aren't leaking data between requests with
+     * the same global `ToastState` instance.
+     * 
+     * @see https://kit.svelte.dev/docs/state-management
+     */
+    if (typeof document === 'undefined') return 
+
     const { message, ...rest } = data
     const id = typeof data?.id === 'number' || (data.id && data.id?.length > 0) ? data.id : toastsCounter++
 

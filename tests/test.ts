@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// Run tests in parallel as they are independent
+test.describe.configure({ mode: 'parallel' });
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/')
 })
