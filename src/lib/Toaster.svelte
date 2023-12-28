@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { onDestroy, onMount } from "svelte";
-	import type { HeightT, Position, ToastT, ToastToDismiss } from "./types.js";
-	import { ToastState } from "./state.js";
-	import Toast from "./Toast.svelte";
+	import { onDestroy, onMount } from 'svelte';
+	import type { HeightT, Position, ToastT, ToastToDismiss } from './types.js';
+	import { ToastState } from './state.js';
+	import Toast from './Toast.svelte';
 
 	// Visible toasts amount
 	const VISIBLE_TOASTS_AMOUNT = 3;
 
 	// Viewport padding
-	const VIEWPORT_OFFSET = "32px";
+	const VIEWPORT_OFFSET = '32px';
 
 	// Default toast width
 	const TOAST_WIDTH = 356;
@@ -25,28 +25,28 @@
 	}
 
 	function getInitialTheme(t: string) {
-		if (t !== "system") {
+		if (t !== 'system') {
 			return t;
 		}
 
-		if (typeof window !== "undefined") {
+		if (typeof window !== 'undefined') {
 			if (
 				window.matchMedia &&
-				window.matchMedia("(prefers-color-scheme: dark)").matches
+				window.matchMedia('(prefers-color-scheme: dark)').matches
 			) {
-				return "dark";
+				return 'dark';
 			}
 
-			return "light";
+			return 'light';
 		}
 
-		return "light";
+		return 'light';
 	}
 
 	export let invert = false;
-	export let theme: "light" | "dark" | "system" = "light";
-	export let position: Position = "bottom-right";
-	export let hotkey: string[] = ["altKey", "KeyT"];
+	export let theme: 'light' | 'dark' | 'system' = 'light';
+	export let position: Position = 'bottom-right';
+	export let hotkey: string[] = ['altKey', 'KeyT'];
 	export let richColors = false;
 	export let expand = false;
 	export let duration: number | null = null;
@@ -71,7 +71,7 @@
 	let interacting = false;
 	let actualTheme = getInitialTheme(theme);
 	let listRef: HTMLOListElement;
-	$: hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
+	$: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
 	let lastFocusedElementRef: HTMLElement | null = null;
 	let isFocusWithinRef = false;
 
@@ -122,7 +122,7 @@
 			}
 
 			if (
-				event.code === "Escape" &&
+				event.code === 'Escape' &&
 				(document.activeElement === listRef ||
 					listRef?.contains(document.activeElement))
 			) {
@@ -130,37 +130,37 @@
 			}
 		};
 
-		document.addEventListener("keydown", handleKeydown);
+		document.addEventListener('keydown', handleKeydown);
 
 		return () => {
-			document.removeEventListener("keydown", handleKeydown);
+			document.removeEventListener('keydown', handleKeydown);
 		};
 	});
 
 	$: {
-		if (theme !== "system") {
+		if (theme !== 'system') {
 			actualTheme = theme;
 		}
 
-		if (typeof window !== "undefined") {
-			if (theme === "system") {
+		if (typeof window !== 'undefined') {
+			if (theme === 'system') {
 				// check if current preference is dark
 				if (
 					window.matchMedia &&
-					window.matchMedia("(prefers-color-scheme: dark)").matches
+					window.matchMedia('(prefers-color-scheme: dark)').matches
 				) {
 					// it's currently dark
-					actualTheme = "dark";
+					actualTheme = 'dark';
 				} else {
 					// it's not dark
-					actualTheme = "light";
+					actualTheme = 'light';
 				}
 			}
 
 			window
-				.matchMedia("(prefers-color-scheme: dark)")
-				.addEventListener("change", ({ matches }) => {
-					actualTheme = matches ? "dark" : "light";
+				.matchMedia('(prefers-color-scheme: dark)')
+				.addEventListener('change', ({ matches }) => {
+					actualTheme = matches ? 'dark' : 'light';
 				});
 		}
 	}
@@ -212,8 +212,8 @@
 				data-sonner-toaster
 				data-theme={actualTheme}
 				data-rich-colors={richColors}
-				data-y-position={position.split("-")[0]}
-				data-x-position={position.split("-")[1]}
+				data-y-position={position.split('-')[0]}
+				data-x-position={position.split('-')[1]}
 				on:blur={handleBlur}
 				on:focus={handleFocus}
 				on:mouseenter={() => (expanded = true)}
@@ -226,7 +226,7 @@
 				on:pointerdown={() => (interacting = true)}
 				on:pointerup={() => (interacting = false)}
 				style:--front-toast-height={`${heights[0]?.height}px`}
-				style:--offset={typeof offset === "number"
+				style:--offset={typeof offset === 'number'
 					? `${offset}px`
 					: offset || VIEWPORT_OFFSET}
 				style:--width={`${TOAST_WIDTH}px`}
@@ -245,7 +245,7 @@
 						closeButton={Boolean(closeButton)}
 						{interacting}
 						{position}
-						style={toastOptions?.style ?? ""}
+						style={toastOptions?.style ?? ''}
 						cancelButtonStyle={toastOptions?.cancelButtonStyle}
 						actionButtonStyle={toastOptions?.actionButtonStyle}
 						on:removeToast={removeToast}
@@ -301,24 +301,24 @@
 		z-index: 999999999;
 	}
 
-	[data-sonner-toaster][data-x-position="right"] {
+	[data-sonner-toaster][data-x-position='right'] {
 		right: max(var(--offset), env(safe-area-inset-right));
 	}
 
-	[data-sonner-toaster][data-x-position="left"] {
+	[data-sonner-toaster][data-x-position='left'] {
 		left: max(var(--offset), env(safe-area-inset-left));
 	}
 
-	[data-sonner-toaster][data-x-position="center"] {
+	[data-sonner-toaster][data-x-position='center'] {
 		left: 50%;
 		transform: translateX(-50%);
 	}
 
-	[data-sonner-toaster][data-y-position="top"] {
+	[data-sonner-toaster][data-y-position='top'] {
 		top: max(var(--offset), env(safe-area-inset-top));
 	}
 
-	[data-sonner-toaster][data-y-position="bottom"] {
+	[data-sonner-toaster][data-y-position='bottom'] {
 		bottom: max(var(--offset), env(safe-area-inset-bottom));
 	}
 
@@ -352,7 +352,7 @@
 		overflow-wrap: anywhere;
 	}
 
-	[data-sonner-toast][data-styled="true"] {
+	[data-sonner-toast][data-styled='true'] {
 		padding: 16px;
 		background: var(--normal-bg);
 		border: 1px solid var(--normal-border);
@@ -372,14 +372,14 @@
 			0 0 0 2px rgba(0, 0, 0, 0.2);
 	}
 
-	[data-sonner-toast][data-y-position="top"] {
+	[data-sonner-toast][data-y-position='top'] {
 		top: 0;
 		--y: translateY(-100%);
 		--lift: 1;
 		--lift-amount: calc(1 * var(--gap));
 	}
 
-	[data-sonner-toast][data-y-position="bottom"] {
+	[data-sonner-toast][data-y-position='bottom'] {
 		bottom: 0;
 		--y: translateY(100%);
 		--lift: -1;
@@ -410,7 +410,7 @@
 		margin-right: 4px;
 	}
 
-	[data-sonner-toast][data-promise="true"] [data-icon] > svg {
+	[data-sonner-toast][data-promise='true'] [data-icon] > svg {
 		opacity: 0;
 		transform: scale(0.8);
 		transform-origin: center;
@@ -491,7 +491,7 @@
 			0 0 0 2px rgba(0, 0, 0, 0.2);
 	}
 
-	[data-sonner-toast] [data-disabled="true"] {
+	[data-sonner-toast] [data-disabled='true'] {
 		cursor: not-allowed;
 	}
 
@@ -513,29 +513,29 @@
 	}
 
 	/* Leave a ghost div to avoid setting hover to false when swiping out */
-	[data-sonner-toast][data-swiping="true"]:before {
-		content: "";
+	[data-sonner-toast][data-swiping='true']:before {
+		content: '';
 		position: absolute;
 		left: 0;
 		right: 0;
 		height: 100%;
 	}
 
-	[data-sonner-toast][data-y-position="top"][data-swiping="true"]:before {
+	[data-sonner-toast][data-y-position='top'][data-swiping='true']:before {
 		/* y 50% needed to distribute height additional height evenly */
 		bottom: 50%;
 		transform: scaleY(3) translateY(50%);
 	}
 
-	[data-sonner-toast][data-y-position="bottom"][data-swiping="true"]:before {
+	[data-sonner-toast][data-y-position='bottom'][data-swiping='true']:before {
 		/* y -50% needed to distribute height additional height evenly */
 		top: 50%;
 		transform: scaleY(3) translateY(-50%);
 	}
 
 	/* Leave a ghost div to avoid setting hover to false when transitioning out */
-	[data-sonner-toast][data-swiping="false"][data-removed="true"]:before {
-		content: "";
+	[data-sonner-toast][data-swiping='false'][data-removed='true']:before {
+		content: '';
 		position: absolute;
 		inset: 0;
 		transform: scaleY(2);
@@ -543,7 +543,7 @@
 
 	/* Needed to avoid setting hover to false when inbetween toasts */
 	[data-sonner-toast]:after {
-		content: "";
+		content: '';
 		position: absolute;
 		left: 0;
 		height: calc(var(--gap) + 1px);
@@ -551,12 +551,12 @@
 		width: 100%;
 	}
 
-	[data-sonner-toast][data-mounted="true"] {
+	[data-sonner-toast][data-mounted='true'] {
 		--y: translateY(0);
 		opacity: 1;
 	}
 
-	[data-sonner-toast][data-expanded="false"][data-front="false"] {
+	[data-sonner-toast][data-expanded='false'][data-front='false'] {
 		--scale: var(--toasts-before) * 0.05 + 1;
 		--y: translateY(calc(var(--lift-amount) * var(--toasts-before)))
 			scale(calc(-1 * var(--scale)));
@@ -567,32 +567,32 @@
 		transition: opacity 400ms;
 	}
 
-	[data-sonner-toast][data-expanded="false"][data-front="false"][data-styled="true"]
+	[data-sonner-toast][data-expanded='false'][data-front='false'][data-styled='true']
 		> * {
 		opacity: 0;
 	}
 
-	[data-sonner-toast][data-visible="false"] {
+	[data-sonner-toast][data-visible='false'] {
 		opacity: 0;
 		pointer-events: none;
 	}
 
-	[data-sonner-toast][data-mounted="true"][data-expanded="true"] {
+	[data-sonner-toast][data-mounted='true'][data-expanded='true'] {
 		--y: translateY(calc(var(--lift) * var(--offset)));
 		height: var(--initial-height);
 	}
 
-	[data-sonner-toast][data-removed="true"][data-front="true"][data-swipe-out="false"] {
+	[data-sonner-toast][data-removed='true'][data-front='true'][data-swipe-out='false'] {
 		--y: translateY(calc(var(--lift) * -100%));
 		opacity: 0;
 	}
 
-	[data-sonner-toast][data-removed="true"][data-front="false"][data-swipe-out="false"][data-expanded="true"] {
+	[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='true'] {
 		--y: translateY(calc(var(--lift) * var(--offset) + var(--lift) * -100%));
 		opacity: 0;
 	}
 
-	[data-sonner-toast][data-removed="true"][data-front="false"][data-swipe-out="false"][data-expanded="false"] {
+	[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='false'] {
 		--y: translateY(40%);
 		opacity: 0;
 		transition:
@@ -601,17 +601,17 @@
 	}
 
 	/* Bump up the height to make sure hover state doesn't get set to false */
-	[data-sonner-toast][data-removed="true"][data-front="false"]:before {
+	[data-sonner-toast][data-removed='true'][data-front='false']:before {
 		height: calc(var(--initial-height) + 20%);
 	}
 
-	[data-sonner-toast][data-swiping="true"] {
+	[data-sonner-toast][data-swiping='true'] {
 		transform: var(--y) translateY(var(--swipe-amount, 0px));
 		transition: none;
 	}
 
-	[data-sonner-toast][data-swipe-out="true"][data-y-position="bottom"],
-	[data-sonner-toast][data-swipe-out="true"][data-y-position="top"] {
+	[data-sonner-toast][data-swipe-out='true'][data-y-position='bottom'],
+	[data-sonner-toast][data-swipe-out='true'][data-y-position='top'] {
 		animation: swipe-out 200ms ease-out forwards;
 	}
 
@@ -649,26 +649,26 @@
 			width: calc(100% - 32px);
 		}
 
-		[data-sonner-toaster][data-x-position="left"] {
+		[data-sonner-toaster][data-x-position='left'] {
 			left: var(--mobile-offset);
 		}
 
-		[data-sonner-toaster][data-y-position="bottom"] {
+		[data-sonner-toaster][data-y-position='bottom'] {
 			bottom: 20px;
 		}
 
-		[data-sonner-toaster][data-y-position="top"] {
+		[data-sonner-toaster][data-y-position='top'] {
 			top: 20px;
 		}
 
-		[data-sonner-toaster][data-x-position="center"] {
+		[data-sonner-toaster][data-x-position='center'] {
 			left: var(--mobile-offset);
 			right: var(--mobile-offset);
 			transform: none;
 		}
 	}
 
-	[data-sonner-toaster][data-theme="light"] {
+	[data-sonner-toaster][data-theme='light'] {
 		--normal-bg: #fff;
 		--normal-border: var(--gray3);
 		--normal-text: var(--gray12);
@@ -690,21 +690,21 @@
 		--error-text: hsl(360, 100%, 45%);
 	}
 
-	[data-sonner-toaster][data-theme="light"]
-		[data-sonner-toast][data-invert="true"] {
+	[data-sonner-toaster][data-theme='light']
+		[data-sonner-toast][data-invert='true'] {
 		--normal-bg: #000;
 		--normal-border: hsl(0, 0%, 20%);
 		--normal-text: var(--gray1);
 	}
 
-	[data-sonner-toaster][data-theme="dark"]
-		[data-sonner-toast][data-invert="true"] {
+	[data-sonner-toaster][data-theme='dark']
+		[data-sonner-toast][data-invert='true'] {
 		--normal-bg: #fff;
 		--normal-border: var(--gray3);
 		--normal-text: var(--gray12);
 	}
 
-	[data-sonner-toaster][data-theme="dark"] {
+	[data-sonner-toaster][data-theme='dark'] {
 		--normal-bg: #000;
 		--normal-border: hsl(0, 0%, 20%);
 		--normal-text: var(--gray1);
@@ -726,56 +726,56 @@
 		--error-text: hsl(358, 100%, 81%);
 	}
 
-	[data-rich-colors="true"] [data-sonner-toast][data-type="success"] {
+	[data-rich-colors='true'] [data-sonner-toast][data-type='success'] {
 		background: var(--success-bg);
 		border-color: var(--success-border);
 		color: var(--success-text);
 	}
 
-	[data-rich-colors="true"]
-		[data-sonner-toast][data-type="success"]
+	[data-rich-colors='true']
+		[data-sonner-toast][data-type='success']
 		[data-close-button] {
 		background: var(--success-bg);
 		border-color: var(--success-border);
 		color: var(--success-text);
 	}
 
-	[data-rich-colors="true"] [data-sonner-toast][data-type="error"] {
+	[data-rich-colors='true'] [data-sonner-toast][data-type='error'] {
 		background: var(--error-bg);
 		border-color: var(--error-border);
 		color: var(--error-text);
 	}
 
-	[data-rich-colors="true"]
-		[data-sonner-toast][data-type="error"]
+	[data-rich-colors='true']
+		[data-sonner-toast][data-type='error']
 		[data-close-button] {
 		background: var(--error-bg);
 		border-color: var(--error-border);
 		color: var(--error-text);
 	}
 
-	[data-rich-colors="true"] [data-sonner-toast][data-type="info"] {
+	[data-rich-colors='true'] [data-sonner-toast][data-type='info'] {
 		background: var(--info-bg);
 		border-color: var(--info-border);
 		color: var(--info-text);
 	}
 
-	[data-rich-colors="true"]
-		[data-sonner-toast][data-type="info"]
+	[data-rich-colors='true']
+		[data-sonner-toast][data-type='info']
 		[data-close-button] {
 		background: var(--info-bg);
 		border-color: var(--info-border);
 		color: var(--info-text);
 	}
 
-	[data-rich-colors="true"] [data-sonner-toast][data-type="warning"] {
+	[data-rich-colors='true'] [data-sonner-toast][data-type='warning'] {
 		background: var(--warning-bg);
 		border-color: var(--warning-border);
 		color: var(--warning-text);
 	}
 
-	[data-rich-colors="true"]
-		[data-sonner-toast][data-type="warning"]
+	[data-rich-colors='true']
+		[data-sonner-toast][data-type='warning']
 		[data-close-button] {
 		background: var(--warning-bg);
 		border-color: var(--warning-border);
@@ -791,7 +791,7 @@
 		z-index: 10;
 	}
 
-	.sonner-loading-wrapper[data-visible="false"] {
+	.sonner-loading-wrapper[data-visible='false'] {
 		transform-origin: center;
 		animation: sonner-fade-out 0.2s ease forwards;
 	}

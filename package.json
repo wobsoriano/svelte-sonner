@@ -17,7 +17,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"release": "bumpp && npm publish",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"format": "prettier --write ."
 	},
 	"exports": {
 		".": {

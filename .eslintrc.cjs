@@ -27,6 +27,6 @@ module.exports = {
 		}
 	],
 	rules: {
-		'quotes': [2, 'single', { 'avoidEscape': true }]
+		quotes: [2, 'single', { avoidEscape: true }]
 	}
 };
