@@ -25,8 +25,8 @@ module.exports = {
 				parser: '@typescript-eslint/parser'
 			}
 		}
-	],
-	rules: {
-		quotes: [2, 'single', { avoidEscape: true }]
-	}
+	]
+	// rules: {
+	// 	quotes: [2, 'single', { avoidEscape: true }]
+	// }
 };
