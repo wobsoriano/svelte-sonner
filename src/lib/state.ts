@@ -1,119 +1,89 @@
 import type { ComponentType } from 'svelte';
-import type {
-	ExternalToast,
-	PromiseData,
-	PromiseT,
-	ToastT,
-	ToastToDismiss,
-	ToastTypes
-} from './types.js';
+import type { HeightT, ExternalToast, PromiseData, PromiseT, ToastT, ToastTypes } from './types.js';
+import { get, writable } from 'svelte/store';
 
 let toastsCounter = 0;
 
-class Observer {
-	subscribers: Array<(toast: ExternalToast | ToastToDismiss) => void>;
-	toasts: Array<ToastT | ToastToDismiss>;
+function createToastState() {
+	const toasts = writable<Array<ToastT>>([]);
+	const heights = writable<HeightT[]>([]);
 
-	constructor() {
-		this.subscribers = [];
-		this.toasts = [];
+	function addToast(data: ToastT) {
+		if (typeof document !== 'undefined') {
+			toasts.update((prev) => [...prev, data]);
+		}
 	}
 
-	// We use arrow functions to maintain the correct `this` reference
-	subscribe = (subscriber: (toast: ToastT | ToastToDismiss | ExternalToast) => void) => {
-		this.subscribers.push(subscriber);
-
-		return () => {
-			const index = this.subscribers.indexOf(subscriber);
-			this.subscribers.splice(index, 1);
-		};
-	};
-
-	publish = (data: ToastT) => {
-		this.subscribers.forEach((subscriber) => subscriber(data));
-	};
-
-	addToast = (data: ToastT) => {
-		this.publish(data);
-		this.toasts = [...this.toasts, data];
-	};
-
-	create = (
+	function create(
 		data: ExternalToast & {
 			message?: string | ComponentType;
 			type?: ToastTypes;
 			promise?: PromiseT;
 		}
-	) => {
-		/**
-		 * If we're not in the browser (e.g. in an SSR context), don't do
-		 * anything. This ensures we aren't leaking data between requests with
-		 * the same global `ToastState` instance.
-		 *
-		 * @see https://kit.svelte.dev/docs/state-management
-		 */
-		if (typeof document === 'undefined') return;
-
+	) {
 		const { message, ...rest } = data;
 		const id =
-			typeof data?.id === 'number' || (data.id && data.id?.length > 0) ? data.id : toastsCounter++;
+			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
+				? data.id
+				: toastsCounter++;
 
-		const alreadyExists = this.toasts.find((toast) => {
+		const $toasts = get(toasts);
+
+		const alreadyExists = $toasts.find((toast) => {
 			return toast.id === id;
 		});
 
 		if (alreadyExists) {
-			this.toasts = this.toasts.map((toast) => {
-				if (toast.id === id) {
-					this.publish({ ...toast, ...data, id, title: message });
-					return { ...toast, ...data, id, title: message };
-				}
-
-				return toast;
-			});
+			toasts.update((prev) =>
+				prev.map((toast) => {
+					if (toast.id === id) {
+						return { ...toast, ...data, id, title: message };
+					}
+					return toast;
+				})
+			);
 		} else {
-			this.addToast({ title: message, ...rest, id });
+			addToast({ title: message, ...rest, id });
 		}
 
 		return id;
-	};
+	}
 
-	dismiss = (id?: number | string) => {
+	function dismiss(id?: number | string) {
 		if (!id) {
-			this.toasts.forEach((toast) => {
-				this.subscribers.forEach((subscriber) => subscriber({ id: toast.id, dismiss: true }));
-			});
+			toasts.set([]);
+			return;
 		}
+		toasts.update((prev) => prev.filter((toast) => toast.id !== id));
 
-		this.subscribers.forEach((subscriber) => subscriber({ id, dismiss: true }));
 		return id;
-	};
+	}
 
-	message = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, message });
-	};
+	function message(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, message });
+	}
 
-	error = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, message, type: 'error' });
-	};
+	function error(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, message, type: 'error' });
+	}
 
-	success = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, type: 'success', message });
-	};
+	function success(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'success', message });
+	}
 
-	info = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, type: 'info', message });
-	};
+	function info(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'info', message });
+	}
 
-	warning = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, type: 'warning', message });
-	};
+	function warning(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'warning', message });
+	}
 
-	loading = (message: string | ComponentType, data?: ExternalToast) => {
-		return this.create({ ...data, type: 'loading', message });
-	};
+	function loading(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'loading', message });
+	}
 
-	promise = <ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) => {
+	function promise<ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) {
 		if (!data) {
 			// Nothing to show
 			return;
@@ -121,7 +91,7 @@ class Observer {
 
 		let id: string | number | undefined = undefined;
 		if (data.loading !== undefined) {
-			id = this.create({
+			id = create({
 				...data,
 				promise,
 				type: 'loading',
@@ -139,30 +109,32 @@ class Observer {
 			if (response && typeof response.ok === 'boolean' && !response.ok) {
 				shouldDismiss = false;
 				const message =
-				typeof data.error === 'function'
-						// @ts-expect-error: Incorrect response type
-						? data.error(`HTTP error! status: ${response.status}`)
+					typeof data.error === 'function'
+						? // @ts-expect-error: Incorrect response type
+							data.error(`HTTP error! status: ${response.status}`)
 						: data.error;
-				this.create({ id, type: 'error', message });
+				create({ id, type: 'error', message });
 			} else if (data.success !== undefined) {
 				shouldDismiss = false;
-				// @ts-expect-error: TODO: Better function checking
-				const message = typeof data.success === 'function' ? data.success(response) : data.success;
-				this.create({ id, type: 'success', message });
+				const message =
+					// @ts-expect-error: TODO: Better function checking
+					typeof data.success === 'function' ? data.success(response) : data.success;
+				create({ id, type: 'success', message });
 			}
 		})
 			.catch((error) => {
 				if (data.error !== undefined) {
 					shouldDismiss = false;
-					// @ts-expect-error: TODO: Better function checking
-					const message = typeof data.error === 'function' ? data.error(error) : data.error;
-					this.create({ id, type: 'error', message });
+					const message =
+						// @ts-expect-error: TODO: Better function checking
+						typeof data.error === 'function' ? data.error(error) : data.error;
+					create({ id, type: 'error', message });
 				}
 			})
 			.finally(() => {
 				if (shouldDismiss) {
 					// Toast is still in load state (and will be indefinitely — dismiss it)
-					this.dismiss(id);
+					dismiss(id);
 					id = undefined;
 				}
 
@@ -170,23 +142,54 @@ class Observer {
 			});
 
 		return id;
-	};
+	}
 
-	custom = <T extends ComponentType = ComponentType>(component: T, data?: ExternalToast<T>) => {
+	function custom<T extends ComponentType = ComponentType>(
+		component: T,
+		data?: ExternalToast<T>
+	) {
 		const id = data?.id || toastsCounter++;
-		this.create({ component, id, ...data });
+		create({ component, id, ...data });
 
 		return id;
+	}
+
+	function removeHeight(id: number | string) {
+		heights.update((prev) => prev.filter((height) => height.toastId !== id));
+	}
+
+	function addHeight(height: HeightT) {
+		heights.update((prev) => [...prev, height]);
+	}
+
+	return {
+		// methods
+		create,
+		addToast,
+		dismiss,
+		message,
+		error,
+		success,
+		info,
+		warning,
+		loading,
+		promise,
+		custom,
+		removeHeight,
+		addHeight,
+		// stores
+		toasts,
+		heights
 	};
 }
 
-export const ToastState = new Observer();
+export const toastState = createToastState();
 
 // bind this to the toast function
 function toastFunction(message: string | ComponentType, data?: ExternalToast) {
 	const id = data?.id || toastsCounter++;
 
-	ToastState.addToast({
+	toastState.addToast({
 		title: message,
 		...data,
 		id
@@ -198,15 +201,15 @@ const basicToast = toastFunction;
 
 // We use `Object.assign` to maintain the correct types as we would lose them otherwise
 export const toast = Object.assign(basicToast, {
-	success: ToastState.success,
-	info: ToastState.info,
-	warning: ToastState.warning,
-	error: ToastState.error,
-	custom: ToastState.custom,
-	message: ToastState.message,
-	promise: ToastState.promise,
-	dismiss: ToastState.dismiss,
-	loading: ToastState.loading
+	success: toastState.success,
+	info: toastState.info,
+	warning: toastState.warning,
+	error: toastState.error,
+	custom: toastState.custom,
+	message: toastState.message,
+	promise: toastState.promise,
+	dismiss: toastState.dismiss,
+	loading: toastState.loading
 });
 
 export const useEffect = (subscribe: unknown) => ({ subscribe });

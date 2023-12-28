@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import type { ToastT, Position, HeightT } from './types.js';
+	import { onMount } from 'svelte';
+	import type { ToastT, Position } from './types.js';
 	import Loader from './Loader.svelte';
 	import Icon from './Icon.svelte';
-	import { useEffect } from './state.js';
+	import { toastState, useEffect } from './state.js';
 
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
@@ -15,12 +15,12 @@
 
 	const TIME_BEFORE_UNMOUNT = 200;
 
+	const { toasts, heights, removeHeight, addHeight, dismiss } = toastState;
+
 	export let toast: ToastT;
-	export let toasts: ToastT[];
 	export let index: number;
 	export let expanded: boolean;
 	export let invert: boolean;
-	export let heights: HeightT[];
 	export let position: Position;
 	export let visibleToasts: number;
 	export let expandByDefault: boolean;
@@ -47,7 +47,7 @@
 
 	// Height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
 	$: heightIndex =
-		heights.findIndex((height) => height.toastId === toast.id) || 0;
+		$heights.findIndex((height) => height.toastId === toast.id) || 0;
 	let offset = 0;
 	let closeTimerStartTimeRef = 0;
 	let closeTimerRemainingTimeRef =
@@ -55,7 +55,7 @@
 	let lastCloseTimerStartTimeRef = 0;
 	let pointerStartRef: { x: number; y: number } | null = null;
 	$: coords = position.split('-');
-	$: toastsHeightBefore = heights.reduce((prev, curr, reducerIndex) => {
+	$: toastsHeightBefore = $heights.reduce((prev, curr, reducerIndex) => {
 		// Calculate offset up untill current  toast
 		if (reducerIndex >= heightIndex) return prev;
 
@@ -68,19 +68,15 @@
 		offset = heightIndex * GAP + toastsHeightBefore;
 	}
 
-	const dispatch = createEventDispatcher();
-
 	const deleteToast = () => {
 		// Save the offset for the exit swipe animation
 		removed = true;
 		offsetBeforeRemove = offset;
-		dispatch(
-			'setHeights',
-			heights.filter((height) => height.toastId !== toast.id)
-		);
+
+		removeHeight(toast.id);
 
 		setTimeout(() => {
-			dispatch('removeToast', toast);
+			dismiss(toast.id);
 		}, TIME_BEFORE_UNMOUNT);
 	};
 
@@ -137,13 +133,10 @@
 
 		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-		dispatch('setHeights', [{ toastId: toast.id, height }, ...heights]);
 
-		return () =>
-			dispatch(
-				'setHeights',
-				heights.filter((height) => height.toastId !== toast.id)
-			);
+		addHeight({ toastId: toast.id, height });
+
+		return () => removeHeight(toast.id);
 	});
 
 	$: if (toast.delete) {
@@ -238,7 +231,7 @@
 	style={`${$$props.style} ${toast.style}`}
 	style:--index={index}
 	style:--toasts-before={index}
-	style:--z-index={toasts.length - index}
+	style:--z-index={$toasts.length - index}
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
 	style:--initial-height={expandByDefault ? 'auto' : `${initialHeight}px`}
 	on:pointerdown={onPointerDown}

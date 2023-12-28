@@ -20,6 +20,15 @@
 				toast('Sonner', {
 					description: 'An opinionated toast component for Svelte.'
 				});
+				toast('Sonner', {
+					description: 'An opinionated toast component for Svelte.'
+				});
+				toast('Sonner', {
+					description: 'An opinionated toast component for Svelte.'
+				});
+				toast('Sonner', {
+					description: 'An opinionated toast component for Svelte.'
+				});
 			}}
 			class="button"
 		>
