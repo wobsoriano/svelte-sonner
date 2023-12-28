@@ -46,6 +46,8 @@
 		"eslint": "^8.49.0",
 		"eslint-plugin-svelte": "^2.33.2",
 		"highlight.js": "^11.8.0",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
 		"publint": "^0.2.2",
 		"sass": "^1.67.0",
 		"svelte": "^4.2.0",
