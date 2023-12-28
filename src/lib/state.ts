@@ -162,6 +162,11 @@ function createToastState() {
 		heights.update((prev) => [...prev, height]);
 	}
 
+	function reset() {
+		toasts.set([]);
+		heights.set([]);
+	}
+
 	return {
 		// methods
 		create,
@@ -177,6 +182,7 @@ function createToastState() {
 		custom,
 		removeHeight,
 		addHeight,
+		reset,
 		// stores
 		toasts,
 		heights

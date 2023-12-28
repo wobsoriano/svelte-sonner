@@ -68,9 +68,9 @@
 		offset = heightIndex * GAP + toastsHeightBefore;
 	}
 
-	const deleteToast = () => {
-		// Save the offset for the exit swipe animation
+	function deleteToast() {
 		removed = true;
+		// Save the offset for the exit swipe animation
 		offsetBeforeRemove = offset;
 
 		removeHeight(toast.id);
@@ -78,12 +78,12 @@
 		setTimeout(() => {
 			dismiss(toast.id);
 		}, TIME_BEFORE_UNMOUNT);
-	};
+	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
 
 	// Pause the tmer on each hover
-	const pauseTimer = () => {
+	function pauseTimer() {
 		if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
 			// Get the elapsed time since the timer started
 			const elapsedTime = new Date().getTime() - closeTimerStartTimeRef;
@@ -93,16 +93,16 @@
 		}
 
 		lastCloseTimerStartTimeRef = new Date().getTime();
-	};
+	}
 
-	const startTimer = () => {
+	function startTimer() {
 		closeTimerStartTimeRef = new Date().getTime();
 		// Let the toast know it has started
 		timeoutId = setTimeout(() => {
 			toast.onAutoClose?.(toast);
 			deleteToast();
 		}, closeTimerRemainingTimeRef);
-	};
+	}
 
 	$: isPromiseLoadingOrInfiniteDuration =
 		(toast.promise && toastType === 'loading') ||

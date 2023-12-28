@@ -92,12 +92,14 @@
 	onMount(() => {
 		const handleKeydown = (event: KeyboardEvent) => {
 			const isHotkeyPressed = hotkey.every(
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(key) => (event as any)[key] || event.code === key
+				(key) =>
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(event as any)[key] || event.code === key
 			);
 
 			if (isHotkeyPressed) {
 				expanded = true;
+				console.log('hotkeypressed');
 				listRef?.focus();
 			}
 
