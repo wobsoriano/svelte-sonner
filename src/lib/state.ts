@@ -139,8 +139,8 @@ class Observer {
 			if (response && typeof response.ok === 'boolean' && !response.ok) {
 				shouldDismiss = false;
 				const message =
-					// @ts-expect-error: Incorrect response type
-					typeof data.error === 'function'
+				typeof data.error === 'function'
+						// @ts-expect-error: Incorrect response type
 						? data.error(`HTTP error! status: ${response.status}`)
 						: data.error;
 				this.create({ id, type: 'error', message });

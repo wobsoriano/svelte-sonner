@@ -84,7 +84,9 @@
 				return;
 			}
 
-			const indexOfExistingToast = toasts.findIndex((t) => t.id === toast.id);
+			const indexOfExistingToast = toasts.findIndex(
+				(t) => t.id === toast.id
+			);
 
 			if (indexOfExistingToast !== -1) {
 				toasts = [
@@ -588,7 +590,9 @@
 	}
 
 	[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='true'] {
-		--y: translateY(calc(var(--lift) * var(--offset) + var(--lift) * -100%));
+		--y: translateY(
+			calc(var(--lift) * var(--offset) + var(--lift) * -100%)
+		);
 		opacity: 0;
 	}
 
@@ -626,8 +630,8 @@
 		to {
 			transform: translateY(
 				calc(
-					var(--lift) * var(--offset) + var(--swipe-amount) + var(--lift) *
-						-100%
+					var(--lift) * var(--offset) + var(--swipe-amount) +
+						var(--lift) * -100%
 				)
 			);
 			opacity: 0;

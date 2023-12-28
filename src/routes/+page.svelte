@@ -57,7 +57,10 @@
 		<Installation />
 		<Usage />
 		<Types />
-		<Position {position} on:setPosition={({ detail }) => (position = detail)} />
+		<Position
+			{position}
+			on:setPosition={({ detail }) => (position = detail)}
+		/>
 		<Expand {expand} on:setExpand={({ detail }) => (expand = detail)} />
 		<Other
 			on:setCloseButton={() => (closeButton = !closeButton)}

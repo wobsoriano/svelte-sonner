@@ -50,7 +50,8 @@
 		heights.findIndex((height) => height.toastId === toast.id) || 0;
 	let offset = 0;
 	let closeTimerStartTimeRef = 0;
-	let closeTimerRemainingTimeRef = toast.duration || duration || TOAST_LIFETIME;
+	let closeTimerRemainingTimeRef =
+		toast.duration || duration || TOAST_LIFETIME;
 	let lastCloseTimerStartTimeRef = 0;
 	let pointerStartRef: { x: number; y: number } | null = null;
 	$: coords = position.split('-');
@@ -91,7 +92,8 @@
 			// Get the elapsed time since the timer started
 			const elapsedTime = new Date().getTime() - closeTimerStartTimeRef;
 
-			closeTimerRemainingTimeRef = closeTimerRemainingTimeRef - elapsedTime;
+			closeTimerRemainingTimeRef =
+				closeTimerRemainingTimeRef - elapsedTime;
 		}
 
 		lastCloseTimerStartTimeRef = new Date().getTime();
@@ -170,7 +172,9 @@
 
 		pointerStartRef = null;
 		const swipeAmount = Number(
-			toastRef?.style.getPropertyValue('--swipe-amount').replace('px', '') || 0
+			toastRef?.style
+				.getPropertyValue('--swipe-amount')
+				.replace('px', '') || 0
 		);
 
 		// Remove only if treshold is met
