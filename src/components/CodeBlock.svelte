@@ -106,7 +106,6 @@
 
 	<div class="wrapper">
 		<div class={`${className} root`}>
-			<div />
 			<code bind:this={codeElement} />
 		</div>
 	</div>

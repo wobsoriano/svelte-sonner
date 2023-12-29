@@ -3,6 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import Test from './Test.svelte';
 	import CodeBlock from './CodeBlock.svelte';
+	import { getOtherCodeSnippet } from './code-snippets';
 
 	const dispatch = createEventDispatcher();
 
@@ -65,7 +66,9 @@ toast.custom(HeadlessToast, {
 })
 `,
 			action: () => {
-				toast.custom(Test, { componentProps: { eventName: 'Louvre Museum' } });
+				toast.custom(Test, {
+					componentProps: { eventName: 'Louvre Museum' }
+				});
 				dispatch('setCloseButton');
 			}
 		}
@@ -95,14 +98,11 @@ toast.custom(HeadlessToast, {
 		{/each}
 	</div>
 	<CodeBlock
-		code={`<script>
-${activeType?.snippet || ''}
-</script>
-
-<!-- ... -->
-    
-<Toaster ${richColorsActive ? 'richColors ' : ''} ${
-			closeButtonActive ? 'closeButton ' : ''
-		}/>`}
+		code={getOtherCodeSnippet(
+			activeType.snippet ?? '',
+			richColorsActive,
+			closeButtonActive
+		)}
+		language="svelte"
 	/>
 </div>
