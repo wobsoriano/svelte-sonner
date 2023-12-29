@@ -1,17 +1,18 @@
 import type { ComponentType } from 'svelte';
 import type { HeightT, ExternalToast, PromiseData, PromiseT, ToastT, ToastTypes } from './types.js';
-import { get, writable } from 'svelte/store';
+import { get } from 'svelte/store';
+import { clientWritable } from './internal/helpers.js';
 
-let toastsCounter = 0;
+// Start the count at 1 so users don't have to worry
+// about falsy values and can just use `if (toastId)`
+let toastsCounter = 1;
 
 function createToastState() {
-	const toasts = writable<Array<ToastT>>([]);
-	const heights = writable<HeightT[]>([]);
+	const toasts = clientWritable<Array<ToastT>>([]);
+	const heights = clientWritable<HeightT[]>([]);
 
 	function addToast(data: ToastT) {
-		if (typeof document !== 'undefined') {
-			toasts.update((prev) => [data, ...prev]);
-		}
+		toasts.update((prev) => [data, ...prev]);
 	}
 
 	function create(
@@ -26,6 +27,7 @@ function createToastState() {
 			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
 				? data.id
 				: toastsCounter++;
+
 		const dismissable = data.dismissable === undefined ? true : data.dismissable;
 		const type = data.type === undefined ? 'default' : data.type;
 
@@ -52,7 +54,7 @@ function createToastState() {
 	}
 
 	function dismiss(id?: number | string) {
-		if (!id) {
+		if (id === undefined) {
 			toasts.set([]);
 			return;
 		}
