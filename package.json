@@ -6,7 +6,7 @@
 		"svelte",
 		"toast"
 	],
-	"version": "0.3.7",
+	"version": "0.3.8",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -14,10 +14,12 @@
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run build",
 		"test": "playwright test",
+		"test:unit": "vitest",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"release": "bumpp && npm publish",
-		"lint": "eslint ."
+		"release": "pnpm run package && changeset publish",
+		"lint": "eslint .",
+		"format": "prettier --write ."
 	},
 	"exports": {
 		".": {
@@ -35,17 +37,30 @@
 		"svelte": ">=3 <5"
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.27.1",
 		"@playwright/test": "^1.38.0",
 		"@sveltejs/adapter-auto": "^2.1.0",
 		"@sveltejs/kit": "^1.25.0",
 		"@sveltejs/package": "^2.2.2",
+		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
+		"@testing-library/dom": "9.3.1",
+		"@testing-library/jest-dom": "5.17.0",
+		"@testing-library/svelte": "4.0.5",
+		"@testing-library/user-event": "14.4.3",
+		"@types/jest-axe": "^3.5.9",
+		"@types/testing-library__jest-dom": "^5.14.9",
 		"@typescript-eslint/eslint-plugin": "^6.7.2",
 		"@typescript-eslint/parser": "^6.7.2",
 		"bumpp": "^9.2.0",
 		"copy-to-clipboard": "^3.3.3",
 		"eslint": "^8.49.0",
+		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.33.2",
 		"highlight.js": "^11.8.0",
+		"jsdom": "22.1.0",
+		"mode-watcher": "^0.1.2",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
 		"publint": "^0.2.2",
 		"sass": "^1.67.0",
 		"svelte": "^4.2.0",
@@ -53,7 +68,8 @@
 		"svelte-preprocess": "^5.0.4",
 		"tslib": "^2.6.2",
 		"typescript": "^5.2.2",
-		"vite": "^4.4.9"
+		"vite": "^4.4.9",
+		"vitest": "^1.1.0"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",

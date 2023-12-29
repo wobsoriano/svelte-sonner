@@ -24,7 +24,7 @@ Add `<Toaster />` to your app, it will be the place where all your toasts will b
 
 ```svelte
 <script>
-import { Toaster, toast } from 'svelte-sonner'
+	import { Toaster, toast } from 'svelte-sonner';
 </script>
 
 <Toaster />
@@ -38,18 +38,18 @@ import { Toaster, toast } from 'svelte-sonner'
 Most basic toast. You can customize it (and any other type) by passing an options object as the second argument.
 
 ```js
-toast('Event has been created')
+toast('Event has been created');
 ```
 
 With custom icon and description:
 
 ```js
-import Icon from './Icon.svelte'
+import Icon from './Icon.svelte';
 
 toast('Event has been created', {
-  description: 'Monday, January 3rd at 6:00pm',
-  icon: Icon,
-})
+	description: 'Monday, January 3rd at 6:00pm',
+	icon: Icon
+});
 ```
 
 ### Success
@@ -57,7 +57,7 @@ toast('Event has been created', {
 Renders a checkmark icon in front of the message.
 
 ```js
-toast.success('Event has been created')
+toast.success('Event has been created');
 ```
 
 ### Info
@@ -81,7 +81,7 @@ toast.warning('Event has warning')
 Renders an error icon in front of the message.
 
 ```js
-toast.error('Event has not been created')
+toast.error('Event has not been created');
 ```
 
 ### Action
@@ -90,11 +90,11 @@ Renders a button.
 
 ```js
 toast('Event has been created', {
-  action: {
-    label: 'Undo',
-    onClick: () => console.log('Undo'),
-  },
-})
+	action: {
+		label: 'Undo',
+		onClick: () => console.log('Undo')
+	}
+});
 ```
 
 ### Promise
@@ -102,23 +102,23 @@ toast('Event has been created', {
 Starts in a loading state and will update automatically after the promise resolves or fails.
 
 ```js
-toast.promise(() => new Promise(resolve => setTimeout(resolve, 2000)), {
-  loading: 'Loading',
-  success: 'Success',
-  error: 'Error',
-})
+toast.promise(() => new Promise((resolve) => setTimeout(resolve, 2000)), {
+	loading: 'Loading',
+	success: 'Success',
+	error: 'Error'
+});
 ```
 
 You can pass a function to the success/error messages to incorporate the result/error of the promise.
 
 ```js
 toast.promise(promise, {
-  loading: 'Loading...',
-  success: (data) => {
-    return `${data.name} has been added!`
-  },
-  error: 'Error',
-})
+	loading: 'Loading...',
+	success: (data) => {
+		return `${data.name} has been added!`;
+	},
+	error: 'Error'
+});
 ```
 
 ### Custom Component
@@ -126,7 +126,7 @@ toast.promise(promise, {
 You can pass a component as the first argument instead of a string to render custom component while maintaining default styling. You can use the headless version below for a custom, unstyled toast.
 
 ```js
-toast(CustomComponent)
+toast(CustomComponent);
 ```
 
 ### Updating a toast
@@ -134,11 +134,11 @@ toast(CustomComponent)
 You can update a toast by using the `toast` function and passing it the id of the toast you want to update, the rest stays the same.
 
 ```js
-const toastId = toast('Sonner')
+const toastId = toast('Sonner');
 
 toast.success('Toast has been updated', {
-  id: toastId,
-})
+	id: toastId
+});
 ```
 
 ## Customization
@@ -149,20 +149,20 @@ You can use `toast.custom` to render an unstyled toast with custom component whi
 
 ```svelte
 <script>
-import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 
-const dispatch = createEventDispatcher()
+	const dispatch = createEventDispatcher();
 </script>
 
- <div>
-  This is a custom component <button on:click={() => dispatch('removeToast')}>close</button>
+<div>
+	This is a custom component <button on:click={() => dispatch('removeToast')}>close</button>
 </div>
 ```
 
 ```js
-import HeadlessToast from './HeadlessToast.svelte'
+import HeadlessToast from './HeadlessToast.svelte';
 
-toast.custom(HeadlessToast)
+toast.custom(HeadlessToast);
 ```
 
 ### Theme
@@ -198,7 +198,11 @@ You can style your toasts globally with the `toastOptions` prop in the `Toaster`
 
 ```svelte
 <Toaster
-  toastOptions={{ style: 'background: red;', class: 'my-toast', descriptionClass: 'my-toast-description' }}
+	toastOptions={{
+		style: 'background: red;',
+		class: 'my-toast',
+		descriptionClass: 'my-toast-description'
+	}}
 />
 ```
 
@@ -206,10 +210,10 @@ You can style your toasts globally with the `toastOptions` prop in the `Toaster`
 
 ```js
 toast('Event has been created', {
-  style: 'background: red;',
-  class: 'my-toast',
-  descriptionClass: 'my-toast-description',
-})
+	style: 'background: red;',
+	class: 'my-toast',
+	descriptionClass: 'my-toast-description'
+});
 ```
 
 ### Close button
@@ -241,25 +245,25 @@ Offset from the edges of the screen.
 To remove a toast programmatically use `toast.dismiss(id)`.
 
 ```js
-const toastId = toast('Event has been created')
+const toastId = toast('Event has been created');
 
-toast.dismiss(toastId)
+toast.dismiss(toastId);
 ```
 
 To remove a toast from inside a custom component, dispatch `closeToast`:
 
 ```js
-import { createEventDispatcher } from 'svelte'
+import { createEventDispatcher } from 'svelte';
 
-const dispatch = createEventDispatcher()
+const dispatch = createEventDispatcher();
 
-dispatch('closeToast')
+dispatch('closeToast');
 ```
 
 You can also dismiss all toasts at once by calling `toast.dismiss()` without an id.
 
 ```js
-toast.dismiss()
+toast.dismiss();
 ```
 
 ### Duration
@@ -272,13 +276,13 @@ You can change the duration of each toast by using the `duration` property, or c
 
 ```js
 toast('Event has been created', {
-  duration: 10000,
-})
+	duration: 10000
+});
 
 // Persisent toast
 toast('Event has been created', {
-  duration: Number.POSITIVE_INFINITY,
-})
+	duration: Number.POSITIVE_INFINITY
+});
 ```
 
 ### On Close Callback
@@ -287,9 +291,9 @@ You can pass `onDismiss` and `onAutoClose` callbacks. `onDismiss` gets fired whe
 
 ```js
 toast('Event has been created', {
-  onDismiss: t => console.log(`Toast with id ${t.id} has been dismissed`),
-  onAutoClose: t => console.log(`Toast with id ${t.id} has been closed automatically`),
-})
+	onDismiss: (t) => console.log(`Toast with id ${t.id} has been dismissed`),
+	onAutoClose: (t) => console.log(`Toast with id ${t.id} has been closed automatically`)
+});
 ```
 
 ## Keyboard focus

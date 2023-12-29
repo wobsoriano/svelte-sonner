@@ -1,197 +1,219 @@
-import type { ComponentType } from 'svelte'
-import type { ExternalToast, PromiseData, PromiseT, ToastT, ToastToDismiss, ToastTypes } from './types.js'
+import type { ComponentType } from 'svelte';
+import type { HeightT, ExternalToast, PromiseData, PromiseT, ToastT, ToastTypes } from './types.js';
+import { get, writable } from 'svelte/store';
 
-let toastsCounter = 0
+let toastsCounter = 0;
 
-class Observer {
-  subscribers: Array<(toast: ExternalToast | ToastToDismiss) => void>
-  toasts: Array<ToastT | ToastToDismiss>
+function createToastState() {
+	const toasts = writable<Array<ToastT>>([]);
+	const heights = writable<HeightT[]>([]);
 
-  constructor() {
-    this.subscribers = []
-    this.toasts = []
-  }
+	function addToast(data: ToastT) {
+		if (typeof document !== 'undefined') {
+			toasts.update((prev) => [data, ...prev]);
+		}
+	}
 
-  // We use arrow functions to maintain the correct `this` reference
-  subscribe = (subscriber: (toast: ToastT | ToastToDismiss | ExternalToast) => void) => {
-    this.subscribers.push(subscriber)
+	function create(
+		data: ExternalToast & {
+			message?: string | ComponentType;
+			type?: ToastTypes;
+			promise?: PromiseT;
+		}
+	) {
+		const { message, ...rest } = data;
+		const id =
+			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
+				? data.id
+				: toastsCounter++;
+		const dismissable = data.dismissable === undefined ? true : data.dismissable;
+		const type = data.type === undefined ? 'default' : data.type;
 
-    return () => {
-      const index = this.subscribers.indexOf(subscriber)
-      this.subscribers.splice(index, 1)
-    }
-  }
+		const $toasts = get(toasts);
 
-  publish = (data: ToastT) => {
-    this.subscribers.forEach(subscriber => subscriber(data))
-  }
+		const alreadyExists = $toasts.find((toast) => {
+			return toast.id === id;
+		});
 
-  addToast = (data: ToastT) => {
-    this.publish(data)
-    this.toasts = [...this.toasts, data]
-  }
+		if (alreadyExists) {
+			toasts.update((prev) =>
+				prev.map((toast) => {
+					if (toast.id === id) {
+						return { ...toast, ...data, id, title: message, dismissable, type };
+					}
+					return toast;
+				})
+			);
+		} else {
+			addToast({ ...rest, id, title: message, dismissable, type });
+		}
 
-  create = (data: ExternalToast & { message?: string | ComponentType; type?: ToastTypes; promise?: PromiseT }) => {
-    /**
-     * If we're not in the browser (e.g. in an SSR context), don't do
-     * anything. This ensures we aren't leaking data between requests with
-     * the same global `ToastState` instance.
-     * 
-     * @see https://kit.svelte.dev/docs/state-management
-     */
-    if (typeof document === 'undefined') return 
+		return id;
+	}
 
-    const { message, ...rest } = data
-    const id = typeof data?.id === 'number' || (data.id && data.id?.length > 0) ? data.id : toastsCounter++
+	function dismiss(id?: number | string) {
+		if (!id) {
+			toasts.set([]);
+			return;
+		}
+		toasts.update((prev) => prev.filter((toast) => toast.id !== id));
 
-    const alreadyExists = this.toasts.find((toast) => {
-      return toast.id === id
-    })
+		return id;
+	}
 
-    if (alreadyExists) {
-      this.toasts = this.toasts.map((toast) => {
-        if (toast.id === id) {
-          this.publish({ ...toast, ...data, id, title: message })
-          return { ...toast, ...data, id, title: message }
-        }
+	function message(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'default', message });
+	}
 
-        return toast
-      })
-    }
-    else {
-      this.addToast({ title: message, ...rest, id })
-    }
+	function error(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'error', message });
+	}
 
-    return id
-  }
+	function success(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'success', message });
+	}
 
-  dismiss = (id?: number | string) => {
-    if (!id) {
-      this.toasts.forEach((toast) => {
-        this.subscribers.forEach(subscriber => subscriber({ id: toast.id, dismiss: true }))
-      })
-    }
+	function info(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'info', message });
+	}
 
-    this.subscribers.forEach(subscriber => subscriber({ id, dismiss: true }))
-    return id
-  }
+	function warning(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'warning', message });
+	}
 
-  message = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, message })
-  }
+	function loading(message: string | ComponentType, data?: ExternalToast) {
+		return create({ ...data, type: 'loading', message });
+	}
 
-  error = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, message, type: 'error' })
-  }
+	function promise<ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) {
+		if (!data) {
+			// Nothing to show
+			return;
+		}
 
-  success = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, type: 'success', message })
-  }
+		let id: string | number | undefined = undefined;
+		if (data.loading !== undefined) {
+			id = create({
+				...data,
+				promise,
+				type: 'loading',
+				message: data.loading
+			});
+		}
 
-  info = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, type: 'info', message })
-  }
+		const p = promise instanceof Promise ? promise : promise();
 
-  warning = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, type: 'warning', message })
-  }
+		let shouldDismiss = id !== undefined;
 
-  loading = (message: string | ComponentType, data?: ExternalToast) => {
-    return this.create({ ...data, type: 'loading', message })
-  }
+		p.then((response) => {
+			// TODO: Clean up TS here, response has incorrect type
+			// @ts-expect-error: Incorrect response type
+			if (response && typeof response.ok === 'boolean' && !response.ok) {
+				shouldDismiss = false;
+				const message =
+					typeof data.error === 'function'
+						? // @ts-expect-error: Incorrect response type
+							data.error(`HTTP error! status: ${response.status}`)
+						: data.error;
+				create({ id, type: 'error', message });
+			} else if (data.success !== undefined) {
+				shouldDismiss = false;
+				const message =
+					// @ts-expect-error: TODO: Better function checking
+					typeof data.success === 'function' ? data.success(response) : data.success;
+				create({ id, type: 'success', message });
+			}
+		})
+			.catch((error) => {
+				if (data.error !== undefined) {
+					shouldDismiss = false;
+					const message =
+						// @ts-expect-error: TODO: Better function checking
+						typeof data.error === 'function' ? data.error(error) : data.error;
+					create({ id, type: 'error', message });
+				}
+			})
+			.finally(() => {
+				if (shouldDismiss) {
+					// Toast is still in load state (and will be indefinitely — dismiss it)
+					dismiss(id);
+					id = undefined;
+				}
 
-  promise = <ToastData>(promise: PromiseT<ToastData>, data?: PromiseData<ToastData>) => {
-    if (!data) {
-      // Nothing to show
-      return
-    }
+				data.finally?.();
+			});
 
-    let id: string | number | undefined = undefined;
-    if (data.loading !== undefined) {
-      id = this.create({
-        ...data,
-        promise,
-        type: 'loading',
-        message: data.loading,
-      });
-    }
+		return id;
+	}
 
-    const p = promise instanceof Promise ? promise : promise();
+	function custom<T extends ComponentType = ComponentType>(
+		component: T,
+		data?: ExternalToast<T>
+	) {
+		const id = data?.id || toastsCounter++;
+		create({ component, id, ...data });
 
-    let shouldDismiss = id !== undefined;
+		return id;
+	}
 
-    p.then((response) => {
-      // TODO: Clean up TS here, response has incorrect type
-      // @ts-expect-error: Incorrect response type
-      if (response && typeof response.ok === 'boolean' && !response.ok) {
-        shouldDismiss = false;
-        const message =
-        // @ts-expect-error: Incorrect response type
-          typeof data.error === 'function' ? data.error(`HTTP error! status: ${response.status}`) : data.error;
-        this.create({ id, type: 'error', message });
-      } else if (data.success !== undefined) {
-        shouldDismiss = false;
-        // @ts-expect-error: TODO: Better function checking
-        const message = typeof data.success === 'function' ? data.success(response) : data.success;
-        this.create({ id, type: 'success', message });
-      }
-    })
-      .catch((error) => {
-        if (data.error !== undefined) {
-          shouldDismiss = false;
-          // @ts-expect-error: TODO: Better function checking
-          const message = typeof data.error === 'function' ? data.error(error) : data.error;
-          this.create({ id, type: 'error', message });
-        }
-      })
-      .finally(() => {
-        if (shouldDismiss) {
-          // Toast is still in load state (and will be indefinitely — dismiss it)
-          this.dismiss(id);
-          id = undefined;
-        }
+	function removeHeight(id: number | string) {
+		heights.update((prev) => prev.filter((height) => height.toastId !== id));
+	}
 
-        data.finally?.();
-      });
+	function addHeight(height: HeightT) {
+		heights.update((prev) => [height, ...prev]);
+	}
 
-    return id;
-  }
+	function reset() {
+		toasts.set([]);
+		heights.set([]);
+	}
 
-  custom = <T extends ComponentType = ComponentType> (component: T, data?: ExternalToast<T>) => {
-    const id = data?.id || toastsCounter++
-    this.create({ component, id, ...data })
-
-    return id
-  }
+	return {
+		// methods
+		create,
+		addToast,
+		dismiss,
+		message,
+		error,
+		success,
+		info,
+		warning,
+		loading,
+		promise,
+		custom,
+		removeHeight,
+		addHeight,
+		reset,
+		// stores
+		toasts,
+		heights
+	};
 }
 
-export const ToastState = new Observer()
+export const toastState = createToastState();
 
 // bind this to the toast function
 function toastFunction(message: string | ComponentType, data?: ExternalToast) {
-  const id = data?.id || toastsCounter++
-
-  ToastState.addToast({
-    title: message,
-    ...data,
-    id,
-  })
-  return id
+	return toastState.create({
+		message,
+		...data
+	});
 }
 
-const basicToast = toastFunction
+const basicToast = toastFunction;
 
 // We use `Object.assign` to maintain the correct types as we would lose them otherwise
 export const toast = Object.assign(basicToast, {
-  success: ToastState.success,
-  info: ToastState.info,
-  warning: ToastState.warning,
-  error: ToastState.error,
-  custom: ToastState.custom,
-  message: ToastState.message,
-  promise: ToastState.promise,
-  dismiss: ToastState.dismiss,
-  loading: ToastState.loading,
-})
+	success: toastState.success,
+	info: toastState.info,
+	warning: toastState.warning,
+	error: toastState.error,
+	custom: toastState.custom,
+	message: toastState.message,
+	promise: toastState.promise,
+	dismiss: toastState.dismiss,
+	loading: toastState.loading
+});
 
-export const useEffect = (subscribe: unknown) => ({ subscribe })
+export const useEffect = (subscribe: unknown) => ({ subscribe });

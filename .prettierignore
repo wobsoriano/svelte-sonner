@@ -11,6 +11,12 @@ node_modules
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
-
+.changeset/
+.prettierrc
 package.json
+.vercel
+.contentlayer
 dist
+
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
