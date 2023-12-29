@@ -11,6 +11,9 @@ export const isBrowser = typeof document !== 'undefined';
  * browser to avoid SSR data leaks. By defining this helper, we don't
  * have to worry about checking for `isBrowser` in every place we
  * mutate the various stores.
+ *
+ * This should only ever be initialized with an empty array or object,
+ * as otherwise the initial value will persist across requests.
  */
 export function clientWritable<T>(initialValue: T) {
 	const store = writable(initialValue);
