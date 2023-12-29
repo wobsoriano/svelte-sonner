@@ -92,4 +92,23 @@ jobs:
               with:
                   version: 8.6.3
                   run_install: true
-            - run: pnpm run test
+            - run: pnpm run test:unit
+
+    Playwright:
+        timeout-minutes: 60
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+            - run: bun install
+            - run: bun run build
+            - run: bun run playwright install --with-deps
+            - run: bun run test || exit 1
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                  name: playwright-report
+                  path: playwright-report/
+                  retention-days: 30
