@@ -13,3 +13,4 @@ package-lock.json
 yarn.lock
 
 package.json
+dist

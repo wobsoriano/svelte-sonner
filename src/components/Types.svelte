@@ -3,8 +3,6 @@
 	import CodeBlock from './CodeBlock.svelte';
 	import Custom from './Custom.svelte';
 
-	const promiseCode = '`${data.name} toast has been added`';
-
 	const allTypes = [
 		{
 			name: 'Default',
@@ -78,7 +76,7 @@ toast.promise(promise, {
 			action: () =>
 				toast.promise<{ name: string }>(
 					() =>
-						new Promise((resolve, reject) =>
+						new Promise((resolve) =>
 							setTimeout(() => {
 								resolve({ name: 'Svelte Sonner' });
 							}, 1500)
@@ -114,8 +112,8 @@ toast(Custom)`,
 <div>
 	<h2>Types</h2>
 	<p>
-		You can customize the type of toast you want to render, and pass an options
-		object as the second argument.
+		You can customize the type of toast you want to render, and pass an
+		options object as the second argument.
 	</p>
 	<div class="buttons">
 		{#each allTypes as type}

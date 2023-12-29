@@ -37,10 +37,12 @@
 		"svelte": ">=3 <5"
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.27.1",
 		"@playwright/test": "^1.38.0",
 		"@sveltejs/adapter-auto": "^2.1.0",
 		"@sveltejs/kit": "^1.25.0",
 		"@sveltejs/package": "^2.2.2",
+		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
 		"@testing-library/dom": "9.3.1",
 		"@testing-library/jest-dom": "5.17.0",
 		"@testing-library/svelte": "4.0.5",
@@ -52,6 +54,7 @@
 		"bumpp": "^9.2.0",
 		"copy-to-clipboard": "^3.3.3",
 		"eslint": "^8.49.0",
+		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.33.2",
 		"highlight.js": "^11.8.0",
 		"jsdom": "22.1.0",
