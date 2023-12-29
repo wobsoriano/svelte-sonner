@@ -50,7 +50,7 @@
 	export let toastOptions: ToastOptions = {};
 	export let offset: $$Props['offset'] = null;
 
-	const { toasts, heights } = toastState;
+	const { toasts, heights, reset } = toastState;
 
 	$: possiblePositions = Array.from(
 		new Set(
@@ -85,6 +85,7 @@
 	});
 
 	onMount(() => {
+		reset();
 		const handleKeydown = (event: KeyboardEvent) => {
 			const isHotkeyPressed = hotkey.every(
 				(key) =>
