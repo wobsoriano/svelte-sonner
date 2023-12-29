@@ -1,7 +1,7 @@
-import Toaster from './Toaster.svelte'
+import Toaster from './Toaster.svelte';
 
-export { toast } from './state.js'
+export { toast } from './state.js';
 
-export { Toaster }
+export { Toaster };
 
-export type { ToastT, ExternalToast } from './types.js'
+export type { ToastT, ExternalToast, ToasterProps, ToastOptions } from './types.js';

@@ -3,7 +3,8 @@ module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended',
-		'plugin:svelte/recommended'
+		'plugin:svelte/recommended',
+		'prettier'
 	],
 	parser: '@typescript-eslint/parser',
 	plugins: ['@typescript-eslint'],
@@ -23,10 +24,19 @@ module.exports = {
 			parser: 'svelte-eslint-parser',
 			parserOptions: {
 				parser: '@typescript-eslint/parser'
+			},
+			rules: {
+				'@typescript-eslint/no-unused-vars': [
+					'warn',
+					{
+						argsIgnorePattern: '^_',
+						varsIgnorePattern: '^\\$\\$(Props|Events|Slots|Generic)$'
+					}
+				]
 			}
 		}
-	],
-	rules: {
-		'quotes': [2, 'single', { 'avoidEscape': true }]
-	}
+	]
+	// rules: {
+	// 	quotes: [2, 'single', { avoidEscape: true }]
+	// }
 };
