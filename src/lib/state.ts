@@ -10,7 +10,7 @@ function createToastState() {
 
 	function addToast(data: ToastT) {
 		if (typeof document !== 'undefined') {
-			toasts.update((prev) => [...prev, data]);
+			toasts.update((prev) => [data, ...prev]);
 		}
 	}
 
@@ -27,6 +27,7 @@ function createToastState() {
 				? data.id
 				: toastsCounter++;
 		const dismissable = data.dismissable === undefined ? true : data.dismissable;
+		const type = data.type === undefined ? 'default' : data.type;
 
 		const $toasts = get(toasts);
 
@@ -38,13 +39,13 @@ function createToastState() {
 			toasts.update((prev) =>
 				prev.map((toast) => {
 					if (toast.id === id) {
-						return { ...toast, ...data, id, title: message, dismissable };
+						return { ...toast, ...data, id, title: message, dismissable, type };
 					}
 					return toast;
 				})
 			);
 		} else {
-			addToast({ ...rest, id, title: message, dismissable });
+			addToast({ ...rest, id, title: message, dismissable, type });
 		}
 
 		return id;
@@ -61,11 +62,11 @@ function createToastState() {
 	}
 
 	function message(message: string | ComponentType, data?: ExternalToast) {
-		return create({ ...data, message });
+		return create({ ...data, type: 'default', message });
 	}
 
 	function error(message: string | ComponentType, data?: ExternalToast) {
-		return create({ ...data, message, type: 'error' });
+		return create({ ...data, type: 'error', message });
 	}
 
 	function success(message: string | ComponentType, data?: ExternalToast) {
@@ -160,7 +161,7 @@ function createToastState() {
 	}
 
 	function addHeight(height: HeightT) {
-		heights.update((prev) => [...prev, height]);
+		heights.update((prev) => [height, ...prev]);
 	}
 
 	function reset() {
@@ -194,14 +195,10 @@ export const toastState = createToastState();
 
 // bind this to the toast function
 function toastFunction(message: string | ComponentType, data?: ExternalToast) {
-	const id = data?.id || toastsCounter++;
-
-	toastState.addToast({
-		title: message,
-		...data,
-		id
+	return toastState.create({
+		message,
+		...data
 	});
-	return id;
 }
 
 const basicToast = toastFunction;

@@ -1,10 +1,10 @@
 import type { ComponentProps, ComponentType } from 'svelte';
 import type { Expand } from '$lib/internal/types.js';
+import type { HTMLOlAttributes } from 'svelte/elements';
 
 export type FixMe = unknown;
 
 export type ToastTypes =
-	| 'normal'
 	| 'action'
 	| 'success'
 	| 'info'
@@ -149,8 +149,6 @@ export type ToasterProps = Partial<{
 	/**
 	 * These will act as default options for all toasts.
 	 *
-	 * @see ToastProps for all available options.
-	 *
 	 * @default {}
 	 */
 	toastOptions: ToastOptions;
@@ -182,7 +180,8 @@ export type ToasterProps = Partial<{
 	 * @default -
 	 */
 	loadingIcon: ComponentType;
-}>;
+}> &
+	HTMLOlAttributes;
 
 export type ToastOptions = {
 	/**

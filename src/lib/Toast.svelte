@@ -33,8 +33,7 @@
 		success: '',
 		default: '',
 		info: '',
-		loading: '',
-		normal: ''
+		loading: ''
 	};
 
 	const { toasts, heights, removeHeight, addHeight, dismiss } = toastState;
@@ -314,7 +313,7 @@
 		<svelte:component this={toast.title} on:closeToast={deleteToast}
 		></svelte:component>
 	{:else}
-		{#if toastType || toast.icon || toast.promise}
+		{#if toastType !== 'default' || toast.icon || toast.promise}
 			<div data-icon="">
 				{#if (toast.promise || toastType === 'loading') && !toast.icon}
 					<Loader visible={toastType === 'loading'} />
