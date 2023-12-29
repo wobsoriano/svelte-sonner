@@ -3,9 +3,7 @@ import type { HeightT, ExternalToast, PromiseData, PromiseT, ToastT, ToastTypes 
 import { get } from 'svelte/store';
 import { clientWritable } from './internal/helpers.js';
 
-// Start the count at 1 so users don't have to worry
-// about falsy values and can just use `if (toastId)`
-let toastsCounter = 1;
+let toastsCounter = 0;
 
 function createToastState() {
 	const toasts = clientWritable<Array<ToastT>>([]);
