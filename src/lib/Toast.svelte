@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { ToastT, Position } from './types.js';
+	import type { ToastClassnames, ToastProps } from './types.js';
 	import Loader from './Loader.svelte';
 	import Icon from './Icon.svelte';
 	import { toastState, useEffect } from './state.js';
+	import { cn } from './internal/helpers.js';
+	import type { Expand } from './internal/types.js';
+
+	type $$Props = Expand<ToastProps>;
 
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
@@ -15,21 +19,41 @@
 
 	const TIME_BEFORE_UNMOUNT = 200;
 
+	const defaultClasses: ToastClassnames = {
+		toast: '',
+		title: '',
+		description: '',
+		loader: '',
+		closeButton: '',
+		cancelButton: '',
+		actionButton: '',
+		action: '',
+		warning: '',
+		error: '',
+		success: '',
+		default: '',
+		info: '',
+		loading: '',
+		normal: ''
+	};
+
 	const { toasts, heights, removeHeight, addHeight, dismiss } = toastState;
 
-	export let toast: ToastT;
-	export let index: number;
-	export let expanded: boolean;
-	export let invert: boolean;
-	export let position: Position;
-	export let visibleToasts: number;
-	export let expandByDefault: boolean;
-	export let closeButton: boolean;
-	export let interacting: boolean;
-	export let cancelButtonStyle = '';
-	export let actionButtonStyle = '';
-	export let duration: number | null;
-	export let descriptionClass = '';
+	export let toast: $$Props['toast'];
+	export let index: $$Props['index'];
+	export let expanded: $$Props['expanded'];
+	export let invert: $$Props['invert'];
+	export let position: $$Props['position'];
+	export let visibleToasts: $$Props['visibleToasts'];
+	export let expandByDefault: $$Props['expandByDefault'];
+	export let closeButton: $$Props['closeButton'];
+	export let interacting: $$Props['interacting'];
+	export let cancelButtonStyle: $$Props['cancelButtonStyle'] = '';
+	export let actionButtonStyle: $$Props['actionButtonStyle'] = '';
+	export let duration: $$Props['duration'] = 4000;
+	export let descriptionClass: $$Props['descriptionClass'] = '';
+	export let classes: $$Props['classes'] = {};
+	export let unstyled: $$Props['unstyled'] = false;
 
 	let mounted = false;
 	let removed = false;
@@ -39,21 +63,25 @@
 	let initialHeight = 0;
 	let toastRef: HTMLLIElement;
 
+	$: classes = { ...defaultClasses, ...classes };
+
 	$: isFront = index === 0;
 	$: isVisible = index + 1 <= visibleToasts;
-	$: toastType = toast.type;
+	$: toastType = toast.type ?? 'default';
 	$: toastClass = toast.class || '';
 	$: toastDescriptionClass = toast.descriptionClass || '';
 
 	// Height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
 	$: heightIndex =
 		$heights.findIndex((height) => height.toastId === toast.id) || 0;
+
 	let offset = 0;
 	let closeTimerStartTimeRef = 0;
 	let closeTimerRemainingTimeRef =
 		toast.duration || duration || TOAST_LIFETIME;
 	let lastCloseTimerStartTimeRef = 0;
 	let pointerStartRef: { x: number; y: number } | null = null;
+
 	$: coords = position.split('-');
 	$: toastsHeightBefore = $heights.reduce((prev, curr, reducerIndex) => {
 		// Calculate offset up untill current  toast
@@ -149,9 +177,10 @@
 		}
 
 		offsetBeforeRemove = offset;
+		const target = event.target as HTMLElement;
 		// Ensure we maintain correct pointer capture even when going outside of the toast (e.g. when swiping)
-		(event.target as HTMLElement).setPointerCapture(event.pointerId);
-		if ((event.target as HTMLElement).tagName === 'BUTTON') {
+		target.setPointerCapture(event.pointerId);
+		if (target.tagName === 'BUTTON') {
 			return;
 		}
 		swiping = true;
@@ -212,9 +241,16 @@
 	aria-atomic="true"
 	role="status"
 	tabIndex={0}
-	class={`${$$props.class} ${toastClass}`}
+	class={cn(
+		$$props.class,
+		toastClass,
+		classes?.toast,
+		toast?.classes?.toast,
+		classes?.[toastType],
+		toast?.classes?.[toastType]
+	)}
 	data-sonner-toast=""
-	data-styled={!toast.component}
+	data-styled={!(toast.component || toast?.unstyled || unstyled)}
 	data-mounted={mounted}
 	data-promise={Boolean(toast.promise)}
 	data-removed={removed}
@@ -249,6 +285,7 @@
 						deleteToast();
 						toast.onDismiss?.(toast);
 					}}
+			class={cn(classes?.closeButton, toast?.classes?.closeButton)}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -290,11 +327,21 @@
 			</div>
 		{/if}
 		<div data-content="">
-			<div data-title="">{toast.title}</div>
+			<div
+				data-title=""
+				class={cn(classes?.title, toast?.classes?.title)}
+			>
+				{toast.title}
+			</div>
 			{#if toast.description}
 				<div
 					data-description=""
-					class={descriptionClass + toastDescriptionClass}
+					class={cn(
+						descriptionClass,
+						toastDescriptionClass,
+						classes?.description,
+						toast.classes?.description
+					)}
 				>
 					{toast.description}
 				</div>
@@ -305,6 +352,7 @@
 				data-button
 				data-cancel
 				style={cancelButtonStyle}
+				class={cn(classes?.cancelButton, toast?.classes?.cancelButton)}
 				on:click={() => {
 					deleteToast();
 					if (toast.cancel?.onClick) {
@@ -319,6 +367,7 @@
 			<button
 				data-button=""
 				style={actionButtonStyle}
+				class={cn(classes?.actionButton, toast?.classes?.actionButton)}
 				on:click={(event) => {
 					toast.action?.onClick(event);
 					if (event.defaultPrevented) return;

@@ -26,6 +26,7 @@ function createToastState() {
 			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
 				? data.id
 				: toastsCounter++;
+		const dismissable = data.dismissable === undefined ? true : data.dismissable;
 
 		const $toasts = get(toasts);
 
@@ -37,13 +38,13 @@ function createToastState() {
 			toasts.update((prev) =>
 				prev.map((toast) => {
 					if (toast.id === id) {
-						return { ...toast, ...data, id, title: message };
+						return { ...toast, ...data, id, title: message, dismissable };
 					}
 					return toast;
 				})
 			);
 		} else {
-			addToast({ title: message, ...rest, id });
+			addToast({ ...rest, id, title: message, dismissable });
 		}
 
 		return id;

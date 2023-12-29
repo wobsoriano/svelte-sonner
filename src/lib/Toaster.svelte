@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import type { Position } from './types.js';
+	import type { Position, ToastOptions } from './types.js';
 	import { toastState } from './state.js';
 	import Toast from './Toast.svelte';
+
+	import type { ToasterProps } from './types.js';
+
+	type $$Props = ToasterProps;
 
 	// Visible toasts amount
 	const VISIBLE_TOASTS_AMOUNT = 3;
@@ -16,15 +20,6 @@
 	// Default gap between toasts
 	const GAP = 14;
 
-	interface ToastOptions {
-		class?: string;
-		descriptionClass?: string;
-		style?: string;
-		cancelButtonStyle?: string;
-		actionButtonStyle?: string;
-	}
-
-	// TODO: move to mode watcher for SSR theme
 	function getInitialTheme(t: string) {
 		if (t !== 'system') {
 			return t;
@@ -45,16 +40,15 @@
 	}
 
 	export let invert = false;
-	export let theme: 'light' | 'dark' | 'system' = 'light';
-	export let position: Position = 'bottom-right';
+	export let theme: Exclude<$$Props['theme'], undefined> = 'light';
+	export let position = 'bottom-right';
 	export let hotkey: string[] = ['altKey', 'KeyT'];
 	export let richColors = false;
 	export let expand = false;
-	export let duration: number | null = null;
-	export let visibleToasts: number = VISIBLE_TOASTS_AMOUNT;
+	export let visibleToasts = VISIBLE_TOASTS_AMOUNT;
 	export let closeButton = false;
 	export let toastOptions: ToastOptions = {};
-	export let offset: string | number | null = null;
+	export let offset: $$Props['offset'] = null;
 
 	const { toasts, heights } = toastState;
 
@@ -73,9 +67,10 @@
 	let interacting = false;
 	let actualTheme = getInitialTheme(theme);
 	let listRef: HTMLOListElement;
-	$: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
 	let lastFocusedElementRef: HTMLElement | null = null;
 	let isFocusWithinRef = false;
+
+	$: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
 
 	$: if ($toasts.length <= 1) {
 		expanded = false;
@@ -207,21 +202,21 @@
 					<Toast
 						{index}
 						{toast}
-						{duration}
-						class={toastOptions?.class}
-						descriptionClass={toastOptions?.descriptionClass}
 						invert={Boolean(invert)}
 						{visibleToasts}
 						closeButton={Boolean(closeButton)}
 						{interacting}
 						{position}
-						style={toastOptions?.style ?? ''}
-						cancelButtonStyle={toastOptions?.cancelButtonStyle}
-						actionButtonStyle={toastOptions?.actionButtonStyle}
-						{toasts}
-						{heights}
 						expandByDefault={Boolean(expand)}
 						{expanded}
+						actionButtonStyle={toastOptions?.actionButtonStyle ||
+							''}
+						cancelButtonStyle={toastOptions?.cancelButtonStyle ||
+							''}
+						descriptionClass={toastOptions?.descriptionClass || ''}
+						classes={toastOptions.classes || {}}
+						duration={toastOptions.duration || 4000}
+						unstyled={toastOptions.unstyled || false}
 					/>
 				{/each}
 			</ol>

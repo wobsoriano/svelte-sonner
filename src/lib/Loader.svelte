@@ -5,7 +5,7 @@
 
 <div class="sonner-loading-wrapper" data-visible={visible}>
 	<div class="sonner-spinner">
-		{#each bars as _bar, i (i)}
+		{#each bars as _, i (i)}
 			<div class="sonner-loading-bar" />
 		{/each}
 	</div>
