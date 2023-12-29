@@ -203,12 +203,12 @@
 					<Toast
 						{index}
 						{toast}
-						invert={Boolean(invert)}
+						{invert}
 						{visibleToasts}
-						closeButton={Boolean(closeButton)}
+						{closeButton}
 						{interacting}
 						{position}
-						expandByDefault={Boolean(expand)}
+						expandByDefault={expand}
 						{expanded}
 						actionButtonStyle={toastOptions?.actionButtonStyle ||
 							''}
