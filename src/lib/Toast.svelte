@@ -309,9 +309,6 @@
 			{...toast.componentProps}
 			on:closeToast={deleteToast}
 		></svelte:component>
-	{:else if toast.title && typeof toast.title !== 'string'}
-		<svelte:component this={toast.title} on:closeToast={deleteToast}
-		></svelte:component>
 	{:else}
 		{#if toastType !== 'default' || toast.icon || toast.promise}
 			<div data-icon="">
@@ -326,12 +323,18 @@
 			</div>
 		{/if}
 		<div data-content="">
-			<div
-				data-title=""
-				class={cn(classes?.title, toast?.classes?.title)}
-			>
-				{toast.title}
-			</div>
+			{#if toast.title}
+				<div
+					data-title=""
+					class={cn(classes?.title, toast?.classes?.title)}
+				>
+					{#if typeof toast.title !== 'string'}
+						<svelte:component this={toast.title} {...toast.componentProps} />
+					{:else}
+						{toast.title}
+					{/if}
+				</div>
+			{/if}
 			{#if toast.description}
 				<div
 					data-description=""
@@ -342,7 +345,11 @@
 						toast.classes?.description
 					)}
 				>
-					{toast.description}
+					{#if typeof toast.description !== 'string'}
+						<svelte:component this={toast.description} {...toast.componentProps} />
+					{:else}
+						{toast.description}
+					{/if}
 				</div>
 			{/if}
 		</div>
