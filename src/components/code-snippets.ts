@@ -19,8 +19,6 @@ export const usageSnippet = `<script>
 <!-- ... -->
 
 <Toaster />
-<button
-  on:click={() => toast('My first toast')}
->
+<button on:click={() => toast('My first toast')}>
   Give me a toast
 </button>`;

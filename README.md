@@ -65,7 +65,7 @@ toast.success('Event has been created');
 Renders a question mark icon in front of the message.
 
 ```js
-toast.info('Event has new information')
+toast.info('Event has new information');
 ```
 
 ### Warning
@@ -73,7 +73,7 @@ toast.info('Event has new information')
 Renders a warning icon in front of the message.
 
 ```js
-toast.warning('Event has warning')
+toast.warning('Event has warning');
 ```
 
 ### Error

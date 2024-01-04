@@ -32,7 +32,8 @@ module.exports = {
 						argsIgnorePattern: '^_',
 						varsIgnorePattern: '^\\$\\$(Props|Events|Slots|Generic)$'
 					}
-				]
+				],
+				'svelte/no-at-html-tags': 'warn'
 			}
 		}
 	]

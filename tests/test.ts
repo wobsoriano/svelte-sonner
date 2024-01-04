@@ -58,3 +58,11 @@ test('close a toast from inside a custom component', async ({ page }) => {
 	await page.getByTestId('close-button').click();
 	await expect(page.getByText('Event Created')).toHaveCount(0);
 });
+
+test('render custom component with properties in toast of predefined type', async ({ page }) => {
+	await page.getByTestId('other-Custom with properties').click();
+	console.log(await page.locator('[data-sonner-toast]').textContent());
+	await expect(
+		page.locator('[data-sonner-toast]').getByText('This is multiline message')
+	).toHaveCount(1);
+});
