@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { toast } from '$lib';
 	import { createEventDispatcher } from 'svelte';
-	import Test from './Test.svelte';
 	import CodeBlock from './CodeBlock.svelte';
+	import Test from './Test.svelte';
+	import TestWithProps from './TestWithProps.svelte';
 	import { getOtherCodeSnippet } from './code-snippets';
 
 	const dispatch = createEventDispatcher();
@@ -43,8 +44,8 @@
 		{
 			name: 'Close Button',
 			snippet: `toast('Event has been created', {
-  description: 'Monday, January 3rd at 6:00pm',
-})`,
+    description: 'Monday, January 3rd at 6:00pm',
+  })`,
 			action: () => {
 				toast('Event has been created', {
 					description: 'Monday, January 3rd at 6:00pm'
@@ -56,18 +57,37 @@
 			name: 'Headless',
 			snippet: `import HeadlessToast from './HeadlessToast.svelte'
 
-toast.custom(HeadlessToast)
+  toast.custom(HeadlessToast)
 
-// With props:
-toast.custom(HeadlessToast, {
-  componentProps: {
-    eventName: 'Louvre Museum'
-  }
-})
-`,
+  // With props:
+  toast.custom(HeadlessToast, {
+    componentProps: {
+      eventName: 'Louvre Museum'
+    }
+  })
+  `,
 			action: () => {
 				toast.custom(Test, {
 					componentProps: { eventName: 'Louvre Museum' }
+				});
+				dispatch('setCloseButton');
+			}
+		},
+		{
+			name: 'Custom with properties',
+			snippet: `import TestWithProps from './TestWithProps.svelte'
+
+  toast.warning(TestWithProps, {
+    componentProps: {
+      message: 'This is <br />multiline message',
+    }
+  })
+  `,
+			action: () => {
+				toast.warning(TestWithProps, {
+					componentProps: {
+						message: 'This is <br />multiline message'
+					}
 				});
 				dispatch('setCloseButton');
 			}

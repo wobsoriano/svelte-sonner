@@ -329,7 +329,10 @@
 					class={cn(classes?.title, toast?.classes?.title)}
 				>
 					{#if typeof toast.title !== 'string'}
-						<svelte:component this={toast.title} {...toast.componentProps} />
+						<svelte:component
+							this={toast.title}
+							{...toast.componentProps}
+						/>
 					{:else}
 						{toast.title}
 					{/if}
@@ -346,7 +349,10 @@
 					)}
 				>
 					{#if typeof toast.description !== 'string'}
-						<svelte:component this={toast.description} {...toast.componentProps} />
+						<svelte:component
+							this={toast.description}
+							{...toast.componentProps}
+						/>
 					{:else}
 						{toast.description}
 					{/if}
