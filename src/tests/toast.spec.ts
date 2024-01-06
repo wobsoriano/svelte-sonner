@@ -61,4 +61,70 @@ describe('Toast', () => {
 		await sleep(100);
 		expect(document.activeElement).toBeInstanceOf(HTMLOListElement);
 	});
+
+	it('should not immediately close the toast when reset', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('Loading', { duration: 4000 });
+
+				setTimeout(() => {
+					toast.success('Finished loading!', { id });
+				}, 1000);
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Loading')).toBeVisible();
+		await sleep(2050);
+		expect(queryByText('Loading')).toBeNull();
+		expect(getByText('Finished loading!')).toBeVisible();
+		await sleep(1000);
+		expect(getByText('Finished loading!')).toBeVisible();
+	});
+
+	it('should reset duration on a toast update', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('Loading', { duration: 1000 });
+
+				setTimeout(() => {
+					toast.success('Finished loading!', { id });
+				}, 750);
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Loading')).toBeVisible();
+		await sleep(800);
+		expect(queryByText('Loading')).toBeNull();
+		expect(getByText('Finished loading!')).toBeVisible();
+		// there would only be ~.5 second left on the original toast
+		// so we're gonna wait 2 seconds to make sure the timer is reset
+		await sleep(600);
+		expect(getByText('Finished loading!')).toBeVisible();
+		// finally we'll wait another 1500ms to make sure the toast closes after 2 seconds
+		// since the original toast had a duration of 2 seconds
+		await sleep(600);
+		expect(queryByText('Finished loading!')).toBeNull();
+	});
+
+	it('should allow duration updates on toast update', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('Loading', { duration: 2000 });
+
+				setTimeout(() => {
+					toast.success('Finished loading!', { id, duration: 4000 });
+				}, 1000);
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Loading')).toBeVisible();
+		await sleep(1200);
+		expect(queryByText('Loading')).toBeNull();
+		expect(getByText('Finished loading!')).toBeVisible();
+		await sleep(2200);
+		expect(getByText('Finished loading!')).toBeVisible();
+	});
 });

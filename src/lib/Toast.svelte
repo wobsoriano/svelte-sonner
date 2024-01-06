@@ -76,8 +76,7 @@
 
 	let offset = 0;
 	let closeTimerStartTimeRef = 0;
-	let closeTimerRemainingTimeRef =
-		toast.duration || duration || TOAST_LIFETIME;
+
 	let lastCloseTimerStartTimeRef = 0;
 	let pointerStartRef: { x: number; y: number } | null = null;
 
@@ -109,14 +108,33 @@
 
 	let timeoutId: ReturnType<typeof setTimeout>;
 
+	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
+
+	let toastUpdateCount = 0;
+
+	$: if (toast) {
+		toastUpdateCount++;
+	}
+
+	$: if (toastUpdateCount > 1 && timeoutId) {
+		// if the toast has been updated after the initial render,
+		// we want to reset the timer and set the remaining time to the
+		// new duration
+		clearTimeout(timeoutId);
+		remainingTime = toast.duration || duration || TOAST_LIFETIME;
+		startTimer();
+	}
+
+	// If toast's duration changes, it will be out of sync with the
+	// remainingAtTimeout, so we know we need to restart the timer
+	// with the new duration
+
 	// Pause the tmer on each hover
 	function pauseTimer() {
 		if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
 			// Get the elapsed time since the timer started
 			const elapsedTime = new Date().getTime() - closeTimerStartTimeRef;
-
-			closeTimerRemainingTimeRef =
-				closeTimerRemainingTimeRef - elapsedTime;
+			remainingTime = remainingTime - elapsedTime;
 		}
 
 		lastCloseTimerStartTimeRef = new Date().getTime();
@@ -128,7 +146,7 @@
 		timeoutId = setTimeout(() => {
 			toast.onAutoClose?.(toast);
 			deleteToast();
-		}, closeTimerRemainingTimeRef);
+		}, remainingTime);
 	}
 
 	$: isPromiseLoadingOrInfiniteDuration =

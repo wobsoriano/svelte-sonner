@@ -95,7 +95,6 @@
 
 			if (isHotkeyPressed) {
 				expanded = true;
-				console.log('hotkeypressed');
 				listRef?.focus();
 			}
 
