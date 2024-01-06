@@ -107,7 +107,29 @@
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
+
 	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
+
+	let toastUpdateCount = 0;
+
+	$: console.log(toastUpdateCount);
+
+	$: if (toast) {
+		toastUpdateCount++;
+	}
+
+	$: if (toastUpdateCount > 1 && timeoutId) {
+		// if the toast has been updated after the initial render,
+		// we want to reset the timer and set the remaining time to the
+		// new duration
+		clearTimeout(timeoutId);
+		remainingTime = toast.duration || duration || TOAST_LIFETIME;
+		startTimer();
+	}
+
+	// If toast's duration changes, it will be out of sync with the
+	// remainingAtTimeout, so we know we need to restart the timer
+	// with the new duration
 
 	// Pause the tmer on each hover
 	function pauseTimer() {
