@@ -61,4 +61,24 @@ describe('Toast', () => {
 		await sleep(100);
 		expect(document.activeElement).toBeInstanceOf(HTMLOListElement);
 	});
+
+	it('should not immediately close the toast when reset', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('Loading', { duration: 4000 });
+
+				setTimeout(() => {
+					toast.success('Finished loading!', { id });
+				}, 1000);
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Loading')).toBeVisible();
+		await sleep(2050);
+		expect(queryByText('Loading')).toBeNull();
+		expect(getByText('Finished loading!')).toBeVisible();
+		await sleep(1000);
+		expect(getByText('Finished loading!')).toBeVisible();
+	});
 });

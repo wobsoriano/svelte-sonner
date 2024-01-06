@@ -76,8 +76,7 @@
 
 	let offset = 0;
 	let closeTimerStartTimeRef = 0;
-	let closeTimerRemainingTimeRef =
-		toast.duration || duration || TOAST_LIFETIME;
+
 	let lastCloseTimerStartTimeRef = 0;
 	let pointerStartRef: { x: number; y: number } | null = null;
 
@@ -108,15 +107,14 @@
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
+	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
 
 	// Pause the tmer on each hover
 	function pauseTimer() {
 		if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
 			// Get the elapsed time since the timer started
 			const elapsedTime = new Date().getTime() - closeTimerStartTimeRef;
-
-			closeTimerRemainingTimeRef =
-				closeTimerRemainingTimeRef - elapsedTime;
+			remainingTime = remainingTime - elapsedTime;
 		}
 
 		lastCloseTimerStartTimeRef = new Date().getTime();
@@ -128,7 +126,7 @@
 		timeoutId = setTimeout(() => {
 			toast.onAutoClose?.(toast);
 			deleteToast();
-		}, closeTimerRemainingTimeRef);
+		}, remainingTime);
 	}
 
 	$: isPromiseLoadingOrInfiniteDuration =
