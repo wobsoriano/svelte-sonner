@@ -112,8 +112,6 @@
 
 	let toastUpdateCount = 0;
 
-	$: console.log(toastUpdateCount);
-
 	$: if (toast) {
 		toastUpdateCount++;
 	}
