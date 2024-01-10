@@ -63,7 +63,7 @@
 		/>
 		<Expand {expand} on:setExpand={({ detail }) => (expand = detail)} />
 		<Other
-			on:setCloseButton={() => (closeButton = !closeButton)}
+			bind:closeButton
 			on:setRichColors={({ detail }) => (richColors = detail)}
 		/>
 	</div>
