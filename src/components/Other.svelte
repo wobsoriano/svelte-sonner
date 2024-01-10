@@ -44,7 +44,7 @@
 			}
 		},
 		{
-			name: 'Close Button',
+			name: 'Close buttons',
 			snippet: `toast('Event has been created', {
     description: 'Monday, January 3rd at 6:00pm',
   })`,
@@ -114,7 +114,7 @@
 				}}
 			>
 				{type.name}
-				{#if type.name === 'Close Button'}
+				{#if type.name === 'Close buttons'}
 					({closeButton ? 'Visible' : 'Hidden'})
 				{/if}
 			</button>
