@@ -6,6 +6,8 @@
 	import TestWithProps from './TestWithProps.svelte';
 	import { getOtherCodeSnippet } from './code-snippets';
 
+	export let closeButton = false;
+
 	const dispatch = createEventDispatcher();
 
 	const allTypes = [
@@ -42,7 +44,7 @@
 			}
 		},
 		{
-			name: 'Close Button',
+			name: 'Close buttons',
 			snippet: `toast('Event has been created', {
     description: 'Monday, January 3rd at 6:00pm',
   })`,
@@ -50,7 +52,7 @@
 				toast('Event has been created', {
 					description: 'Monday, January 3rd at 6:00pm'
 				});
-				dispatch('setCloseButton');
+				closeButton = !closeButton;
 			}
 		},
 		{
@@ -70,7 +72,6 @@
 				toast.custom(Test, {
 					componentProps: { eventName: 'Louvre Museum' }
 				});
-				dispatch('setCloseButton');
 			}
 		},
 		{
@@ -89,7 +90,6 @@
 						message: 'This is <br />multiline message'
 					}
 				});
-				dispatch('setCloseButton');
 			}
 		}
 	];
@@ -114,6 +114,9 @@
 				}}
 			>
 				{type.name}
+				{#if type.name === 'Close buttons'}
+					({closeButton ? 'Visible' : 'Hidden'})
+				{/if}
 			</button>
 		{/each}
 	</div>
