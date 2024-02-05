@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.12
+
+### Patch Changes
+
+- 6a59c2c: fix: add back missing duration prop to Toaster
+
 ## 0.3.11
 
 ### Patch Changes
