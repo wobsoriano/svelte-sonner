@@ -133,6 +133,13 @@ export type ToasterProps = Partial<{
 	expand: boolean;
 
 	/**
+	 * The duration of the toast in milliseconds.
+	 *
+	 * @default 4000
+	 */
+	duration?: number;
+
+	/**
 	 * Amount of visible toasts
 	 *
 	 * @default 3
@@ -252,7 +259,7 @@ export type ToastProps = {
 	interacting: boolean;
 	cancelButtonStyle: string;
 	actionButtonStyle: string;
-	duration: number | null;
+	duration?: number;
 	descriptionClass: string;
 	classes: ToastClassnames;
 	unstyled: boolean;
