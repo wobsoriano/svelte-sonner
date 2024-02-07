@@ -260,6 +260,7 @@ export type ToastProps = {
 	cancelButtonStyle: string;
 	actionButtonStyle: string;
 	duration?: number;
+	class: string;
 	descriptionClass: string;
 	classes: ToastClassnames;
 	unstyled: boolean;

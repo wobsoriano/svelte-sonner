@@ -215,6 +215,7 @@
 							''}
 						cancelButtonStyle={toastOptions?.cancelButtonStyle ||
 							''}
+						class={toastOptions?.class || ''}
 						descriptionClass={toastOptions?.descriptionClass || ''}
 						classes={toastOptions.classes || {}}
 						duration={toastOptions?.duration ?? duration}
