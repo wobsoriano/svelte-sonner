@@ -39,9 +39,12 @@ function createToastState() {
 			toasts.update((prev) =>
 				prev.map((toast) => {
 					if (toast.id === id) {
-						return { ...toast, ...data, id, title: message, dismissable, type };
+						return { ...toast, ...data, id, title: message, dismissable, type, updated: true };
 					}
-					return toast;
+					return {
+						...toast,
+						updated: false
+					};
 				})
 			);
 		} else {
