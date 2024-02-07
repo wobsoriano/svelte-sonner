@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.15
+
+### Patch Changes
+
+- 26fc332: fix: toasts dismissing at the same time
+
 ## 0.3.14
 
 ### Patch Changes
