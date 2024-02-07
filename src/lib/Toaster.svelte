@@ -408,6 +408,9 @@
 		border: none;
 		cursor: pointer;
 		outline: none;
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
 		transition:
 			opacity 400ms,
 			box-shadow 200ms;
