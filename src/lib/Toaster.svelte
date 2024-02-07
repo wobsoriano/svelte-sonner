@@ -3,7 +3,7 @@
 	import type { Position, ToastOptions } from './types.js';
 	import { toastState } from './state.js';
 	import Toast from './Toast.svelte';
-	
+
 	import type { ToasterProps } from './types.js';
 
 	type $$Props = ToasterProps;
