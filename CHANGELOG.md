@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.16
+
+### Patch Changes
+
+- 40b42e2: fix: rtl styling
+
 ## 0.3.15
 
 ### Patch Changes
