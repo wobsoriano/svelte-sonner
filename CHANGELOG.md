@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.13
+
+### Patch Changes
+
+- 877e513: fix: prevent action button shrinking
+
 ## 0.3.12
 
 ### Patch Changes
