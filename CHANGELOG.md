@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.14
+
+### Patch Changes
+
+- ea6f527: fix: class toast option not applied to toasts
+
 ## 0.3.13
 
 ### Patch Changes
