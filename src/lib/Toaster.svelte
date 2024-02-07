@@ -3,7 +3,7 @@
 	import type { Position, ToastOptions } from './types.js';
 	import { toastState } from './state.js';
 	import Toast from './Toast.svelte';
-
+	
 	import type { ToasterProps } from './types.js';
 
 	type $$Props = ToasterProps;
@@ -408,6 +408,9 @@
 		border: none;
 		cursor: pointer;
 		outline: none;
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
 		transition:
 			opacity 400ms,
 			box-shadow 200ms;
