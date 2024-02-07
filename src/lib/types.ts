@@ -54,6 +54,10 @@ export type ToastT<T extends ComponentType = ComponentType> = {
 	descriptionClass?: string;
 	position?: Position;
 	unstyled?: boolean;
+	/**
+	 * @internal This is used to determine if the toast has been updated to determine when to reset timer. Hacky but works.
+	 */
+	updated?: boolean
 };
 
 export type Position =
@@ -84,7 +88,7 @@ export type ToastToDismiss = {
 
 export type ExternalToast<T extends ComponentType = ComponentType> = Omit<
 	ToastT<T>,
-	'id' | 'type' | 'title' | 'promise'
+	'id' | 'type' | 'title' | 'promise' | 'updated'
 > & {
 	id?: number | string;
 };

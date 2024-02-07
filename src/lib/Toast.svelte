@@ -110,13 +110,7 @@
 
 	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
 
-	let toastUpdateCount = 0;
-
-	$: if (toast) {
-		toastUpdateCount++;
-	}
-
-	$: if (toastUpdateCount > 1 && timeoutId) {
+	$: if (toast.updated) {
 		// if the toast has been updated after the initial render,
 		// we want to reset the timer and set the remaining time to the
 		// new duration
