@@ -6,7 +6,7 @@
 		"svelte",
 		"toast"
 	],
-	"version": "0.3.16",
+	"version": "0.3.17",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",

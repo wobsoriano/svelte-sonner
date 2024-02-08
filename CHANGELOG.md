@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.17
+
+### Patch Changes
+
+- 074220c: feat: make icons customizable
+
 ## 0.3.16
 
 ### Patch Changes
