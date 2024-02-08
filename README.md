@@ -268,7 +268,7 @@ Styling per toast type is also possible.
 />
 ```
 
-## Changing Icon
+### Changing Icon
 
 You can change the default icons using slots:
 
