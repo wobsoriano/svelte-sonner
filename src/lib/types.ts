@@ -174,9 +174,9 @@ export type ToasterProps = Partial<{
 	/**
 	 * Directionality of toast's text
 	 *
-	 * @default 'ltr'
+	 * @default 'auto'
 	 */
-	dir: 'ltr' | 'rtl';
+	dir: 'ltr' | 'rtl' | 'auto';
 
 	/**
 	 * Gap between toasts when expanded, in pixels.
