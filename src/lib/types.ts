@@ -141,7 +141,7 @@ export type ToasterProps = Partial<{
 	 *
 	 * @default 4000
 	 */
-	duration?: number;
+	duration: number;
 
 	/**
 	 * Amount of visible toasts
@@ -184,13 +184,6 @@ export type ToasterProps = Partial<{
 	 * @default '14px'
 	 */
 	gap: number;
-
-	/**
-	 * Changes the default loading icon
-	 *
-	 * @default -
-	 */
-	loadingIcon: ComponentType;
 }> &
 	HTMLOlAttributes;
 
@@ -263,7 +256,7 @@ export type ToastProps = {
 	interacting: boolean;
 	cancelButtonStyle: string;
 	actionButtonStyle: string;
-	duration?: number;
+	duration: number;
 	class: string;
 	descriptionClass: string;
 	classes: ToastClassnames;

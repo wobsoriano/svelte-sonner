@@ -58,7 +58,7 @@
 	export let hotkey: string[] = ['altKey', 'KeyT'];
 	export let richColors = false;
 	export let expand = false;
-	export let duration: $$Props['duration'] = 4000;
+	export let duration: Exclude<$$Props['duration'], undefined> = 4000;
 	export let visibleToasts = VISIBLE_TOASTS_AMOUNT;
 	export let closeButton = false;
 	export let toastOptions: ToastOptions = {};
