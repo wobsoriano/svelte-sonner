@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { ToastClassnames, ToastProps } from './types.js';
-	import Loader from './Loader.svelte';
-	import Icon from './Icon.svelte';
 	import { toastState, useEffect } from './state.js';
 	import { cn } from './internal/helpers.js';
 	import type { Expand } from './internal/types.js';
@@ -325,12 +323,20 @@
 		{#if toastType !== 'default' || toast.icon || toast.promise}
 			<div data-icon="">
 				{#if (toast.promise || toastType === 'loading') && !toast.icon}
-					<Loader visible={toastType === 'loading'} />
+					<slot name="loading-icon" />
 				{/if}
 				{#if toast.icon}
 					<svelte:component this={toast.icon}></svelte:component>
 				{:else}
-					<Icon type={toastType} />
+					{#if toastType === 'success'}
+						<slot name="success-icon" />
+					{:else if toastType === 'error'}
+						<slot name="error-icon" />
+					{:else if toastType === 'warning'}
+						<slot name="warning-icon" />
+					{:else if toastType === 'info'}
+						<slot name="info-icon" />
+					{/if}
 				{/if}
 			</div>
 		{/if}
