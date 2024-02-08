@@ -268,6 +268,20 @@ Styling per toast type is also possible.
 />
 ```
 
+## Changing Icon
+
+You can change the default icons using slots:
+
+```svelte
+<Toaster>
+	<LoadingIcon slot="loading-icon" />
+	<SuccessIcon slot="success-icon" />
+	<ErrorIcon slot="error-icon" />
+	<InfoIcon slot="info-icon" />
+	<WarningIcon slot="warning-icon" />
+</Toaster>
+```
+
 ### Close button
 
 Add a close button to all toasts that shows on hover by adding the `closeButton` prop.

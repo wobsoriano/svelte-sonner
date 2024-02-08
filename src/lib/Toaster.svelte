@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import type { Position, ToastOptions } from './types.js';
 	import { toastState } from './state.js';
 	import Toast from './Toast.svelte';
-
+	import Loader from './Loader.svelte';
+	import Icon from './Icon.svelte';
+	
 	import type { ToasterProps } from './types.js';
+	import type { Position, ToastOptions } from './types.js';
 
 	type $$Props = ToasterProps;
 
@@ -235,7 +237,23 @@
 						classes={toastOptions.classes || {}}
 						duration={toastOptions?.duration ?? duration}
 						unstyled={toastOptions.unstyled || false}
-					/>
+					>
+						<slot name="loading-icon" slot="loading-icon">
+							<Loader visible={toast.type === 'loading'} />
+						</slot>
+						<slot name="success-icon" slot="success-icon">
+							<Icon type="success" />
+						</slot>
+						<slot name="error-icon" slot="error-icon">
+							<Icon type="error" />
+						</slot>
+						<slot name="warning-icon" slot="warning-icon">
+							<Icon type="warning" />
+						</slot>
+						<slot name="info-icon" slot="info-icon">
+							<Icon type="info" />
+						</slot>
+					</Toast>
 				{/each}
 			</ol>
 		{/each}
