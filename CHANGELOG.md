@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.18
+
+### Patch Changes
+
+- 379d307: fix: blurry toasts
+
 ## 0.3.17
 
 ### Patch Changes
