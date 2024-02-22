@@ -155,7 +155,7 @@ You can use `toast.custom` to render an unstyled toast with custom component whi
 </script>
 
 <div>
-	This is a custom component <button on:click={() => dispatch('removeToast')}>close</button>
+	This is a custom component <button on:click={() => dispatch('closeToast')}>close</button>
 </div>
 ```
 
