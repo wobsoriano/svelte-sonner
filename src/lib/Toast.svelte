@@ -174,7 +174,7 @@
 
 		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-		
+
 		addHeight({ toastId: toast.id, height });
 	})
 
