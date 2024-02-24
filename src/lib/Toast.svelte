@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, afterUpdate } from 'svelte';
 	import type { ToastClassnames, ToastProps } from './types.js';
 	import { toastState, useEffect } from './state.js';
 	import { cn } from './internal/helpers.js';
@@ -166,15 +166,17 @@
 	onMount(() => {
 		mounted = true;
 
+		return () => removeHeight(toast.id);
+	});
+
+	afterUpdate(() => {
 		const height = toastRef.getBoundingClientRect().height;
 
 		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-
+		
 		addHeight({ toastId: toast.id, height });
-
-		return () => removeHeight(toast.id);
-	});
+	})
 
 	$: if (toast.delete) {
 		deleteToast();
