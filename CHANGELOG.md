@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.19
+
+### Patch Changes
+
+- fee33b7: fix: multi-line promises height
+
 ## 0.3.18
 
 ### Patch Changes
