@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import type { ToastClassnames, ToastProps } from './types.js';
 	import { toastState, useEffect } from './state.js';
 	import { cn } from './internal/helpers.js';
@@ -92,6 +92,28 @@
 		offset = heightIndex * GAP + toastsHeightBefore;
 	}
 
+	// Listen to height changes
+	async function updateHeights() {
+		if (!mounted) {
+			return
+		}
+
+		const toastNode = toastRef;
+    const originalHeight = toastNode.style.height;
+		toastNode.style.height = 'auto';
+
+		await tick()
+
+		const newHeight = toastNode.getBoundingClientRect().height;
+    toastNode.style.height = originalHeight;
+
+		initialHeight = newHeight;
+
+		addHeight({ toastId: toast.id, height: newHeight });
+	}
+
+	$: mounted, toast.title, toast.description, updateHeights()
+
 	function deleteToast() {
 		removed = true;
 		// Save the offset for the exit swipe animation
@@ -170,7 +192,6 @@
 
 		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-
 		addHeight({ toastId: toast.id, height });
 
 		return () => removeHeight(toast.id);

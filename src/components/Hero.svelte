@@ -1,5 +1,9 @@
 <script>
 	import { toast } from '$lib';
+
+	function somePromise() {
+  return new Promise(res => setTimeout(res, 500))
+}
 </script>
 
 <div class="wrapper">
@@ -20,6 +24,10 @@
 				toast('Sonner', {
 					description: 'An opinionated toast component for Svelte.'
 				});
+				// toast.promise(() => somePromise(), {
+				// 	loading: 'Loading...',
+				// 	success:  'Hi im longger now and dakdkasldkas.,dk;askdl;askd ;lask;dl kas;ld k;alsd;as;ldkas;dk;alsd;laskd;las;dkas;dk;alskd;asd, sorry',
+				// });
 			}}
 			class="button"
 		>
