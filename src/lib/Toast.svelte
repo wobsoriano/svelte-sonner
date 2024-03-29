@@ -88,9 +88,8 @@
 	$: invert = toast.invert || invert;
 	$: disabled = toastType === 'loading';
 
-	$: {
-		offset = heightIndex * GAP + toastsHeightBefore;
-	}
+	// Sometimes toasts are blurry when offset isn't an int
+	$: offset = Math.round(heightIndex * GAP + toastsHeightBefore);
 
 	// Listen to height changes
 	async function updateHeights() {
