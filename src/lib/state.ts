@@ -39,7 +39,15 @@ function createToastState() {
 			toasts.update((prev) =>
 				prev.map((toast) => {
 					if (toast.id === id) {
-						return { ...toast, ...data, id, title: message, dismissable, type, updated: true };
+						return {
+							...toast,
+							...data,
+							id,
+							title: message,
+							dismissable,
+							type,
+							updated: true
+						};
 					}
 					return {
 						...toast,
@@ -163,8 +171,22 @@ function createToastState() {
 		heights.update((prev) => prev.filter((height) => height.toastId !== id));
 	}
 
-	function addHeight(height: HeightT) {
-		heights.update((prev) => [height, ...prev]);
+	function setHeight(data: HeightT) {
+		const exists = get(heights).find((el) => el.toastId === data.toastId);
+		if (exists === undefined) {
+			heights.update((prev) => [data, ...prev]);
+			return;
+		}
+
+		heights.update((prev) =>
+			prev.map((el) => {
+				if (el.toastId === data.toastId) {
+					return data;
+				} else {
+					return el;
+				}
+			})
+		);
 	}
 
 	function reset() {
@@ -186,7 +208,7 @@ function createToastState() {
 		promise,
 		custom,
 		removeHeight,
-		addHeight,
+		setHeight,
 		reset,
 		// stores
 		toasts,
