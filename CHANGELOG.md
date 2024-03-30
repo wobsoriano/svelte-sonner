@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.20
+
+### Patch Changes
+
+- e3ec6c7: fix: blurry toasts, heights store
+
 ## 0.3.19
 
 ### Patch Changes
