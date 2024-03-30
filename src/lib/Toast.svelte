@@ -34,7 +34,7 @@
 		loading: ''
 	};
 
-	const { toasts, heights, removeHeight, addHeight, dismiss } = toastState;
+	const { toasts, heights, removeHeight, setHeight, dismiss } = toastState;
 
 	export let toast: $$Props['toast'];
 	export let index: $$Props['index'];
@@ -88,9 +88,8 @@
 	$: invert = toast.invert || invert;
 	$: disabled = toastType === 'loading';
 
-	$: {
-		offset = heightIndex * GAP + toastsHeightBefore;
-	}
+	// Sometimes toasts are blurry when offset isn't an int
+	$: offset = Math.round(heightIndex * GAP + toastsHeightBefore);
 
 	// Listen to height changes
 	async function updateHeights() {
@@ -109,10 +108,13 @@
 
 		initialHeight = newHeight;
 
-		addHeight({ toastId: toast.id, height: newHeight });
+		setHeight({ toastId: toast.id, height: newHeight });
 	}
 
-	$: mounted, toast.title, toast.description, updateHeights()
+	$: title = toast.title;
+	$: description = toast.description;
+
+	$: mounted, title, description, updateHeights();
 
 	function deleteToast() {
 		removed = true;
@@ -192,7 +194,7 @@
 
 		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-		addHeight({ toastId: toast.id, height });
+		setHeight({ toastId: toast.id, height });
 
 		return () => removeHeight(toast.id);
 	});
