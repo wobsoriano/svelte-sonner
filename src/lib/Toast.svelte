@@ -106,10 +106,16 @@
 
 		await tick();
 
+		let scale: number;
+		if (expanded || expandByDefault) {
+			scale = 1;
+		} else {
+			scale = 1 - index * SCALE_MULTIPLIER;
+		}
+
 		toastRef.style.setProperty('height', 'auto');
 
 		const offsetHeight = toastRef.offsetHeight;
-		const scale = 1 - index * SCALE_MULTIPLIER;
 		// rectHeight is affected by transform: scale(...);
 		const rectHeight = toastRef.getBoundingClientRect().height;
 		const scaledRectHeight =
@@ -318,7 +324,7 @@
 	style:--toasts-before={index}
 	style:--z-index={$toasts.length - index}
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
-	style:--initial-height={expandByDefault ? 'auto' : `${initialHeight}px`}
+	style:--initial-height={`${initialHeight}px`}
 	on:pointerdown={onPointerDown}
 	on:pointerup={onPointerUp}
 	on:pointermove={onPointerMove}
