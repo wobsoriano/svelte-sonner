@@ -1,9 +1,12 @@
+<!-- Set immutable: true to avoid unnecessary re-runs of reactive statements. -->
+<svelte:options immutable={true} />
+
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import type { ToastClassnames, ToastProps } from './types.js';
-	import { toastState, useEffect } from './state.js';
-	import { cn } from './internal/helpers.js';
-	import type { Expand } from './internal/types.js';
+	import type { ToastClassnames, ToastProps } from './types';
+	import { toastState, useEffect } from './state';
+	import { cn } from './internal/helpers';
+	import type { Expand } from './internal/types';
 
 	type $$Props = Expand<ToastProps>;
 
@@ -16,6 +19,8 @@
 	const SWIPE_TRESHOLD = 20;
 
 	const TIME_BEFORE_UNMOUNT = 200;
+
+	const SCALE_MULTIPLIER = 0.05;
 
 	const defaultClasses: ToastClassnames = {
 		toast: '',
@@ -64,7 +69,9 @@
 
 	$: isFront = index === 0;
 	$: isVisible = index + 1 <= visibleToasts;
-	$: toastType = toast.type ?? 'default';
+	$: toastTitle = toast.title;
+	$: toastDescription = toast.description;
+	$: toastType = toast.type;
 	$: toastClass = toast.class || '';
 	$: toastDescriptionClass = toast.descriptionClass || '';
 
@@ -94,27 +101,37 @@
 	// Listen to height changes
 	async function updateHeights() {
 		if (!mounted) {
-			return
+			return;
 		}
 
-		const toastNode = toastRef;
-    const originalHeight = toastNode.style.height;
-		toastNode.style.height = 'auto';
+		await tick();
 
-		await tick()
+		toastRef.style.setProperty('height', 'auto');
 
-		const newHeight = toastNode.getBoundingClientRect().height;
-    toastNode.style.height = originalHeight;
+		const offsetHeight = toastRef.offsetHeight;
+		const scale = 1 - index * SCALE_MULTIPLIER;
+		// rectHeight is affected by transform: scale(...);
+		const rectHeight = toastRef.getBoundingClientRect().height;
+		const scaledRectHeight =
+			Math.round((rectHeight / scale + Number.EPSILON) * 100) / 100;
 
-		initialHeight = newHeight;
+		toastRef.style.removeProperty('height');
 
-		setHeight({ toastId: toast.id, height: newHeight });
+		let finalHeight: number;
+		if (Math.abs(scaledRectHeight - offsetHeight) < 1) {
+			// Use scaledRectHeight as it's more precise
+			finalHeight = scaledRectHeight;
+		} else {
+			// toast was transitioning its scale, so scaledRectHeight isn't accurate
+			finalHeight = offsetHeight;
+		}
+
+		initialHeight = finalHeight;
+
+		setHeight({ toastId: toast.id, height: finalHeight });
 	}
 
-	$: title = toast.title;
-	$: description = toast.description;
-
-	$: mounted, title, description, updateHeights();
+	$: toastTitle, toastDescription, updateHeights();
 
 	function deleteToast() {
 		removed = true;
@@ -350,16 +367,14 @@
 				{/if}
 				{#if toast.icon}
 					<svelte:component this={toast.icon}></svelte:component>
-				{:else}
-					{#if toastType === 'success'}
-						<slot name="success-icon" />
-					{:else if toastType === 'error'}
-						<slot name="error-icon" />
-					{:else if toastType === 'warning'}
-						<slot name="warning-icon" />
-					{:else if toastType === 'info'}
-						<slot name="info-icon" />
-					{/if}
+				{:else if toastType === 'success'}
+					<slot name="success-icon" />
+				{:else if toastType === 'error'}
+					<slot name="error-icon" />
+				{:else if toastType === 'warning'}
+					<slot name="warning-icon" />
+				{:else if toastType === 'info'}
+					<slot name="info-icon" />
 				{/if}
 			</div>
 		{/if}

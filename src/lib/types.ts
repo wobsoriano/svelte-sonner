@@ -25,7 +25,7 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
 export type ToastT<T extends ComponentType = ComponentType> = {
 	id: number | string;
 	title?: string | ComponentType;
-	type?: ToastTypes;
+	type: ToastTypes;
 	icon?: ComponentType;
 	component?: T;
 	componentProps?: ComponentProps<InstanceType<T>>;
@@ -57,7 +57,7 @@ export type ToastT<T extends ComponentType = ComponentType> = {
 	/**
 	 * @internal This is used to determine if the toast has been updated to determine when to reset timer. Hacky but works.
 	 */
-	updated?: boolean
+	updated?: boolean;
 };
 
 export type Position =
