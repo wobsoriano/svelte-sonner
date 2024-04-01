@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.21
+
+### Patch Changes
+
+- 65cb045: fix: height calculation for updated toasts
+
 ## 0.3.20
 
 ### Patch Changes
