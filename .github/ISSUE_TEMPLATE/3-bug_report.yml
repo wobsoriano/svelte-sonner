@@ -19,10 +19,10 @@ body:
       attributes:
           label: Reproduction
           description: |
-            Provide a minimal reproduction of the problem. Include a StackBlitz or link to a GitHub repository that we can easily run to recreate the issue. If a report is vague and does not have a reproduction, it will be closed without warning. 
+              Provide a minimal reproduction of the problem. Include a StackBlitz or link to a GitHub repository that we can easily run to recreate the issue. If a report is vague and does not have a reproduction, it will be closed without warning. 
 
-            To get started, you can use the following StackBlitz template:
-            https://stackblitz.com/edit/vitejs-vite-hriczm
+              To get started, you can use the following StackBlitz template:
+              https://stackblitz.com/edit/vitejs-vite-hriczm
       validations:
           required: true
     - type: textarea

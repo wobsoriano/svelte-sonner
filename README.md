@@ -230,7 +230,7 @@ The preferred way to style the toasts with tailwind is by using the `unstyled` p
 			description: 'text-red-400',
 			actionButton: 'bg-zinc-400',
 			cancelButton: 'bg-orange-400',
-			closeButton: 'bg-lime-400',
+			closeButton: 'bg-lime-400'
 		}
 	}}
 />
@@ -240,16 +240,16 @@ You can do the same when calling `toast()`.
 
 ```js
 toast('Hello World', {
-  unstyled: true,
-  classes: {
+	unstyled: true,
+	classes: {
 		toast: 'bg-blue-400',
 		title: 'text-red-400 text-2xl',
 		description: 'text-red-400',
 		actionButton: 'bg-zinc-400',
 		cancelButton: 'bg-orange-400',
-		closeButton: 'bg-lime-400',
-  },
-})
+		closeButton: 'bg-lime-400'
+	}
+});
 ```
 
 Styling per toast type is also possible.
@@ -262,7 +262,7 @@ Styling per toast type is also possible.
 			error: 'bg-red-400',
 			success: 'text-green-400',
 			warning: 'text-yellow-400',
-			info: 'bg-blue-400',
+			info: 'bg-blue-400'
 		}
 	}}
 />
