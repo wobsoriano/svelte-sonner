@@ -428,32 +428,32 @@ html[dir='rtl'],
 	gap: 2px;
 }
 
-[data-sonner-toast] [data-button] {
-	border-radius: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	height: 24px;
-	font-size: 12px;
-	color: var(--normal-bg);
-	background: var(--normal-text);
-	margin-left: var(--toast-button-margin-start);
-	margin-right: var(--toast-button-margin-end);
-	border: none;
-	cursor: pointer;
-	outline: none;
-	display: flex;
-	align-items: center;
-	flex-shrink: 0;
-	transition: opacity 400ms, box-shadow 200ms;
+[data-sonner-toast][data-styled="true"] [data-button] {
+  border-radius: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  height: 24px;
+  font-size: 12px;
+  color: var(--normal-bg);
+  background: var(--normal-text);
+  margin-left: var(--toast-button-margin-start);
+  margin-right: var(--toast-button-margin-end);
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: opacity 400ms, box-shadow 200ms;
 }
 
-[data-sonner-toast] [data-button]:focus-visible {
-	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4);
+:where([data-sonner-toast]) :where([data-button]):focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4);
 }
 
-[data-sonner-toast] [data-button]:first-of-type {
-	margin-left: var(--toast-button-margin-start);
-	margin-right: var(--toast-button-margin-end);
+:where([data-sonner-toast]) :where([data-button]):first-of-type {
+  margin-left: var(--toast-button-margin-start);
+  margin-right: var(--toast-button-margin-end);
 }
 
 [data-sonner-toast] [data-cancel] {
