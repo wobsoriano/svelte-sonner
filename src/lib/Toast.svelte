@@ -39,7 +39,7 @@
 		loading: ''
 	};
 
-	const { toasts, heights, removeHeight, setHeight, dismiss } = toastState;
+	const { toasts, heights, removeHeight, setHeight, remove } = toastState;
 
 	export let toast: $$Props['toast'];
 	export let index: $$Props['index'];
@@ -147,7 +147,7 @@
 		removeHeight(toast.id);
 
 		setTimeout(() => {
-			dismiss(toast.id);
+			remove(toast.id);
 		}, TIME_BEFORE_UNMOUNT);
 	}
 

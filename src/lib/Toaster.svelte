@@ -5,7 +5,7 @@
 	import Loader from './Loader.svelte';
 	import Icon from './Icon.svelte';
 
-	import type { ToasterProps } from './types.js';
+	import type { ToastToDismiss, ToasterProps } from './types.js';
 	import type { Position, ToastOptions } from './types.js';
 
 	type $$Props = ToasterProps;
@@ -95,6 +95,25 @@
 
 	$: if ($toasts.length <= 1) {
 		expanded = false;
+	}
+
+	// Check for dismissed toasts and remove them. We need to do this to have dismiss animation.
+	$: {
+		const toastsToDismiss = $toasts.filter((toast) => (toast as unknown as ToastToDismiss).dismiss && !toast.delete);
+
+		if (toastsToDismiss.length > 0) {
+			const updatedToasts = $toasts.map((toast) => {
+				const matchingToast = toastsToDismiss.find((dismissToast) => dismissToast.id === toast.id);
+
+        if (matchingToast) {
+            return { ...toast, delete: true };
+        }
+
+				return toast;
+			})
+
+			toasts.set(updatedToasts);
+		}
 	}
 
 	onDestroy(() => {
