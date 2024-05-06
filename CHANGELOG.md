@@ -1,5 +1,13 @@
 # svelte-sonner
 
+## 0.3.23
+
+### Patch Changes
+
+- 3903d66: feat: exported Icon and Loader component
+- 771223b: fix: dark mode for close button
+- f031fa4: fix: safari 13 support for matchmedia event listener
+
 ## 0.3.22
 
 ### Patch Changes
