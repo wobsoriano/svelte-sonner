@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.24
+
+### Patch Changes
+
+- 52a09f2: fix: animate manually dismissed toasts
+
 ## 0.3.23
 
 ### Patch Changes
