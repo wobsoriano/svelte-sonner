@@ -774,6 +774,14 @@
 		color: var(--success-text);
 	}
 
+	[data-theme='dark']
+		[data-sonner-toast][data-type='default']
+		[data-close-button] {
+		background: var(--normal-bg);
+		border-color: var(--normal-border);
+		color: var(--normal-text);
+	}
+
 	[data-rich-colors='true']
 		[data-sonner-toast][data-type='success']
 		[data-close-button] {
