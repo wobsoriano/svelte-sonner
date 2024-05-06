@@ -22,6 +22,9 @@
 	// Default gap between toasts
 	const GAP = 14;
 
+	const DARK = 'dark';
+	const LIGHT = 'light';
+
 	function getInitialTheme(t: string) {
 		if (t !== 'system') {
 			return t;
@@ -32,13 +35,13 @@
 				window.matchMedia &&
 				window.matchMedia('(prefers-color-scheme: dark)').matches
 			) {
-				return 'dark';
+				return DARK;
 			}
 
-			return 'light';
+			return LIGHT;
 		}
 
-		return 'light';
+		return LIGHT;
 	}
 
 	function getDocumentDirection(): ToasterProps['dir'] {
@@ -145,18 +148,24 @@
 					window.matchMedia('(prefers-color-scheme: dark)').matches
 				) {
 					// it's currently dark
-					actualTheme = 'dark';
+					actualTheme = DARK;
 				} else {
 					// it's not dark
-					actualTheme = 'light';
+					actualTheme = LIGHT;
 				}
 			}
 
-			window
-				.matchMedia('(prefers-color-scheme: dark)')
-				.addEventListener('change', ({ matches }) => {
-					actualTheme = matches ? 'dark' : 'light';
-				});
+			const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+			const changeHandler = ({ matches }: MediaQueryListEvent) => {
+				actualTheme = matches ? DARK : LIGHT;
+			};
+
+			if ('addEventListener' in mediaQueryList) {
+				mediaQueryList.addEventListener('change', changeHandler);
+			} else {
+      	// @ts-expect-error deprecated API
+				mediaQueryList.addListener(changeHandler);
+			}
 		}
 	}
 
