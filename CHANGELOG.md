@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.25
+
+### Patch Changes
+
+- a9e6f9c: fix: Svelte 5 peer dep
+
 ## 0.3.24
 
 ### Patch Changes
