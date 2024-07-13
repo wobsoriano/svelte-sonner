@@ -1,4 +1,4 @@
-import type { ComponentProps, ComponentType } from 'svelte';
+import type { Component } from 'svelte';
 import type { Expand } from '$lib/internal/types.js';
 import type { HTMLOlAttributes } from 'svelte/elements';
 
@@ -16,21 +16,27 @@ export type ToastTypes =
 export type PromiseT<Data = unknown> = Promise<Data> | (() => Promise<Data>);
 
 export type PromiseData<ToastData = unknown> = ExternalToast & {
-	loading?: string | ComponentType;
-	success?: string | ComponentType | ((data: ToastData) => ComponentType | string);
-	error?: string | ComponentType | ((error: unknown) => ComponentType | string);
+	loading?: string | Component;
+	// TODO: We need a way to differentiate between a callback and a component
+	// This is not possible with Svelte 5 atm, i've asked them to add a `isComponent` function
+	// or similar, so for now we remove the `Component` type from the union
+	// success?: string | Component | ((data: ToastData) => Component | string);
+	success?: string | ((data: ToastData) => Component | string);
+
+	// error?: string | Component | ((error: unknown) => Component | string);
+	error?: string | ((error: unknown) => Component | string);
 	finally?: () => void | Promise<void>;
 };
 
-export type ToastT<T extends ComponentType = ComponentType> = {
+export type ToastT<T extends Component = Component> = {
 	id: number | string;
-	title?: string | ComponentType;
+	title?: string | T;
 	type: ToastTypes;
-	icon?: ComponentType;
+	icon?: T;
 	component?: T;
-	componentProps?: ComponentProps<InstanceType<T>>;
+	componentProps?: Parameters<T>[0];
 	invert?: boolean;
-	description?: string | ComponentType;
+	description?: string | T;
 	cancelButtonStyle?: string;
 	actionButtonStyle?: string;
 	duration?: number;
@@ -54,6 +60,7 @@ export type ToastT<T extends ComponentType = ComponentType> = {
 	descriptionClass?: string;
 	position?: Position;
 	unstyled?: boolean;
+	dismiss?: boolean;
 	/**
 	 * @internal This is used to determine if the toast has been updated to determine when to reset timer. Hacky but works.
 	 */
@@ -86,7 +93,7 @@ export type ToastToDismiss = {
 	dismiss: boolean;
 };
 
-export type ExternalToast<T extends ComponentType = ComponentType> = Omit<
+export type ExternalToast<T extends Component = Component> = Omit<
 	ToastT<T>,
 	'id' | 'type' | 'title' | 'promise' | 'updated'
 > & {

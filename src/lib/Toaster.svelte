@@ -99,18 +99,23 @@
 
 	// Check for dismissed toasts and remove them. We need to do this to have dismiss animation.
 	$: {
-		const toastsToDismiss = $toasts.filter((toast) => (toast as unknown as ToastToDismiss).dismiss && !toast.delete);
+		const toastsToDismiss = $toasts.filter(
+			(toast) =>
+				(toast as unknown as ToastToDismiss).dismiss && !toast.delete
+		);
 
 		if (toastsToDismiss.length > 0) {
 			const updatedToasts = $toasts.map((toast) => {
-				const matchingToast = toastsToDismiss.find((dismissToast) => dismissToast.id === toast.id);
+				const matchingToast = toastsToDismiss.find(
+					(dismissToast) => dismissToast.id === toast.id
+				);
 
-        if (matchingToast) {
-            return { ...toast, delete: true };
-        }
+				if (matchingToast) {
+					return { ...toast, delete: true };
+				}
 
 				return toast;
-			})
+			});
 
 			toasts.set(updatedToasts);
 		}
@@ -174,7 +179,9 @@
 				}
 			}
 
-			const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+			const mediaQueryList = window.matchMedia(
+				'(prefers-color-scheme: dark)'
+			);
 			const changeHandler = ({ matches }: MediaQueryListEvent) => {
 				actualTheme = matches ? DARK : LIGHT;
 			};
@@ -182,7 +189,7 @@
 			if ('addEventListener' in mediaQueryList) {
 				mediaQueryList.addEventListener('change', changeHandler);
 			} else {
-      	// @ts-expect-error deprecated API
+				// @ts-expect-error deprecated API
 				mediaQueryList.addListener(changeHandler);
 			}
 		}

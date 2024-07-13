@@ -1,6 +1,3 @@
-<!-- Set immutable: true to avoid unnecessary re-runs of reactive statements. -->
-<svelte:options immutable={true} />
-
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import type { ToastClassnames, ToastProps } from './types';
