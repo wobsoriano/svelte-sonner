@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.26
+
+### Patch Changes
+
+- 1836b26: Add license
+
 ## 0.3.25
 
 ### Patch Changes
