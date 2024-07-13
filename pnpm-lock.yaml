@@ -20,6 +20,9 @@ devDependencies:
   '@sveltejs/package':
     specifier: ^2.3.2
     version: 2.3.2(svelte@5.0.0-next.183)(typescript@5.5.3)
+  '@sveltejs/vite-plugin-svelte':
+    specifier: ^3.1.1
+    version: 3.1.1(svelte@5.0.0-next.183)(vite@5.3.3)
   '@svitejs/changesets-changelog-github-compact':
     specifier: ^1.1.0
     version: 1.1.0
