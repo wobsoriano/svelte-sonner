@@ -1,16 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { toastState } from './state.js';
+	import { toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
 	import Loader from './Loader.svelte';
 	import Icon from './Icon.svelte';
-
 	import type { ToastToDismiss, ToasterProps } from './types.js';
-	import type { Position, ToastOptions } from './types.js';
+	import type { Position } from './types.js';
 
-	type $$Props = ToasterProps;
-
-	// Visible toasts amount
+	// visible toasts amount
 	const VISIBLE_TOASTS_AMOUNT = 3;
 
 	// Viewport padding
@@ -29,7 +26,6 @@
 		if (t !== 'system') {
 			return t;
 		}
-
 		if (typeof window !== 'undefined') {
 			if (
 				window.matchMedia &&
@@ -58,54 +54,61 @@
 		return dirAttribute as ToasterProps['dir'];
 	}
 
-	export let invert = false;
-	export let theme: Exclude<$$Props['theme'], undefined> = 'light';
-	export let position = 'bottom-right';
-	export let hotkey: string[] = ['altKey', 'KeyT'];
-	export let richColors = false;
-	export let expand = false;
-	export let duration: Exclude<$$Props['duration'], undefined> = 4000;
-	export let visibleToasts = VISIBLE_TOASTS_AMOUNT;
-	export let closeButton = false;
-	export let toastOptions: ToastOptions = {};
-	export let offset: $$Props['offset'] = null;
-	export let dir: $$Props['dir'] = getDocumentDirection();
+	let {
+		invert = false,
+		theme = 'light',
+		position = 'bottom-right',
+		hotkey = ['altKey', 'KeyT'],
+		richColors = false,
+		expand = false,
+		duration = 4000,
+		visibleToasts = VISIBLE_TOASTS_AMOUNT,
+		closeButton = false,
+		toastOptions = {},
+		offset = null,
+		dir = getDocumentDirection(),
+		...restProps
+	}: ToasterProps = $props();
 
-	const { toasts, heights, reset } = toastState;
+	const possiblePositions = $derived(
+		Array.from(
+			new Set(
+				[
+					position,
+					...toastState.toasts
+						.filter((toast) => toast.position)
+						.map((toast) => toast.position)
+				].filter(Boolean)
+			)
+		) as Position[]
+	);
 
-	$: possiblePositions = Array.from(
-		new Set(
-			[
-				position,
-				...$toasts
-					.filter((toast) => toast.position)
-					.map((toast) => toast.position)
-			].filter(Boolean)
-		)
-	) as Position[];
+	let expanded = $state(false);
+	let interacting = $state(false);
+	let actualTheme = $state(getInitialTheme(theme));
+	let listRef = $state<HTMLOListElement>();
+	let lastFocusedElementRef = $state<HTMLElement | null>(null);
+	let isFocusWithin = $state(false);
 
-	let expanded = false;
-	let interacting = false;
-	let actualTheme = getInitialTheme(theme);
-	let listRef: HTMLOListElement;
-	let lastFocusedElementRef: HTMLElement | null = null;
-	let isFocusWithinRef = false;
+	const hotkeyLabel = $derived(
+		hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
+	);
 
-	$: hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
-
-	$: if ($toasts.length <= 1) {
-		expanded = false;
-	}
+	$effect(() => {
+		if (toastState.toasts.length <= 1) {
+			expanded = false;
+		}
+	});
 
 	// Check for dismissed toasts and remove them. We need to do this to have dismiss animation.
-	$: {
-		const toastsToDismiss = $toasts.filter(
+	$effect(() => {
+		const toastsToDismiss = toastState.toasts.filter(
 			(toast) =>
 				(toast as unknown as ToastToDismiss).dismiss && !toast.delete
 		);
 
 		if (toastsToDismiss.length > 0) {
-			const updatedToasts = $toasts.map((toast) => {
+			const updatedToasts = toastState.toasts.map((toast) => {
 				const matchingToast = toastsToDismiss.find(
 					(dismissToast) => dismissToast.id === toast.id
 				);
@@ -116,28 +119,27 @@
 
 				return toast;
 			});
-
-			toasts.set(updatedToasts);
+			toastState.toasts = updatedToasts;
 		}
-	}
+	});
 
 	onDestroy(() => {
 		if (listRef && lastFocusedElementRef) {
 			lastFocusedElementRef.focus({ preventScroll: true });
 			lastFocusedElementRef = null;
-			isFocusWithinRef = false;
+			isFocusWithin = false;
 		}
 	});
 
 	onMount(() => {
-		reset();
+		toastState.reset();
+
 		const handleKeydown = (event: KeyboardEvent) => {
 			const isHotkeyPressed = hotkey.every(
 				(key) =>
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(event as any)[key] || event.code === key
 			);
-
 			if (isHotkeyPressed) {
 				expanded = true;
 				listRef?.focus();
@@ -159,22 +161,19 @@
 		};
 	});
 
-	$: {
+	$effect(() => {
 		if (theme !== 'system') {
 			actualTheme = theme;
 		}
 
 		if (typeof window !== 'undefined') {
 			if (theme === 'system') {
-				// check if current preference is dark
 				if (
 					window.matchMedia &&
 					window.matchMedia('(prefers-color-scheme: dark)').matches
 				) {
-					// it's currently dark
 					actualTheme = DARK;
 				} else {
-					// it's not dark
 					actualTheme = LIGHT;
 				}
 			}
@@ -182,6 +181,7 @@
 			const mediaQueryList = window.matchMedia(
 				'(prefers-color-scheme: dark)'
 			);
+
 			const changeHandler = ({ matches }: MediaQueryListEvent) => {
 				actualTheme = matches ? DARK : LIGHT;
 			};
@@ -193,7 +193,7 @@
 				mediaQueryList.addListener(changeHandler);
 			}
 		}
-	}
+	});
 
 	type OListFocusEvent = FocusEvent & {
 		currentTarget: EventTarget & HTMLOListElement;
@@ -201,10 +201,10 @@
 
 	function handleBlur(event: OListFocusEvent) {
 		if (
-			isFocusWithinRef &&
+			isFocusWithin &&
 			!event.currentTarget.contains(event.relatedTarget as HTMLElement)
 		) {
-			isFocusWithinRef = false;
+			isFocusWithin = false;
 			if (lastFocusedElementRef) {
 				lastFocusedElementRef.focus({ preventScroll: true });
 				lastFocusedElementRef = null;
@@ -213,47 +213,47 @@
 	}
 
 	function handleFocus(event: OListFocusEvent) {
-		if (!isFocusWithinRef) {
-			isFocusWithinRef = true;
+		if (!isFocusWithin) {
+			isFocusWithin = true;
 			lastFocusedElementRef = event.relatedTarget as HTMLElement;
 		}
 	}
 </script>
 
-{#if $toasts.length > 0}
+{#if toastState.toasts.length > 0}
 	<section aria-label={`Notifications ${hotkeyLabel}`} tabIndex={-1}>
 		{#each possiblePositions as position, index}
 			<ol
 				tabIndex={-1}
 				bind:this={listRef}
-				class={$$props.class}
+				class={restProps.class}
 				data-sonner-toaster
 				data-theme={actualTheme}
 				data-rich-colors={richColors}
 				dir={dir === 'auto' ? getDocumentDirection() : dir}
 				data-y-position={position.split('-')[0]}
 				data-x-position={position.split('-')[1]}
-				on:blur={handleBlur}
-				on:focus={handleFocus}
-				on:mouseenter={() => (expanded = true)}
-				on:mousemove={() => (expanded = true)}
-				on:mouseleave={() => {
+				onblur={handleBlur}
+				onfocus={handleFocus}
+				onmouseenter={() => (expanded = true)}
+				onmousemove={() => (expanded = true)}
+				onmouseleave={() => {
 					if (!interacting) {
 						expanded = false;
 					}
 				}}
-				on:pointerdown={() => (interacting = true)}
-				on:pointerup={() => (interacting = false)}
-				style:--front-toast-height={`${$heights[0]?.height}px`}
+				onpointerdown={() => (interacting = true)}
+				onpointerup={() => (interacting = false)}
+				style:--front-toast-height={`${toastState.heights[0]?.height}px`}
 				style:--offset={typeof offset === 'number'
 					? `${offset}px`
 					: offset || VIEWPORT_OFFSET}
 				style:--width={`${TOAST_WIDTH}px`}
 				style:--gap={`${GAP}px`}
-				style={$$props.style}
-				{...$$restProps}
+				style={restProps.style}
+				{...restProps}
 			>
-				{#each $toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
+				{#each toastState.toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
 					<Toast
 						{index}
 						{toast}
@@ -274,21 +274,45 @@
 						duration={toastOptions?.duration ?? duration}
 						unstyled={toastOptions.unstyled || false}
 					>
-						<slot name="loading-icon" slot="loading-icon">
-							<Loader visible={toast.type === 'loading'} />
-						</slot>
-						<slot name="success-icon" slot="success-icon">
-							<Icon type="success" />
-						</slot>
-						<slot name="error-icon" slot="error-icon">
-							<Icon type="error" />
-						</slot>
-						<slot name="warning-icon" slot="warning-icon">
-							<Icon type="warning" />
-						</slot>
-						<slot name="info-icon" slot="info-icon">
-							<Icon type="info" />
-						</slot>
+						{#snippet loadingIcon()}
+							{#if restProps.loadingIcon}
+								{@render restProps.loadingIcon?.()}
+							{:else}
+								<Loader visible={toast.type === 'loading'} />
+							{/if}
+						{/snippet}
+
+						{#snippet successIcon()}
+							{#if restProps.successIcon}
+								{@render restProps.successIcon?.()}
+							{:else}
+								<Icon type="success" />
+							{/if}
+						{/snippet}
+
+						{#snippet errorIcon()}
+							{#if restProps.errorIcon}
+								{@render restProps.errorIcon?.()}
+							{:else}
+								<Icon type="error" />
+							{/if}
+						{/snippet}
+
+						{#snippet warningIcon()}
+							{#if restProps.warningIcon}
+								{@render restProps.warningIcon?.()}
+							{:else}
+								<Icon type="warning" />
+							{/if}
+						{/snippet}
+
+						{#snippet infoIcon()}
+							{#if restProps.infoIcon}
+								{@render restProps.infoIcon?.()}
+							{:else}
+								<Icon type="info" />
+							{/if}
+						{/snippet}
 					</Toast>
 				{/each}
 			</ol>

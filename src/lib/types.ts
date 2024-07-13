@@ -1,6 +1,6 @@
-import type { Component } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { Expand } from '$lib/internal/types.js';
-import type { HTMLOlAttributes } from 'svelte/elements';
+import type { HTMLAttributes, HTMLOlAttributes } from 'svelte/elements';
 
 export type FixMe = unknown;
 
@@ -34,7 +34,7 @@ export type ToastT<T extends Component = Component> = {
 	type: ToastTypes;
 	icon?: T;
 	component?: T;
-	componentProps?: Parameters<T>[0];
+	componentProps?: Record<string, unknown>;
 	invert?: boolean;
 	description?: string | T;
 	cancelButtonStyle?: string;
@@ -191,6 +191,12 @@ export type ToasterProps = Partial<{
 	 * @default '14px'
 	 */
 	gap: number;
+
+	loadingIcon?: Snippet;
+	successIcon?: Snippet;
+	errorIcon?: Snippet;
+	warningIcon?: Snippet;
+	infoIcon?: Snippet;
 }> &
 	HTMLOlAttributes;
 
@@ -268,4 +274,9 @@ export type ToastProps = {
 	descriptionClass: string;
 	classes: ToastClassnames;
 	unstyled: boolean;
-};
+	loadingIcon?: Snippet;
+	successIcon?: Snippet;
+	errorIcon?: Snippet;
+	warningIcon?: Snippet;
+	infoIcon?: Snippet;
+} & HTMLAttributes<HTMLLIElement>;
