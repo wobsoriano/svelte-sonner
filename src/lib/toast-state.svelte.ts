@@ -111,7 +111,10 @@ class ToastState {
 		return this.create({ ...data, type: 'info', message });
 	};
 
-	warning = (message: string | Component, data?: ExternalToast): string | number => {
+	warning = <T extends Component = Component>(
+		message: string | T,
+		data?: ExternalToast<T>
+	): string | number => {
 		return this.create({ ...data, type: 'warning', message });
 	};
 
@@ -221,7 +224,7 @@ function constructPromiseErrorMessage(response: unknown) {
 
 export const toastState = new ToastState();
 
-function toastFunction(message: string | Component, data?: ExternalToast) {
+function toastFunction<T extends Component>(message: string | T, data?: ExternalToast<T>) {
 	return toastState.create({
 		message,
 		...data

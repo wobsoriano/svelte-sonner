@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { toast } from '$lib';
-	import { createEventDispatcher } from 'svelte';
 	import CodeBlock from './CodeBlock.svelte';
 
 	const positions = [
@@ -12,9 +11,15 @@
 		'bottom-right'
 	] as const;
 
-	export let position: (typeof positions)[number];
+	type PositionType = (typeof positions)[number];
 
-	const dispatch = createEventDispatcher();
+	let {
+		position,
+		setPosition
+	}: {
+		position: PositionType;
+		setPosition: (position: PositionType) => void;
+	} = $props();
 </script>
 
 <div>
@@ -25,11 +30,11 @@
 			<button
 				data-active={position === pos}
 				class="button"
-				on:click={() => {
+				onclick={() => {
 					const toastsAmount = document.querySelectorAll(
 						'[data-sonner-toast]'
 					).length;
-					dispatch('setPosition', pos);
+					setPosition(pos);
 
 					// No need to show a toast when there is already one
 					if (toastsAmount > 0 && pos !== position) return;

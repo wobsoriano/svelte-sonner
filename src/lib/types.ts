@@ -34,7 +34,7 @@ export type ToastT<T extends Component = Component> = {
 	type: ToastTypes;
 	icon?: T;
 	component?: T;
-	componentProps?: Record<string, unknown>;
+	componentProps?: Parameters<T>[1];
 	invert?: boolean;
 	description?: string | T;
 	cancelButtonStyle?: string;

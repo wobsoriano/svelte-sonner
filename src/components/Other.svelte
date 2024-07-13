@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { toast } from '$lib';
-	import { createEventDispatcher } from 'svelte';
+	import type { Component } from 'svelte';
 	import CodeBlock from './CodeBlock.svelte';
 	import Test from './Test.svelte';
 	import TestWithProps from './TestWithProps.svelte';
 	import { getOtherCodeSnippet } from './code-snippets';
 
-	export let closeButton = false;
-
-	const dispatch = createEventDispatcher();
+	let {
+		closeButton = $bindable(false),
+		setRichColors = () => {}
+	}: { closeButton?: boolean; setRichColors?: (bool: boolean) => void } =
+		$props();
 
 	const allTypes = [
 		{
@@ -16,7 +18,7 @@
 			snippet: "toast.success('Event has been created')",
 			action: () => {
 				toast.success('Event has been created');
-				dispatch('setRichColors', true);
+				setRichColors(true);
 			}
 		},
 		{
@@ -24,7 +26,7 @@
 			snippet: "toast.error('Event has not been created')",
 			action: () => {
 				toast.error('Event has not been created');
-				dispatch('setRichColors', true);
+				setRichColors(true);
 			}
 		},
 		{
@@ -32,7 +34,7 @@
 			snippet: "toast.info('Info')",
 			action: () => {
 				toast.info('Be at the area 10 minutes before the event time');
-				dispatch('setRichColors', true);
+				setRichColors(true);
 			}
 		},
 		{
@@ -40,7 +42,7 @@
 			snippet: "toast.warning('Warning')",
 			action: () => {
 				toast.warning('Event start time cannot be earlier than 8am');
-				dispatch('setRichColors', true);
+				setRichColors(true);
 			}
 		},
 		{
@@ -69,8 +71,10 @@
   })
   `,
 			action: () => {
-				toast.custom(Test, {
-					componentProps: { eventName: 'Louvre Museum' }
+				toast.custom(Test as unknown as Component, {
+					componentProps: {
+						eventName: 'hello'
+					}
 				});
 			}
 		},
@@ -85,7 +89,7 @@
   })
   `,
 			action: () => {
-				toast.warning(TestWithProps, {
+				toast.warning(TestWithProps as unknown as Component, {
 					componentProps: {
 						message: 'This is <br />multiline message'
 					}
@@ -94,10 +98,10 @@
 		}
 	];
 
-	let activeType = allTypes[0];
+	let activeType = $state(allTypes[0]);
 
-	$: richColorsActive = activeType?.name?.includes('Rich');
-	$: closeButtonActive = activeType?.name?.includes('Close');
+	const richColorsActive = $derived(activeType?.name?.includes('Rich'));
+	const closeButtonActive = $derived(activeType?.name?.includes('Close'));
 </script>
 
 <div>
@@ -108,7 +112,7 @@
 				class="button"
 				data-testid={`other-${type.name}`}
 				data-active={activeType?.name === type.name}
-				on:click={() => {
+				onclick={() => {
 					type.action?.();
 					activeType = type;
 				}}

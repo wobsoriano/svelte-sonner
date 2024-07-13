@@ -4,9 +4,9 @@
 
 <div class="wrapper">
 	<div class="toastWrapper">
-		<div class="toast" />
-		<div class="toast" />
-		<div class="toast" />
+		<div class="toast"></div>
+		<div class="toast"></div>
+		<div class="toast"></div>
 	</div>
 	<h1 class="heading">Svelte Sonner</h1>
 	<p style="margin-top: 0; font-size: 18px">
@@ -16,7 +16,7 @@
 		<button
 			data-testid="default-button"
 			data-primary=""
-			on:click={() => {
+			onclick={() => {
 				toast('Sonner', {
 					description: 'An opinionated toast component for Svelte.'
 				});
