@@ -1,6 +1,7 @@
 {
 	"name": "svelte-sonner",
 	"description": "An opinionated toast component for Svelte.",
+	"license": "MIT",
 	"author": "Robert Soriano <sorianorobertc@gmail.com>",
 	"keywords": [
 		"svelte",
