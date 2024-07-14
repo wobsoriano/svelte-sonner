@@ -16,20 +16,18 @@ class ToastState {
 	toasts = $state<ToastT[]>([]);
 	heights = $state<HeightT[]>([]);
 
-	constructor() {}
-
-	#findToastIdx = (id: number | string) => {
+	#findToastIdx = (id: number | string): number | null => {
 		const idx = this.toasts.findIndex((toast) => toast.id === id);
 		if (idx === -1) return null;
 		return idx;
 	};
 
-	addToast = (data: ToastT) => {
+	addToast = (data: ToastT): void => {
 		if (!isBrowser) return;
 		this.toasts.push(data);
 	};
 
-	updateToast = ({ id, data, type, message }: UpdateToastProps) => {
+	updateToast = ({ id, data, type, message }: UpdateToastProps): void => {
 		const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
 		const toastToUpdate = this.toasts[toastIdx];
 
