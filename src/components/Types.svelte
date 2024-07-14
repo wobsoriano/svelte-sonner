@@ -106,7 +106,7 @@ toast(Custom)`,
 		}
 	];
 
-	let activeType = allTypes[0];
+	let activeType = $state(allTypes[0]);
 </script>
 
 <div>
@@ -121,7 +121,7 @@ toast(Custom)`,
 				class="button"
 				data-testid={type.name}
 				data-active={activeType?.name === type.name}
-				on:click={() => {
+				onclick={() => {
 					type.action?.();
 					activeType = type;
 				}}

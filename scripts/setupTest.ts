@@ -1,6 +1,8 @@
 // setupTest.ts
 /* eslint-disable @typescript-eslint/no-empty-function */
-import matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/svelte/vitest';
+import '@testing-library/jest-dom/vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
 import { expect, vi } from 'vitest';
 import type { Navigation, Page } from '@sveltejs/kit';
 import { readable } from 'svelte/store';
@@ -32,9 +34,11 @@ vi.mock('$app/navigation', (): typeof navigation => ({
 	goto: () => Promise.resolve(),
 	invalidate: () => Promise.resolve(),
 	invalidateAll: () => Promise.resolve(),
-	preloadData: () => Promise.resolve(),
+	preloadData: () => Promise.resolve({}),
 	preloadCode: () => Promise.resolve(),
-	onNavigate: () => {}
+	onNavigate: () => {},
+	pushState: () => {},
+	replaceState: () => {}
 }));
 
 // Mock SvelteKit runtime module $app/stores
@@ -50,7 +54,8 @@ vi.mock('$app/stores', (): typeof stores => {
 			status: 200,
 			error: null,
 			data: {},
-			form: undefined
+			form: undefined,
+			state: {}
 		});
 		const updated = { subscribe: readable(false).subscribe, check: async () => false };
 

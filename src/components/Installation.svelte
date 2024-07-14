@@ -3,13 +3,13 @@
 
 	let copying = 0;
 
-	const onCopy = () => {
+	function onCopy() {
 		copy('npm install svelte-sonner');
 		copying++;
 		setTimeout(() => {
 			copying--;
 		}, 2000);
-	};
+	}
 </script>
 
 <div>
