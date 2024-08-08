@@ -184,6 +184,13 @@ export type ToasterProps = Partial<{
 	 * @default '14px'
 	 */
 	gap: number;
+
+	/**
+	 * Aria label to announce the notifications
+	 * @default 'Notifications'
+	 * 
+	 */
+	containerAriaLabel?: string
 }> &
 	HTMLOlAttributes;
 
