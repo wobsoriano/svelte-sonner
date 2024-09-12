@@ -62,6 +62,7 @@
 	export let theme: Exclude<$$Props['theme'], undefined> = 'light';
 	export let position = 'bottom-right';
 	export let hotkey: string[] = ['altKey', 'KeyT'];
+	export let containerAriaLabel: string = 'Notifications';
 	export let richColors = false;
 	export let expand = false;
 	export let duration: Exclude<$$Props['duration'], undefined> = 4000;
@@ -214,7 +215,7 @@
 </script>
 
 {#if $toasts.length > 0}
-	<section aria-label={`Notifications ${hotkeyLabel}`} tabIndex={-1}>
+	<section aria-label={`${containerAriaLabel} ${hotkeyLabel}`} tabIndex={-1}>
 		{#each possiblePositions as position, index}
 			<ol
 				tabIndex={-1}
