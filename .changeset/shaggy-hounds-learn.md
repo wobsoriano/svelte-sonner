@@ -2,4 +2,4 @@
 "svelte-sonner": patch
 ---
 
-Add container aria label
+Add container aria label prop
