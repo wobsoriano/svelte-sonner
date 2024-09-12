@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 0.3.28
+
+### Patch Changes
+
+- 6767aef: Add container aria label prop
+
 ## 0.3.27
 
 ### Patch Changes
