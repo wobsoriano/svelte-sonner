@@ -1,17 +1,5 @@
 # svelte-sonner
 
-## 0.3.28
-
-### Patch Changes
-
-- 6767aef: Add container aria label prop
-
-## 0.3.27
-
-### Patch Changes
-
-- 793f333: fix: self-closing elements
-
 ## 0.3.26
 
 ### Patch Changes

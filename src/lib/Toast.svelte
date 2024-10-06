@@ -1,14 +1,27 @@
-<!-- Set immutable: true to avoid unnecessary re-runs of reactive statements. -->
-<svelte:options immutable={true} />
-
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
-	import type { ToastClassnames, ToastProps } from './types';
-	import { toastState, useEffect } from './state';
-	import { cn } from './internal/helpers';
-	import type { Expand } from './internal/types';
+	import { onMount, untrack } from 'svelte';
+	import type { ToastClassnames, ToastProps } from './types.js';
+	import { toastState } from './toast-state.svelte.js';
+	import { cn } from './internal/helpers.js';
 
-	type $$Props = Expand<ToastProps>;
+	let {
+		toast,
+		index,
+		expanded,
+		invert: invertProp,
+		position,
+		visibleToasts,
+		expandByDefault,
+		closeButton,
+		interacting,
+		cancelButtonStyle = '',
+		actionButtonStyle = '',
+		duration,
+		descriptionClass = '',
+		classes: classesProp,
+		unstyled = false,
+		...restProps
+	}: ToastProps = $props();
 
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
@@ -16,7 +29,7 @@
 	// Default gap between toasts
 	const GAP = 14;
 
-	const SWIPE_TRESHOLD = 20;
+	const SWIPE_THRESHOLD = 20;
 
 	const TIME_BEFORE_UNMOUNT = 200;
 
@@ -39,93 +52,74 @@
 		loading: ''
 	};
 
-	const { toasts, heights, removeHeight, setHeight, remove } = toastState;
+	let mounted = $state(false);
+	let removed = $state(false);
+	let swiping = $state(false);
+	let swipeOut = $state(false);
+	let offsetBeforeRemove = $state(0);
+	let initialHeight = $state(0);
+	let toastRef = $state<HTMLLIElement>();
 
-	export let toast: $$Props['toast'];
-	export let index: $$Props['index'];
-	export let expanded: $$Props['expanded'];
-	export let invert: $$Props['invert'];
-	export let position: $$Props['position'];
-	export let visibleToasts: $$Props['visibleToasts'];
-	export let expandByDefault: $$Props['expandByDefault'];
-	export let closeButton: $$Props['closeButton'];
-	export let interacting: $$Props['interacting'];
-	export let cancelButtonStyle: $$Props['cancelButtonStyle'] = '';
-	export let actionButtonStyle: $$Props['actionButtonStyle'] = '';
-	export let duration: $$Props['duration'] = 4000;
-	export let descriptionClass: $$Props['descriptionClass'] = '';
-	export let classes: $$Props['classes'] = {};
-	export let unstyled: $$Props['unstyled'] = false;
+	const classes = $derived({ ...defaultClasses, ...classesProp });
 
-	let mounted = false;
-	let removed = false;
-	let swiping = false;
-	let swipeOut = false;
-	let offsetBeforeRemove = 0;
-	let initialHeight = 0;
-	let toastRef: HTMLLIElement;
+	const isFront = $derived(index === 0);
+	const isVisible = $derived(index + 1 <= visibleToasts);
+	const toastTitle = $derived(toast.title);
+	const toastDescription = $derived(toast.description);
+	const toastType = $derived(toast.type);
+	const toastClass = $derived(toast.class || '');
+	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 
-	$: classes = { ...defaultClasses, ...classes };
+	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
+	const heightIndex = $derived(
+		toastState.heights.findIndex((height) => height.toastId === toast.id) ||
+			0
+	);
 
-	$: isFront = index === 0;
-	$: isVisible = index + 1 <= visibleToasts;
-	$: toastTitle = toast.title;
-	$: toastDescription = toast.description;
-	$: toastType = toast.type;
-	$: toastClass = toast.class || '';
-	$: toastDescriptionClass = toast.descriptionClass || '';
+	let closeTimerStartTime = $state(0);
+	let lastCloseTimerStartTime = $state(0);
 
-	// Height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
-	$: heightIndex =
-		$heights.findIndex((height) => height.toastId === toast.id) || 0;
+	let pointerStart = $state<{ x: number; y: number } | null>(null);
 
-	let offset = 0;
-	let closeTimerStartTimeRef = 0;
+	const coords = $derived(position.split('-'));
+	const toastsHeightBefore = $derived(
+		toastState.heights.reduce((prev, curr, reducerIndex) => {
+			if (reducerIndex >= heightIndex) return prev;
+			return prev + curr.height;
+		}, 0)
+	);
 
-	let lastCloseTimerStartTimeRef = 0;
-	let pointerStartRef: { x: number; y: number } | null = null;
+	const invert = $derived(toast.invert || invertProp);
+	const disabled = $derived(toastType === 'loading');
 
-	$: coords = position.split('-');
-	$: toastsHeightBefore = $heights.reduce((prev, curr, reducerIndex) => {
-		// Calculate offset up untill current  toast
-		if (reducerIndex >= heightIndex) return prev;
+	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
 
-		return prev + curr.height;
-	}, 0);
-	$: invert = toast.invert || invert;
-	$: disabled = toastType === 'loading';
-
-	// Sometimes toasts are blurry when offset isn't an int
-	$: offset = Math.round(heightIndex * GAP + toastsHeightBefore);
-
-	// Listen to height changes
-	async function updateHeights() {
-		if (!mounted) {
-			return;
-		}
-
-		await tick();
-
+	$effect(() => {
+		toastTitle;
+		toastDescription;
 		let scale: number;
+
 		if (expanded || expandByDefault) {
 			scale = 1;
 		} else {
 			scale = 1 - index * SCALE_MULTIPLIER;
 		}
 
-		toastRef.style.setProperty('height', 'auto');
+		const toastEl = untrack(() => toastRef);
+		if (toastEl === undefined) return;
+		toastEl.style.setProperty('height', 'auto');
 
-		const offsetHeight = toastRef.offsetHeight;
-		// rectHeight is affected by transform: scale(...);
-		const rectHeight = toastRef.getBoundingClientRect().height;
+		const offsetHeight = toastEl.offsetHeight;
+		const rectHeight = toastEl.getBoundingClientRect().height;
 		const scaledRectHeight =
-			Math.round((rectHeight / scale + Number.EPSILON) * 100) / 100;
+			Math.round((rectHeight / scale + Number.EPSILON) & 100) / 100;
 
-		toastRef.style.removeProperty('height');
+		toastEl.style.removeProperty('height');
 
 		let finalHeight: number;
+
 		if (Math.abs(scaledRectHeight - offsetHeight) < 1) {
-			// Use scaledRectHeight as it's more precise
+			// use scaledRectHeight as it's more precise
 			finalHeight = scaledRectHeight;
 		} else {
 			// toast was transitioning its scale, so scaledRectHeight isn't accurate
@@ -134,70 +128,60 @@
 
 		initialHeight = finalHeight;
 
-		setHeight({ toastId: toast.id, height: finalHeight });
-	}
-
-	$: toastTitle, toastDescription, updateHeights();
+		toastState.setHeight({ toastId: toast.id, height: finalHeight });
+	});
 
 	function deleteToast() {
 		removed = true;
-		// Save the offset for the exit swipe animation
+		// save the offset for the exit swipe animation
 		offsetBeforeRemove = offset;
 
-		removeHeight(toast.id);
+		toastState.removeHeight(toast.id);
 
 		setTimeout(() => {
-			remove(toast.id);
+			toastState.remove(toast.id);
 		}, TIME_BEFORE_UNMOUNT);
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
-
 	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
 
-	$: if (toast.updated) {
-		// if the toast has been updated after the initial render,
-		// we want to reset the timer and set the remaining time to the
-		// new duration
-		clearTimeout(timeoutId);
-		remainingTime = toast.duration || duration || TOAST_LIFETIME;
-		startTimer();
-	}
-
-	// If toast's duration changes, it will be out of sync with the
-	// remainingAtTimeout, so we know we need to restart the timer
-	// with the new duration
-
-	// Pause the tmer on each hover
-	function pauseTimer() {
-		if (lastCloseTimerStartTimeRef < closeTimerStartTimeRef) {
-			// Get the elapsed time since the timer started
-			const elapsedTime = new Date().getTime() - closeTimerStartTimeRef;
-			remainingTime = remainingTime - elapsedTime;
-		}
-
-		lastCloseTimerStartTimeRef = new Date().getTime();
-	}
+	const isPromiseLoadingOrInfiniteDuration = $derived(
+		(toast.promise && toastType === 'loading') ||
+			toast.duration === Number.POSITIVE_INFINITY
+	);
 
 	function startTimer() {
-		closeTimerStartTimeRef = new Date().getTime();
-		// Let the toast know it has started
+		closeTimerStartTime = new Date().getTime();
+		// let the toast know it has started
 		timeoutId = setTimeout(() => {
 			toast.onAutoClose?.(toast);
 			deleteToast();
 		}, remainingTime);
 	}
 
-	$: isPromiseLoadingOrInfiniteDuration =
-		(toast.promise && toastType === 'loading') ||
-		toast.duration === Number.POSITIVE_INFINITY;
+	function pauseTimer() {
+		if (lastCloseTimerStartTime < closeTimerStartTime) {
+			// get the elapsed time since the timer started
+			const elapsedTime = new Date().getTime() - closeTimerStartTime;
+			remainingTime = remainingTime - elapsedTime;
+		}
 
-	/**
-	 * Hacky useEffect impl.
-	 * https://github.com/sveltejs/svelte/issues/5283#issuecomment-678759305
-	 */
-	let effect;
-	$: effect = useEffect(() => {
+		lastCloseTimerStartTime = new Date().getTime();
+	}
+
+	$effect(() => {
+		if (toast.updated) {
+			// if the toast has been updated after the initial render,
+			// we want to reset the timer and set the remaining time to the
+			// new duration
+			clearTimeout(timeoutId);
+			remainingTime = toast.duration || duration || TOAST_LIFETIME;
+			startTimer();
+		}
+	});
+
+	$effect(() => {
 		if (!isPromiseLoadingOrInfiniteDuration) {
 			if (expanded || interacting) {
 				pauseTimer();
@@ -208,54 +192,51 @@
 
 		return () => clearTimeout(timeoutId);
 	});
-	$: $effect;
 
 	onMount(() => {
 		mounted = true;
 
-		const height = toastRef.getBoundingClientRect().height;
+		const height = toastRef?.getBoundingClientRect().height as number;
 
-		// Add toast height tot heights array after the toast is mounted
 		initialHeight = height;
-		setHeight({ toastId: toast.id, height });
+		toastState.setHeight({ toastId: toast.id, height });
 
-		return () => removeHeight(toast.id);
+		return () => {
+			toastState.removeHeight(toast.id);
+		};
 	});
 
-	$: if (toast.delete) {
-		deleteToast();
-	}
+	$effect(() => {
+		if (toast.delete) {
+			deleteToast();
+		}
+	});
 
 	function onPointerDown(event: PointerEvent) {
-		if (disabled) {
-			return;
-		}
+		if (disabled) return;
 
 		offsetBeforeRemove = offset;
 		const target = event.target as HTMLElement;
-		// Ensure we maintain correct pointer capture even when going outside of the toast (e.g. when swiping)
+
+		// ensure we maintain correct pointer capture even when going outside of the toast (e.g. when swiping)
 		target.setPointerCapture(event.pointerId);
-		if (target.tagName === 'BUTTON') {
-			return;
-		}
+		if (target.tagName === 'BUTTON') return;
 		swiping = true;
-		pointerStartRef = { x: event.clientX, y: event.clientY };
+		pointerStart = { x: event.clientX, y: event.clientY };
 	}
 
 	function onPointerUp() {
-		if (swipeOut) {
-			return;
-		}
+		if (swipeOut) return;
 
-		pointerStartRef = null;
+		pointerStart = null;
 		const swipeAmount = Number(
 			toastRef?.style
 				.getPropertyValue('--swipe-amount')
 				.replace('px', '') || 0
 		);
 
-		// Remove only if treshold is met
-		if (Math.abs(swipeAmount) >= SWIPE_TRESHOLD) {
+		// remove only if threshold is met
+		if (Math.abs(swipeAmount) >= SWIPE_THRESHOLD) {
 			offsetBeforeRemove = offset;
 			toast.onDismiss?.(toast);
 			deleteToast();
@@ -263,17 +244,15 @@
 			return;
 		}
 
-		toastRef.style.setProperty('--swipe-amount', '0px');
+		toastRef?.style.setProperty('--swipe-amount', '0px');
 		swiping = false;
 	}
 
 	function onPointerMove(event: PointerEvent) {
-		if (!pointerStartRef) {
-			return;
-		}
+		if (!pointerStart) return;
 
-		const yPosition = event.clientY - pointerStartRef!.y;
-		const xPosition = event.clientX - pointerStartRef!.x;
+		const yPosition = event.clientY - pointerStart.y;
+		const xPosition = event.clientX - pointerStart.x;
 
 		const clamp = coords[0] === 'top' ? Math.min : Math.max;
 		const clampedY = clamp(0, yPosition);
@@ -281,11 +260,11 @@
 		const isAllowedToSwipe = Math.abs(clampedY) > swipeStartThreshold;
 
 		if (isAllowedToSwipe) {
-			toastRef.style.setProperty('--swipe-amount', `${yPosition}px`);
+			toastRef?.style.setProperty('--swipe-amount', `${yPosition}px`);
 		} else if (Math.abs(xPosition) > swipeStartThreshold) {
-			// User is swiping in wrong direction so we disable swipe gesture
+			// user is swiping in wrong direction so we disable swipe gesture
 			// for the current pointer down interaction
-			pointerStartRef = null;
+			pointerStart = null;
 		}
 	}
 </script>
@@ -297,7 +276,7 @@
 	role="status"
 	tabIndex={0}
 	class={cn(
-		$$props.class,
+		restProps.class,
 		toastClass,
 		classes?.toast,
 		toast?.classes?.toast,
@@ -319,27 +298,26 @@
 	data-invert={invert}
 	data-swipe-out={swipeOut}
 	data-expanded={Boolean(expanded || (expandByDefault && mounted))}
-	style={`${$$props.style} ${toast.style}`}
+	style={`${restProps.style} ${toast.style}`}
 	style:--index={index}
 	style:--toasts-before={index}
-	style:--z-index={$toasts.length - index}
+	style:--z-index={toastState.toasts.length - index}
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
 	style:--initial-height={`${initialHeight}px`}
-	on:pointerdown={onPointerDown}
-	on:pointerup={onPointerUp}
-	on:pointermove={onPointerMove}
+	onpointerdown={onPointerDown}
+	onpointerup={onPointerUp}
+	onpointermove={onPointerMove}
 >
 	{#if closeButton && !toast.component}
 		<button
 			aria-label="Close toast"
 			data-disabled={disabled}
 			data-close-button
-			on:click={disabled
-				? undefined
-				: () => {
-						deleteToast();
-						toast.onDismiss?.(toast);
-					}}
+			onclick={() => {
+				if (disabled) return;
+				deleteToast();
+				toast.onDismiss?.(toast);
+			}}
 			class={cn(classes?.closeButton, toast?.classes?.closeButton)}
 		>
 			<svg
@@ -360,27 +338,25 @@
 	{/if}
 
 	{#if toast.component}
-		<svelte:component
-			this={toast.component}
-			{...toast.componentProps}
-			on:closeToast={deleteToast}
-		></svelte:component>
+		{@const Component = toast.component}
+		<Component {...toast.componentProps} closeToast={deleteToast} />
 	{:else}
 		{#if toastType !== 'default' || toast.icon || toast.promise}
 			<div data-icon="">
 				{#if (toast.promise || toastType === 'loading') && !toast.icon}
-					<slot name="loading-icon" />
+					{@render restProps.loadingIcon?.()}
 				{/if}
 				{#if toast.icon}
-					<svelte:component this={toast.icon}></svelte:component>
+					{@const Icon = toast.icon}
+					<Icon />
 				{:else if toastType === 'success'}
-					<slot name="success-icon" />
+					{@render restProps.successIcon?.()}
 				{:else if toastType === 'error'}
-					<slot name="error-icon" />
+					{@render restProps.errorIcon?.()}
 				{:else if toastType === 'warning'}
-					<slot name="warning-icon" />
+					{@render restProps.warningIcon?.()}
 				{:else if toastType === 'info'}
-					<slot name="info-icon" />
+					{@render restProps.infoIcon?.()}
 				{/if}
 			</div>
 		{/if}
@@ -391,10 +367,8 @@
 					class={cn(classes?.title, toast?.classes?.title)}
 				>
 					{#if typeof toast.title !== 'string'}
-						<svelte:component
-							this={toast.title}
-							{...toast.componentProps}
-						/>
+						{@const Title = toast.title}
+						<Title {...toast.componentProps} />
 					{:else}
 						{toast.title}
 					{/if}
@@ -411,10 +385,8 @@
 					)}
 				>
 					{#if typeof toast.description !== 'string'}
-						<svelte:component
-							this={toast.description}
-							{...toast.componentProps}
-						/>
+						{@const Description = toast.description}
+						<Description {...toast.componentProps} />
 					{:else}
 						{toast.description}
 					{/if}
@@ -427,11 +399,9 @@
 				data-cancel
 				style={cancelButtonStyle}
 				class={cn(classes?.cancelButton, toast?.classes?.cancelButton)}
-				on:click={() => {
+				onclick={() => {
 					deleteToast();
-					if (toast.cancel?.onClick) {
-						toast.cancel.onClick();
-					}
+					toast.cancel?.onClick?.();
 				}}
 			>
 				{toast.cancel.label}
@@ -442,7 +412,7 @@
 				data-button=""
 				style={actionButtonStyle}
 				class={cn(classes?.actionButton, toast?.classes?.actionButton)}
-				on:click={(event) => {
+				onclick={(event) => {
 					toast.action?.onClick(event);
 					if (event.defaultPrevented) return;
 					deleteToast();

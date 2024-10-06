@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CodeBlock from './CodeBlock.svelte';
-	import { usageSnippet } from './code-snippets';
+	import { usageSnippet } from './code-snippets.js';
 </script>
 
 <div>
