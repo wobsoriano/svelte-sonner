@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	type ToastFn = (t: typeof toast) => void;
 
 	export type ToastTestProps = {
@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-	import { Toaster, toast } from '$lib';
+	import { Toaster, toast } from '$lib/index.js';
 
 	type $$Props = ToastTestProps;
 

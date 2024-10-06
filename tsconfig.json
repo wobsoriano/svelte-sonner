@@ -11,6 +11,7 @@
 		"strict": true,
 		"moduleResolution": "NodeNext",
 		"module": "NodeNext",
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"verbatimModuleSyntax": true
 	}
 }
