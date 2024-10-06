@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toast } from '$lib';
+	import { toast } from '$lib/index.js';
 	import CodeBlock from './CodeBlock.svelte';
 	import Custom from './Custom.svelte';
 
@@ -51,7 +51,6 @@
 				toast.message('Event has been created', {
 					action: {
 						label: 'Undo',
-						// eslint-disable-next-line no-console
 						onClick: () => console.log('Undo')
 					}
 				})
@@ -83,7 +82,7 @@ toast.promise(promise, {
 						),
 					{
 						loading: 'Loading...',
-						success: (data) => {
+						success: (data: { name: string }) => {
 							return `${data.name} toast has been added`;
 						},
 						error: 'Error... :( Try again!'
@@ -106,7 +105,7 @@ toast(Custom)`,
 		}
 	];
 
-	let activeType = allTypes[0];
+	let activeType = $state(allTypes[0]);
 </script>
 
 <div>
@@ -121,7 +120,7 @@ toast(Custom)`,
 				class="button"
 				data-testid={type.name}
 				data-active={activeType?.name === type.name}
-				on:click={() => {
+				onclick={() => {
 					type.action?.();
 					activeType = type;
 				}}

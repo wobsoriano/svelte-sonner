@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toast } from '$lib/index.js';
-	import { createEventDispatcher } from 'svelte';
 	import CodeBlock from './CodeBlock.svelte';
 
-	export let expand: boolean;
-
-	const dispatch = createEventDispatcher();
+	let {
+		expand,
+		setExpand
+	}: { expand: boolean; setExpand: (expand: boolean) => void } = $props();
 </script>
 
 <div>
@@ -19,11 +19,11 @@
 		<button
 			data-active={expand}
 			class="button"
-			on:click={() => {
+			onclick={() => {
 				toast('Event has been created', {
 					description: 'Monday, January 3rd at 6:00pm'
 				});
-				dispatch('setExpand', true);
+				setExpand(true);
 			}}
 		>
 			Expand
@@ -31,11 +31,11 @@
 		<button
 			data-active={!expand}
 			class="button"
-			on:click={() => {
+			onclick={() => {
 				toast('Event has been created', {
 					description: 'Monday, January 3rd at 6:00pm'
 				});
-				dispatch('setExpand', false);
+				setExpand(false);
 			}}
 		>
 			Default
