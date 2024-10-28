@@ -1,7 +1,8 @@
 <script lang="ts">
-	export let message: string;
+	let { message }: { message: string } = $props();
 </script>
 
 <div>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html message}
 </div>

@@ -4,7 +4,7 @@
 	import xml from 'highlight.js/lib/languages/xml';
 	import 'highlight.js/styles/github.css';
 	import copy from 'copy-to-clipboard';
-	import { createEventDispatcher } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('xml', xml);
@@ -20,28 +20,43 @@
 			.replace(/'/g, '&#x27;');
 	}
 
-	const dispatch = createEventDispatcher();
+	type Props = {
+		autodetect?: boolean;
+		language?: string;
+		ignoreIllegals?: boolean;
+		code?: string;
+		setLanguage?: (language: string) => void;
+	} & HTMLAttributes<HTMLDivElement>;
 
-	export let autodetect = true;
-	export let language = '';
-	export let ignoreIllegals = true;
-	export let code: string;
+	let {
+		autodetect = true,
+		language = '',
+		setLanguage = () => {},
+		ignoreIllegals = true,
+		code,
+		...restProps
+	}: Props = $props();
 
-	let copying = 0;
-	let highlightedCode: string;
-	$: cannotDetectLanguage = !autodetect && !hljs.getLanguage(language);
+	let copying = $state(0);
+	let highlightedCode: string = $state('');
 
-	$: className = cannotDetectLanguage
-		? ''
-		: `hljs ${language} ${$$props.class ?? ''}`;
-	$: {
+	const cannotDetectLanguage = $derived(
+		!autodetect && !hljs.getLanguage(language)
+	);
+
+	const className = $derived(
+		cannotDetectLanguage ? '' : `hljs ${language} ${restProps.class ?? ''}`
+	);
+
+	$effect(() => {
+		if (!code) return;
 		if (cannotDetectLanguage) {
 			highlightedCode = escapeHtml(code);
 		}
 
 		if (autodetect) {
 			const result = hljs.highlightAuto(code);
-			dispatch('setLanguage', result.language ?? '');
+			setLanguage(result.language ?? '');
 			highlightedCode = result.value;
 		} else {
 			const result = hljs.highlight(code, {
@@ -50,23 +65,26 @@
 			});
 			highlightedCode = result.value;
 		}
-	}
+	});
 
-	$: if (codeElement) {
-		codeElement.innerHTML = highlightedCode;
-	}
+	$effect(() => {
+		if (codeElement) {
+			codeElement.innerHTML = highlightedCode;
+		}
+	});
 
-	const onCopy = () => {
+	function onCopy() {
+		if (!code) return;
 		copy(code);
 		copying++;
 		setTimeout(() => {
 			copying--;
 		}, 2000);
-	};
+	}
 </script>
 
 <div class="outerWrapper">
-	<button class="copyButton" on:click={onCopy} aria-label="Copy code">
+	<button class="copyButton" onclick={onCopy} aria-label="Copy code">
 		{#if copying}
 			<div>
 				<svg
@@ -106,7 +124,7 @@
 
 	<div class="wrapper">
 		<div class={`${className} root`}>
-			<code bind:this={codeElement} />
+			<code bind:this={codeElement}></code>
 		</div>
 	</div>
 </div>
