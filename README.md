@@ -270,15 +270,25 @@ Styling per toast type is also possible.
 
 ### Changing Icon
 
-You can change the default icons using slots:
+You can change the default icons using snippets:
 
 ```svelte
 <Toaster>
-	<LoadingIcon slot="loading-icon" />
-	<SuccessIcon slot="success-icon" />
-	<ErrorIcon slot="error-icon" />
-	<InfoIcon slot="info-icon" />
-	<WarningIcon slot="warning-icon" />
+	{#snippet loadingIcon()}
+		<LoadingIcon />
+	{/snippet}
+	{#snippet successIcon()}
+		<SuccessIcon />
+	{/snippet}
+	{#snippet errorIcon()}
+		<ErrorIcon />
+	{/snippet}
+	{#snippet infoIcon()}
+		<InfoIcon />
+	{/snippet}
+	{#snippet warningIcon()}
+		<WarningIcon />
+	{/snippet}
 </Toaster>
 ```
 
