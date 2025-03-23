@@ -17,7 +17,7 @@ jobs:
             - run: bun run build
             - run: bun run playwright install --with-deps
             - run: bun run test || exit 1
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: playwright-report
