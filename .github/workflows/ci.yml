@@ -19,13 +19,13 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - uses: pnpm/action-setup@v2
+            - uses: pnpm/action-setup@v4
               with:
-                  version: 8
+                  version: 9.7.0
 
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@v4
               with:
-                  node-version: 18
+                  node-version: 20
 
             # PNPM Store cache setup
             - name: Get pnpm store directory
@@ -55,15 +55,15 @@ jobs:
                   fetch-depth: 0
 
             - name: Install Node.JS
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 18
+                  node-version: 20
 
-            - uses: pnpm/action-setup@v2
+            - uses: pnpm/action-setup@v4
               name: Install pnpm
               id: pnpm-install
               with:
-                  version: 8
+                  version: 9.7.0
 
             # PNPM Store cache setup
             - name: Get pnpm store directory
@@ -88,9 +88,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v2
+            - uses: pnpm/action-setup@v4
               with:
-                  version: 8.6.3
+                  version: 9.7.0
                   run_install: true
             - run: pnpm run test:unit
 

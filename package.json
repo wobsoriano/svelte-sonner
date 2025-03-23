@@ -76,5 +76,13 @@
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module"
+	"type": "module",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@sveltejs/kit",
+			"esbuild",
+			"svelte-preprocess"
+		]
+	},
+	"packageManager": "pnpm@9.7.0"
 }
