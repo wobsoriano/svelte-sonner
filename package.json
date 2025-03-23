@@ -3,6 +3,12 @@
 	"description": "An opinionated toast component for Svelte.",
 	"license": "MIT",
 	"author": "Robert Soriano <sorianorobertc@gmail.com>",
+	"homepage": "https://github.com/wobsoriano/svelte-sonner#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wobsoriano/svelte-sonner.git"
+  },
+  "bugs": "https://github.com/wobsoriano/svelte-sonner/issues",
 	"keywords": [
 		"svelte",
 		"toast"
