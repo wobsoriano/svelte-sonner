@@ -24,7 +24,7 @@ class ToastState {
 
 	addToast = (data: ToastT): void => {
 		if (!isBrowser) return;
-		this.toasts.push(data);
+		this.toasts.unshift(data);
 	};
 
 	updateToast = ({ id, data, type, message }: UpdateToastProps): void => {
