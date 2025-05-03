@@ -177,7 +177,8 @@
 	.hero-description {
 		margin-top: 0;
 		font-size: 18px;
-		text-align: center
+		text-align: center;
+		text-wrap: balance;
 	}
 
 	.wrapper p {
