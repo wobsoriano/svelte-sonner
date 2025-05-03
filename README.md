@@ -4,9 +4,7 @@ https://github.com/wobsoriano/svelte-sonner/assets/13049130/4b9c250f-1431-4130-9
 
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)
 
-An opinionated toast component for Svelte.
-
-Based on [emilkowalski](https://github.com/emilkowalski)'s React [implementation](https://sonner.emilkowal.ski/).
+An opinionated toast component for Svelte. A port of Emil Kowalski's [Sonner](https://sonner.emilkowal.ski/).
 
 ## Quick start
 

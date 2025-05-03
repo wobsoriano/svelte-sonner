@@ -9,8 +9,8 @@
 		<div class="toast" />
 	</div>
 	<h1 class="heading">Svelte Sonner</h1>
-	<p style="margin-top: 0; font-size: 18px">
-		An opinionated toast component for Svelte.
+	<p class="hero-description">
+		An opinionated toast component for Svelte.<br /> A port of Emil Kowalski's Sonner.
 	</p>
 	<div class="buttons">
 		<button
@@ -172,6 +172,12 @@
 		font-size: 48px;
 		font-weight: 700;
 		margin: -20px 0 12px;
+	}
+
+	.hero-description {
+		margin-top: 0;
+		font-size: 18px;
+		text-align: center
 	}
 
 	.wrapper p {
