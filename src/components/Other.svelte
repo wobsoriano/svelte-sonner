@@ -89,7 +89,8 @@
   })
   `,
 			action: () => {
-				toast.warning(TestWithProps as unknown as Component, {
+				// @ts-expect-error - TODO figure this out
+				toast.warning(TestWithProps, {
 					componentProps: {
 						message: 'This is <br />multiline message'
 					}

@@ -4,11 +4,11 @@
 	"license": "MIT",
 	"author": "Robert Soriano <sorianorobertc@gmail.com>",
 	"homepage": "https://github.com/wobsoriano/svelte-sonner#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wobsoriano/svelte-sonner.git"
-  },
-  "bugs": "https://github.com/wobsoriano/svelte-sonner/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wobsoriano/svelte-sonner.git"
+	},
+	"bugs": "https://github.com/wobsoriano/svelte-sonner/issues",
 	"keywords": [
 		"svelte",
 		"toast"
@@ -47,8 +47,8 @@
 		"@changesets/cli": "^2.27.1",
 		"@playwright/test": "^1.38.0",
 		"@sveltejs/adapter-auto": "^3.3.1",
-		"@sveltejs/kit": "^2.7.3",
-		"@sveltejs/package": "^2.3.2",
+		"@sveltejs/kit": "^2.20.8",
+		"@sveltejs/package": "^2.3.11",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
 		"@testing-library/dom": "^10.3.1",
@@ -68,11 +68,11 @@
 		"highlight.js": "^11.8.0",
 		"jsdom": "^24.1.0",
 		"mode-watcher": "^0.4.1",
-		"prettier": "^3.2.5",
-		"prettier-plugin-svelte": "^3.2.7",
+		"prettier": "^3.5.3",
+		"prettier-plugin-svelte": "^3.3.3",
 		"publint": "^0.2.2",
-		"svelte": "^5.1.3",
-		"svelte-check": "^4.0.5",
+		"svelte": "^5.28.2",
+		"svelte-check": "^4.1.7",
 		"svelte-preprocess": "^6.0.3",
 		"tslib": "^2.8.0",
 		"typescript": "^5.6.2",

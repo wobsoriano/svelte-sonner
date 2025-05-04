@@ -1,4 +1,4 @@
-import type { Component, Snippet } from 'svelte';
+import type { Component, ComponentProps, Snippet } from 'svelte';
 import type { Expand } from '$lib/internal/types.js';
 import type { HTMLAttributes, HTMLOlAttributes } from 'svelte/elements';
 
@@ -16,27 +16,36 @@ export type ToastTypes =
 export type PromiseT<Data = unknown> = Promise<Data> | (() => Promise<Data>);
 
 export type PromiseData<ToastData = unknown> = ExternalToast & {
-	loading?: string | Component;
-	// TODO: We need a way to differentiate between a callback and a component
-	// This is not possible with Svelte 5 atm, i've asked them to add a `isComponent` function
-	// or similar, so for now we remove the `Component` type from the union
-	// success?: string | Component | ((data: ToastData) => Component | string);
+	/**
+	 * The loading message or a function that returns the message or
+	 * a custom toast component.
+	 */
+	loading?: string | (() => Component | string);
+	/**
+	 * The success message or a function that returns the message or
+	 * a custom toast component.
+	 */
 	success?: string | ((data: ToastData) => Component | string);
-
-	// error?: string | Component | ((error: unknown) => Component | string);
+	/**
+	 * The error message or a function that returns the message or
+	 * a custom toast component.
+	 */
 	error?: string | ((error: unknown) => Component | string);
+	/**
+	 * A function that is called when the promise is finally resolved or rejected.
+	 */
 	finally?: () => void | Promise<void>;
 };
 
 export type ToastT<T extends Component = Component> = {
 	id: number | string;
-	title?: string | T;
+	title?: string | Component;
 	type: ToastTypes;
-	icon?: T;
-	component?: T;
-	componentProps?: Parameters<T>[1];
+	icon?: Component;
+	component?: Component;
+	componentProps?: ComponentProps<T>;
 	invert?: boolean;
-	description?: string | T;
+	description?: string | Component;
 	cancelButtonStyle?: string;
 	actionButtonStyle?: string;
 	duration?: number;
@@ -79,12 +88,6 @@ export type HeightT = {
 	height: number;
 	toastId: number | string;
 };
-
-export enum SwipeStateTypes {
-	SwipedOut = 'SwipedOut',
-	SwipedBack = 'SwipedBack',
-	NotSwiped = 'NotSwiped'
-}
 
 export type Theme = 'light' | 'dark';
 

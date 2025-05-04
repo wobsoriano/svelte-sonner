@@ -14,10 +14,12 @@
 	--gray12: hsl(0, 0%, 9%);
 	--hover: rgb(40, 40, 40);
 	--border-radius: 6px;
-	--font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+	--font-sans:
+		ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
 		Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji,
 		Segoe UI Symbol, Noto Color Emoji;
-	--font-mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
+	--font-mono:
+		'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
 		Courier New, monospace;
 }
 
