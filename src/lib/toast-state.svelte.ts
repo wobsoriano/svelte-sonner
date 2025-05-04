@@ -1,6 +1,13 @@
-import type { Component } from 'svelte';
 import { isBrowser } from './internal/helpers.js';
-import type { ExternalToast, HeightT, PromiseData, PromiseT, ToastT, ToastTypes } from './types.js';
+import type {
+	ExternalToast,
+	HeightT,
+	PromiseData,
+	PromiseT,
+	AnyComponent,
+	ToastT,
+	ToastTypes
+} from './types.js';
 
 let toastsCounter = 0;
 
@@ -8,7 +15,7 @@ type UpdateToastProps = {
 	id: number | string;
 	data: Partial<ToastT>;
 	type: ToastTypes;
-	message: string | Component | undefined;
+	message: string | AnyComponent | undefined;
 	dismissable: boolean;
 };
 
@@ -41,7 +48,7 @@ class ToastState {
 		};
 	};
 
-	create = <T extends Component>(
+	create = <T extends AnyComponent>(
 		data: ExternalToast<T> & {
 			message?: string | T;
 			type?: ToastTypes;
@@ -95,36 +102,39 @@ class ToastState {
 		return id;
 	};
 
-	message = <T extends Component>(message: string | T, data?: ExternalToast<T>) => {
+	message = <T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) => {
 		return this.create<T>({ ...data, type: 'default', message });
 	};
 
-	error = <T extends Component>(
+	error = <T extends AnyComponent>(
 		message: string | T,
 		data?: ExternalToast<T>
 	): string | number => {
 		return this.create({ ...data, type: 'error', message });
 	};
 
-	success = <T extends Component>(
+	success = <T extends AnyComponent>(
 		message: string | T,
 		data?: ExternalToast<T>
 	): string | number => {
 		return this.create({ ...data, type: 'success', message });
 	};
 
-	info = <T extends Component>(message: string | T, data?: ExternalToast<T>): string | number => {
+	info = <T extends AnyComponent>(
+		message: string | T,
+		data?: ExternalToast<T>
+	): string | number => {
 		return this.create({ ...data, type: 'info', message });
 	};
 
-	warning = <T extends Component>(
+	warning = <T extends AnyComponent>(
 		message: string | T,
 		data?: ExternalToast<T>
 	): string | number => {
 		return this.create({ ...data, type: 'warning', message });
 	};
 
-	loading = <T extends Component>(
+	loading = <T extends AnyComponent>(
 		message: string | T,
 		data?: ExternalToast<T>
 	): string | number => {
@@ -193,7 +203,7 @@ class ToastState {
 		return id;
 	};
 
-	custom = <T extends Component>(component: T, data?: ExternalToast<T>): string | number => {
+	custom = <T extends AnyComponent>(component: T, data?: ExternalToast<T>): string | number => {
 		const id = data?.id || toastsCounter++;
 
 		this.create({ component, id, ...data });
@@ -229,7 +239,7 @@ function constructPromiseErrorMessage(response: unknown) {
 
 export const toastState = new ToastState();
 
-function toastFunction<T extends Component>(message: string | T, data?: ExternalToast<T>) {
+function toastFunction<T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) {
 	return toastState.create({
 		message,
 		...data

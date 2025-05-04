@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { toast } from '$lib/index.js';
-	import type { Component } from 'svelte';
 	import CodeBlock from './CodeBlock.svelte';
 	import Test from './Test.svelte';
 	import TestWithProps from './TestWithProps.svelte';
@@ -71,7 +70,7 @@
   })
   `,
 			action: () => {
-				toast.custom(Test as unknown as Component, {
+				toast.custom(Test, {
 					componentProps: {
 						eventName: 'hello'
 					}
@@ -89,7 +88,6 @@
   })
   `,
 			action: () => {
-				// @ts-expect-error - TODO figure this out
 				toast.warning(TestWithProps, {
 					componentProps: {
 						message: 'This is <br />multiline message'

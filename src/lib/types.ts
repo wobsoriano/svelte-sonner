@@ -4,6 +4,10 @@ import type { HTMLAttributes, HTMLOlAttributes } from 'svelte/elements';
 
 export type FixMe = unknown;
 
+// We need this to consistently be this wide.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyComponent = Component<any, any, string>;
+
 export type ToastTypes =
 	| 'action'
 	| 'success'
@@ -20,32 +24,32 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
 	 * The loading message or a function that returns the message or
 	 * a custom toast component.
 	 */
-	loading?: string | (() => Component | string);
+	loading?: string | (() => AnyComponent | string);
 	/**
 	 * The success message or a function that returns the message or
 	 * a custom toast component.
 	 */
-	success?: string | ((data: ToastData) => Component | string);
+	success?: string | ((data: ToastData) => AnyComponent | string);
 	/**
 	 * The error message or a function that returns the message or
 	 * a custom toast component.
 	 */
-	error?: string | ((error: unknown) => Component | string);
+	error?: string | ((error: unknown) => AnyComponent | string);
 	/**
 	 * A function that is called when the promise is finally resolved or rejected.
 	 */
 	finally?: () => void | Promise<void>;
 };
 
-export type ToastT<T extends Component = Component> = {
+export type ToastT<T extends AnyComponent = AnyComponent> = {
 	id: number | string;
-	title?: string | Component;
+	title?: string | AnyComponent;
 	type: ToastTypes;
-	icon?: Component;
-	component?: Component;
+	icon?: AnyComponent;
+	component?: AnyComponent;
 	componentProps?: ComponentProps<T>;
 	invert?: boolean;
-	description?: string | Component;
+	description?: string | AnyComponent;
 	cancelButtonStyle?: string;
 	actionButtonStyle?: string;
 	duration?: number;
@@ -96,7 +100,7 @@ export type ToastToDismiss = {
 	dismiss: boolean;
 };
 
-export type ExternalToast<T extends Component = Component> = Omit<
+export type ExternalToast<T extends AnyComponent = AnyComponent> = Omit<
 	ToastT<T>,
 	'id' | 'type' | 'title' | 'promise' | 'updated'
 > & {
