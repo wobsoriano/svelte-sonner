@@ -665,15 +665,15 @@
 	}
 
 	:where(
-			[data-sonner-toast][data-removed='true'][data-front='true'][data-swipe-out='false']
-		) {
+		[data-sonner-toast][data-removed='true'][data-front='true'][data-swipe-out='false']
+	) {
 		--y: translateY(calc(var(--lift) * -100%));
 		opacity: 0;
 	}
 
 	:where(
-			[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='true']
-		) {
+		[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='true']
+	) {
 		--y: translateY(
 			calc(var(--lift) * var(--offset) + var(--lift) * -100%)
 		);
@@ -681,8 +681,8 @@
 	}
 
 	:where(
-			[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='false']
-		) {
+		[data-sonner-toast][data-removed='true'][data-front='false'][data-swipe-out='false'][data-expanded='false']
+	) {
 		--y: translateY(40%);
 		opacity: 0;
 		transition:
