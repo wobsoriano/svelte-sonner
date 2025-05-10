@@ -1,41 +1,19 @@
-<script lang="ts">
-	import { onMount, untrack } from 'svelte';
-	import type { ToastClassnames, ToastProps } from './types.js';
-	import { toastState } from './toast-state.svelte.js';
-	import { cn } from './internal/helpers.js';
-
-	let {
-		toast,
-		index,
-		expanded,
-		invert: invertProp,
-		position,
-		visibleToasts,
-		expandByDefault,
-		closeButton,
-		interacting,
-		cancelButtonStyle = '',
-		actionButtonStyle = '',
-		duration,
-		descriptionClass = '',
-		classes: classesProp,
-		unstyled = false,
-		...restProps
-	}: ToastProps = $props();
-
+<script lang="ts" module>
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
 
 	// Default gap between toasts
 	const GAP = 14;
 
-	const SWIPE_THRESHOLD = 20;
+	// Threshold to dismiss a toast
+	const SWIPE_THRESHOLD = 45;
 
+	// Equal to exit animation duration
 	const TIME_BEFORE_UNMOUNT = 200;
 
 	const SCALE_MULTIPLIER = 0.05;
 
-	const defaultClasses: ToastClassnames = {
+	const DEFAULT_TOAST_CLASSES: ToastClasses = {
 		toast: '',
 		title: '',
 		description: '',
@@ -52,35 +30,107 @@
 		loading: ''
 	};
 
+	function getDefaultSwipeDirections(
+		position: string
+	): Array<SwipeDirection> {
+		const [y, x] = position.split('-');
+		const directions: Array<SwipeDirection> = [];
+
+		if (y) {
+			directions.push(y as SwipeDirection);
+		}
+
+		if (x) {
+			directions.push(x as SwipeDirection);
+		}
+
+		return directions;
+	}
+
+	function getDampening(delta: number) {
+		const factor = Math.abs(delta) / 20;
+
+		return 1 / (1.5 + factor);
+	}
+</script>
+
+<script lang="ts">
+	import { onMount, untrack } from 'svelte';
+	import {
+		isAction,
+		type SwipeDirection,
+		type ToastClasses,
+		type ToastProps
+	} from './types.js';
+	import { toastState } from './toast-state.svelte.js';
+	import { cn } from './internal/helpers.js';
+	import { useDocumentHidden } from './internal/use-document-hidden.svelte.js';
+	import type {
+		DragEventHandler,
+		PointerEventHandler
+	} from 'svelte/elements';
+	import Loader from './Loader.svelte';
+
+	let {
+		toast,
+		index,
+		expanded,
+		invert: invertFromToaster,
+		position,
+		visibleToasts,
+		expandByDefault,
+		closeButton: closeButtonFromToaster,
+		interacting,
+		cancelButtonStyle = '',
+		actionButtonStyle = '',
+		duration: durationFromToaster,
+		descriptionClass = '',
+		classes: classesProp,
+		unstyled = false,
+		loadingIcon,
+		successIcon,
+		errorIcon,
+		warningIcon,
+		closeIcon,
+		infoIcon,
+		defaultRichColors = false,
+		swipeDirections: swipeDirectionsProp,
+		closeButtonAriaLabel,
+		...restProps
+	}: ToastProps = $props();
+
+	const defaultClasses: ToastClasses = { ...DEFAULT_TOAST_CLASSES };
+
 	let mounted = $state(false);
 	let removed = $state(false);
 	let swiping = $state(false);
 	let swipeOut = $state(false);
+	let isSwiped = $state(false);
 	let offsetBeforeRemove = $state(0);
 	let initialHeight = $state(0);
+	let remainingTime = toast.duration || durationFromToaster || TOAST_LIFETIME;
+	let dragStartTime = $state<Date | null>(null);
 	let toastRef = $state<HTMLLIElement>();
-
-	const classes = $derived({ ...defaultClasses, ...classesProp });
-
+	let swipeDirection = $state<'x' | 'y' | null>(null);
+	let swipeOutDirection = $state<'left' | 'right' | 'up' | 'down' | null>(
+		null
+	);
 	const isFront = $derived(index === 0);
 	const isVisible = $derived(index + 1 <= visibleToasts);
-	const toastTitle = $derived(toast.title);
-	const toastDescription = $derived(toast.description);
 	const toastType = $derived(toast.type);
+	const dismissable = $derived(toast.dismissable !== false);
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
-
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
 	const heightIndex = $derived(
 		toastState.heights.findIndex((height) => height.toastId === toast.id) ||
 			0
 	);
-
-	let closeTimerStartTime = $state(0);
-	let lastCloseTimerStartTime = $state(0);
-
-	let pointerStart = $state<{ x: number; y: number } | null>(null);
-
+	const closeButton = $derived(toast.closeButton ?? closeButtonFromToaster);
+	const duration = $derived(
+		toast.duration ?? durationFromToaster ?? TOAST_LIFETIME
+	);
+	let pointerStart: { x: number; y: number } | null = null;
 	const coords = $derived(position.split('-'));
 	const toastsHeightBefore = $derived(
 		toastState.heights.reduce((prev, curr, reducerIndex) => {
@@ -88,9 +138,17 @@
 			return prev + curr.height;
 		}, 0)
 	);
-
-	const invert = $derived(toast.invert || invertProp);
+	const isDocumentHidden = useDocumentHidden();
+	const invert = $derived(toast.invert || invertFromToaster);
 	const disabled = $derived(toastType === 'loading');
+
+	const classes = $derived({ ...defaultClasses, ...classesProp });
+
+	const toastTitle = $derived(toast.title);
+	const toastDescription = $derived(toast.description);
+
+	let closeTimerStartTime = $state(0);
+	let lastCloseTimerStartTime = $state(0);
 
 	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
 
@@ -144,7 +202,6 @@
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
-	let remainingTime = toast.duration || duration || TOAST_LIFETIME;
 
 	const isPromiseLoadingOrInfiniteDuration = $derived(
 		(toast.promise && toastType === 'loading') ||
@@ -176,14 +233,14 @@
 			// we want to reset the timer and set the remaining time to the
 			// new duration
 			clearTimeout(timeoutId);
-			remainingTime = toast.duration || duration || TOAST_LIFETIME;
+			remainingTime = duration;
 			startTimer();
 		}
 	});
 
 	$effect(() => {
 		if (!isPromiseLoadingOrInfiniteDuration) {
-			if (expanded || interacting) {
+			if (expanded || interacting || isDocumentHidden.current) {
 				pauseTimer();
 			} else {
 				startTimer();
@@ -212,7 +269,7 @@
 		}
 	});
 
-	function onPointerDown(event: PointerEvent) {
+	const handlePointerDown: PointerEventHandler<HTMLLIElement> = (event) => {
 		if (disabled) return;
 
 		offsetBeforeRemove = offset;
@@ -223,58 +280,161 @@
 		if (target.tagName === 'BUTTON') return;
 		swiping = true;
 		pointerStart = { x: event.clientX, y: event.clientY };
-	}
+	};
 
-	function onPointerUp() {
-		if (swipeOut) return;
+	const handlePointerUp: PointerEventHandler<HTMLLIElement> = () => {
+		if (swipeOut || !dismissable) return;
 
 		pointerStart = null;
-		const swipeAmount = Number(
+		const swipeAmountX = Number(
 			toastRef?.style
-				.getPropertyValue('--swipe-amount')
+				.getPropertyValue('--swipe-amount-x')
 				.replace('px', '') || 0
 		);
+		const swipeAmountY = Number(
+			toastRef?.style
+				.getPropertyValue('--swipe-amount-y')
+				.replace('px', '') || 0
+		);
+		const timeTaken =
+			new Date().getTime() - (dragStartTime?.getTime() ?? 0);
+
+		const swipeAmount =
+			swipeDirection === 'x' ? swipeAmountX : swipeAmountY;
+		const velocity = Math.abs(swipeAmount) / timeTaken;
 
 		// remove only if threshold is met
-		if (Math.abs(swipeAmount) >= SWIPE_THRESHOLD) {
+		if (Math.abs(swipeAmount) >= SWIPE_THRESHOLD || velocity > 0.11) {
 			offsetBeforeRemove = offset;
 			toast.onDismiss?.(toast);
+
+			if (swipeDirection === 'x') {
+				swipeOutDirection = swipeAmountX > 0 ? 'right' : 'left';
+			} else {
+				swipeOutDirection = swipeAmountY > 0 ? 'down' : 'up';
+			}
+
 			deleteToast();
 			swipeOut = true;
 			return;
+		} else {
+			toastRef?.style.setProperty('--swipe-amount-x', '0px');
+			toastRef?.style.setProperty('--swipe-amount-y', '0px');
 		}
-
-		toastRef?.style.setProperty('--swipe-amount', '0px');
+		isSwiped = false;
 		swiping = false;
-	}
+		swipeDirection = null;
+	};
 
-	function onPointerMove(event: PointerEvent) {
-		if (!pointerStart) return;
+	const handlePointerMove: PointerEventHandler<HTMLLIElement> = (event) => {
+		if (!pointerStart || !dismissable) return;
 
-		const yPosition = event.clientY - pointerStart.y;
-		const xPosition = event.clientX - pointerStart.x;
+		const isHighlighted =
+			(window.getSelection()?.toString().length ?? -1) > 0;
+		if (isHighlighted) return;
 
-		const clamp = coords[0] === 'top' ? Math.min : Math.max;
-		const clampedY = clamp(0, yPosition);
-		const swipeStartThreshold = event.pointerType === 'touch' ? 10 : 2;
-		const isAllowedToSwipe = Math.abs(clampedY) > swipeStartThreshold;
+		const yDelta = event.clientY - pointerStart.y;
+		const xDelta = event.clientX - pointerStart.x;
 
-		if (isAllowedToSwipe) {
-			toastRef?.style.setProperty('--swipe-amount', `${yPosition}px`);
-		} else if (Math.abs(xPosition) > swipeStartThreshold) {
-			// user is swiping in wrong direction so we disable swipe gesture
-			// for the current pointer down interaction
-			pointerStart = null;
+		const swipeDirections =
+			swipeDirectionsProp ?? getDefaultSwipeDirections(position);
+
+		// Determine swipe direction if not already locked
+		if (!swipeDirection && (Math.abs(xDelta) > 1 || Math.abs(yDelta) > 1)) {
+			swipeDirection = Math.abs(xDelta) > Math.abs(yDelta) ? 'x' : 'y';
 		}
-	}
+
+		let swipeAmount = { x: 0, y: 0 };
+
+		if (swipeDirection === 'y') {
+			// handle vertical swipes
+			if (
+				swipeDirections.includes('top') ||
+				swipeDirections.includes('bottom')
+			) {
+				if (
+					(swipeDirections.includes('top') && yDelta < 0) ||
+					(swipeDirections.includes('bottom') && yDelta > 0)
+				) {
+					swipeAmount.y = yDelta;
+				} else {
+					// smoothly transition to dampened movement
+					const dampenedDelta = yDelta * getDampening(yDelta);
+					// ensure we don't jump when transition to dampened movement
+					swipeAmount.y =
+						Math.abs(dampenedDelta) < Math.abs(yDelta)
+							? dampenedDelta
+							: yDelta;
+				}
+			}
+		} else if (swipeDirection === 'x') {
+			// handle horizontal swipes
+			if (
+				swipeDirections.includes('left') ||
+				swipeDirections.includes('right')
+			) {
+				if (
+					(swipeDirections.includes('left') && xDelta < 0) ||
+					(swipeDirections.includes('right') && xDelta > 0)
+				) {
+					swipeAmount.x = xDelta;
+				} else {
+					// Smoothly transition to dampened movement
+					const dampenedDelta = xDelta * getDampening(xDelta);
+					// Ensure we don't jump when transitioning to dampened movement
+					swipeAmount.x =
+						Math.abs(dampenedDelta) < Math.abs(xDelta)
+							? dampenedDelta
+							: xDelta;
+				}
+			}
+		}
+
+		if (Math.abs(swipeAmount.x) > 0 || Math.abs(swipeAmount.y) > 0) {
+			isSwiped = true;
+		}
+
+		toastRef?.style.setProperty('--swipe-amount-x', `${swipeAmount.x}px`);
+		toastRef?.style.setProperty('--swipe-amount-y', `${swipeAmount.y}px`);
+	};
+
+	const handleDragEnd: DragEventHandler<HTMLLIElement> = () => {
+		swiping = false;
+		swipeDirection = null;
+		pointerStart = null;
+	};
+
+	const icon = $derived.by(() => {
+		if (toast.icon) return toast.icon;
+		if (toastType === 'success') return successIcon;
+		if (toastType === 'error') return errorIcon;
+		if (toastType === 'warning') return warningIcon;
+		if (toastType === 'info') return infoIcon;
+		if (toastType === 'loading') return loadingIcon;
+		return null;
+	});
 </script>
 
+{#snippet LoadingIcon()}
+	{#if loadingIcon}
+		<div
+			class={cn(classes?.loader, toast?.classes?.loader, 'sonner-loader')}
+			data-visible={toastType === 'loading'}
+		>
+			{@render loadingIcon()}
+		</div>
+	{:else}
+		<Loader
+			class={cn(classes?.loader, toast.classes?.loader)}
+			visible={toastType === 'loading'}
+		/>
+	{/if}
+{/snippet}
+
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <li
+	tabindex={0}
 	bind:this={toastRef}
-	aria-live={toast.important ? 'assertive' : 'polite'}
-	aria-atomic="true"
-	role="status"
-	tabIndex={0}
 	class={cn(
 		restProps.class,
 		toastClass,
@@ -284,9 +444,11 @@
 		toast?.classes?.[toastType]
 	)}
 	data-sonner-toast=""
-	data-styled={!(toast.component || toast?.unstyled || unstyled)}
+	data-rich-colors={toast.richColors ?? defaultRichColors}
+	data-styled={!(toast.component || toast.unstyled || unstyled)}
 	data-mounted={mounted}
 	data-promise={Boolean(toast.promise)}
+	data-swiped={isSwiped}
 	data-removed={removed}
 	data-visible={isVisible}
 	data-y-position={coords[0]}
@@ -294,46 +456,36 @@
 	data-index={index}
 	data-front={isFront}
 	data-swiping={swiping}
+	data-dismissable={dismissable}
 	data-type={toastType}
 	data-invert={invert}
 	data-swipe-out={swipeOut}
+	data-swipe-direction={swipeOutDirection}
 	data-expanded={Boolean(expanded || (expandByDefault && mounted))}
-	style={`${restProps.style} ${toast.style}`}
 	style:--index={index}
 	style:--toasts-before={index}
 	style:--z-index={toastState.toasts.length - index}
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
-	style:--initial-height={`${initialHeight}px`}
-	onpointerdown={onPointerDown}
-	onpointerup={onPointerUp}
-	onpointermove={onPointerMove}
+	style:--initial-height={expandByDefault ? 'auto' : `${initialHeight}px`}
+	style={`${restProps.style} ${toast.style}`}
+	onpointermove={handlePointerMove}
+	onpointerup={handlePointerUp}
+	onpointerdown={handlePointerDown}
+	ondragend={handleDragEnd}
 >
-	{#if closeButton && !toast.component}
+	{#if closeButton && !toast.component && toastType !== 'loading' && closeIcon !== null}
 		<button
-			aria-label="Close toast"
+			aria-label={closeButtonAriaLabel}
 			data-disabled={disabled}
 			data-close-button
 			onclick={() => {
-				if (disabled) return;
+				if (disabled || !dismissable) return;
 				deleteToast();
 				toast.onDismiss?.(toast);
 			}}
 			class={cn(classes?.closeButton, toast?.classes?.closeButton)}
 		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="12"
-				height="12"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-			>
-				<line x1="18" y1="6" x2="6" y2="18" />
-				<line x1="6" y1="6" x2="18" y2="18" />
-			</svg>
+			{@render closeIcon?.()}
 		</button>
 	{/if}
 
@@ -341,39 +493,44 @@
 		{@const Component = toast.component}
 		<Component {...toast.componentProps} closeToast={deleteToast} />
 	{:else}
-		{#if toastType !== 'default' || toast.icon || toast.promise}
-			<div data-icon="">
-				{#if (toast.promise || toastType === 'loading') && !toast.icon}
-					{@render restProps.loadingIcon?.()}
+		{#if (toastType || toast.icon || toast.promise) && toast.icon !== null && (icon !== null || toast.icon)}
+			<div data-icon="" class={cn(classes?.icon, toast?.classes?.icon)}>
+				{#if toast.promise || toastType === 'loading'}
+					{#if toast.icon}
+						<toast.icon />
+					{:else}
+						{@render LoadingIcon()}
+					{/if}
 				{/if}
-				{#if toast.icon}
-					{@const Icon = toast.icon}
-					<Icon />
-				{:else if toastType === 'success'}
-					{@render restProps.successIcon?.()}
-				{:else if toastType === 'error'}
-					{@render restProps.errorIcon?.()}
-				{:else if toastType === 'warning'}
-					{@render restProps.warningIcon?.()}
-				{:else if toastType === 'info'}
-					{@render restProps.infoIcon?.()}
+				{#if toast.type !== 'loading'}
+					{#if toast.icon}
+						<toast.icon />
+					{:else if toastType === 'success'}
+						{@render successIcon?.()}
+					{:else if toastType === 'error'}
+						{@render errorIcon?.()}
+					{:else if toastType === 'warning'}
+						{@render warningIcon?.()}
+					{:else if toastType === 'info'}
+						{@render infoIcon?.()}
+					{/if}
 				{/if}
 			</div>
 		{/if}
 		<div data-content="">
-			{#if toast.title}
-				<div
-					data-title=""
-					class={cn(classes?.title, toast?.classes?.title)}
-				>
+			<div
+				data-title=""
+				class={cn(classes?.title, toast?.classes?.title)}
+			>
+				{#if toast.title}
 					{#if typeof toast.title !== 'string'}
 						{@const Title = toast.title}
 						<Title {...toast.componentProps} />
 					{:else}
 						{toast.title}
 					{/if}
-				</div>
-			{/if}
+				{/if}
+			</div>
 			{#if toast.description}
 				<div
 					data-description=""
@@ -394,32 +551,49 @@
 			{/if}
 		</div>
 		{#if toast.cancel}
-			<button
-				data-button
-				data-cancel
-				style={cancelButtonStyle}
-				class={cn(classes?.cancelButton, toast?.classes?.cancelButton)}
-				onclick={() => {
-					deleteToast();
-					toast.cancel?.onClick?.();
-				}}
-			>
-				{toast.cancel.label}
-			</button>
+			{#if typeof toast.cancel === 'function'}
+				<toast.cancel />
+			{:else if isAction(toast.cancel)}
+				<button
+					data-button
+					data-cancel
+					style={toast.cancelButtonStyle ?? cancelButtonStyle}
+					class={cn(
+						classes?.cancelButton,
+						toast?.classes?.cancelButton
+					)}
+					onclick={(event) => {
+						if (!isAction(toast.cancel)) return;
+						if (!dismissable) return;
+						toast.cancel?.onClick?.(event);
+						deleteToast();
+					}}
+				>
+					{toast.cancel.label}
+				</button>
+			{/if}
 		{/if}
 		{#if toast.action}
-			<button
-				data-button=""
-				style={actionButtonStyle}
-				class={cn(classes?.actionButton, toast?.classes?.actionButton)}
-				onclick={(event) => {
-					toast.action?.onClick(event);
-					if (event.defaultPrevented) return;
-					deleteToast();
-				}}
-			>
-				{toast.action.label}
-			</button>
+			{#if typeof toast.action === 'function'}
+				<toast.action />
+			{:else if isAction(toast.action)}
+				<button
+					data-button=""
+					style={toast.actionButtonStyle ?? actionButtonStyle}
+					class={cn(
+						classes?.actionButton,
+						toast?.classes?.actionButton
+					)}
+					onclick={(event) => {
+						if (!isAction(toast.action)) return;
+						toast.action?.onClick(event);
+						if (event.defaultPrevented) return;
+						deleteToast();
+					}}
+				>
+					{toast.action.label}
+				</button>
+			{/if}
 		{/if}
 	{/if}
 </li>
