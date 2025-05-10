@@ -72,7 +72,7 @@
 			action: () => {
 				toast.custom(Test, {
 					componentProps: {
-						eventName: 'hello'
+						eventName: 'Louvre Museum'
 					}
 				});
 			}
