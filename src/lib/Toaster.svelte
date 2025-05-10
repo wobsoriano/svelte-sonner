@@ -77,7 +77,6 @@
 	import { onMount } from 'svelte';
 	import { toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
-	import Loader from './Loader.svelte';
 	import type { ToastToDismiss, ToasterProps } from './types.js';
 	import type { Position } from './types.js';
 	import type {

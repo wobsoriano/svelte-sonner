@@ -56,7 +56,7 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	id: number | string;
 	title?: string | AnyComponent;
 	type: ToastTypes;
-	icon?: AnyComponent;
+	icon?: AnyComponent | null;
 	component?: AnyComponent;
 	componentProps?: ComponentProps<T>;
 	richColors?: boolean;

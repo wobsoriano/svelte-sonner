@@ -90,13 +90,6 @@ toast.promise(promise, {
 				)
 		},
 		{
-			name: 'Loading',
-			snippet: "toast.loading('Loading...')",
-			action: () => {
-				toast.loading('Loading...');
-			}
-		},
-		{
 			name: 'Custom',
 			snippet: `import Custom from './Custom.svelte'
 
