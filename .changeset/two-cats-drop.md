@@ -13,6 +13,7 @@ Here's an example of using snippets to change the default loading icon:
 	{#snippet loadingIcon()}
 		<LoadingIcon />
 	{/snippet}
+</Toaster>
 ```
 
 Coming soon: Docs site 😉
