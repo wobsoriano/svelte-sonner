@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.0.1
+
+### Patch Changes
+
+- 02af4ff: Fixes an issue where `runed` package can't be resolved due to it being in the `devDependencies` section instead of `dependencies`.
+
 ## 1.0.0
 
 ### Major Changes
