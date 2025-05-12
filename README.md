@@ -26,7 +26,7 @@ Add `<Toaster />` to your app, it will be the place where all your toasts will b
 </script>
 
 <Toaster />
-<button on:click={() => toast('My first toast')}>Give me a toast</button>
+<button onclick={() => toast('My first toast')}>Give me a toast</button>
 ```
 
 ## Types
@@ -153,7 +153,7 @@ You can use `toast.custom` to render an unstyled toast with custom component whi
 </script>
 
 <div>
-	This is a custom component <button on:click={() => dispatch('closeToast')}>close</button>
+	This is a custom component <button onclick={() => dispatch('closeToast')}>close</button>
 </div>
 ```
 
@@ -316,7 +316,7 @@ Offset from the edges of the screen.
 
 ### Programmatically remove toast
 
-To remove a toast programmatically use `toast.dismiss(id)`.
+To remove a toast programmatically use `toast.dismiss(id)`. The `toast()` function returns the id of the toast.
 
 ```js
 const toastId = toast('Event has been created');
@@ -324,20 +324,20 @@ const toastId = toast('Event has been created');
 toast.dismiss(toastId);
 ```
 
-To remove a toast from inside a custom component, dispatch `closeToast`:
-
-```js
-import { createEventDispatcher } from 'svelte';
-
-const dispatch = createEventDispatcher();
-
-dispatch('closeToast');
-```
-
 You can also dismiss all toasts at once by calling `toast.dismiss()` without an id.
 
 ```js
 toast.dismiss();
+```
+
+### `useSonner`
+
+You can use the `useSonner` hook to retrieve all visible toasts like below.
+
+```ts
+const sonner = useSonner();
+
+$effect(() => console.log(sonner.toasts));
 ```
 
 ### Duration
