@@ -26,7 +26,7 @@ Add `<Toaster />` to your app, it will be the place where all your toasts will b
 </script>
 
 <Toaster />
-<button on:click={() => toast('My first toast')}>Give me a toast</button>
+<button onclick={() => toast('My first toast')}>Give me a toast</button>
 ```
 
 ## Types
@@ -153,7 +153,7 @@ You can use `toast.custom` to render an unstyled toast with custom component whi
 </script>
 
 <div>
-	This is a custom component <button on:click={() => dispatch('closeToast')}>close</button>
+	This is a custom component <button onclick={() => dispatch('closeToast')}>close</button>
 </div>
 ```
 
