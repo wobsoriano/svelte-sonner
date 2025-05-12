@@ -75,9 +75,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { toastState } from './toast-state.svelte';
+	import { setSonnerContext, toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
-	import type { ToastToDismiss, ToasterProps } from './types.js';
+	import type { ToasterProps } from './types.js';
 	import type { Position } from './types.js';
 	import type {
 		DragEventHandler,
@@ -181,8 +181,7 @@
 	// Check for dismissed toasts and remove them. We need to do this to have dismiss animation.
 	$effect(() => {
 		const toastsToDismiss = toastState.toasts.filter(
-			(toast) =>
-				(toast as unknown as ToastToDismiss).dismiss && !toast.delete
+			(toast) => toast.dismiss && !toast.delete
 		);
 
 		if (toastsToDismiss.length > 0) {
@@ -333,6 +332,9 @@
 	const handlePointerUp: PointerEventHandler<HTMLOListElement> = () => {
 		interacting = false;
 	};
+
+	// Set the context for `useSonner`
+	setSonnerContext();
 </script>
 
 <section
