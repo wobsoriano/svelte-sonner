@@ -1,3 +1,4 @@
+import { getContext, setContext } from 'svelte';
 import { isBrowser } from './internal/helpers.js';
 import type {
 	ExternalToast,
@@ -246,6 +247,44 @@ function toastFunction<T extends AnyComponent>(message: string | T, data?: Exter
 	});
 }
 
+export class SonnerState {
+	/**
+	 * A derived state of the toasts that are not dismissed.
+	 */
+	#activeToasts = $derived(toastState.toasts.filter((toast) => !toast.dismiss));
+
+	get toasts() {
+		return this.#activeToasts;
+	}
+}
+
+const SONNER_CONTEXT_KEY = Symbol('sonner-svelte-context');
+
+export function setSonnerContext() {
+	setContext(SONNER_CONTEXT_KEY, new SonnerState());
+}
+
+/**
+ * A hook to get a reference to the sonner toast state.
+ *
+ * Returns a class instance a getter for the `toasts` array.
+ *
+ * @example
+ * ```svelte
+ * <script lang="ts">
+ *   import { useSonner } from 'svelte-sonner';
+ *
+ *   const sonner = useSonner();
+ *
+ *   // Reactive access to the toasts
+ *   $effect(() => console.log(sonner.toasts))
+ * </script>
+ * ```
+ */
+export function useSonner(): SonnerState {
+	return getContext(SONNER_CONTEXT_KEY);
+}
+
 const basicToast = toastFunction;
 
 export const toast = Object.assign(basicToast, {
@@ -257,5 +296,8 @@ export const toast = Object.assign(basicToast, {
 	message: toastState.message,
 	promise: toastState.promise,
 	dismiss: toastState.dismiss,
-	loading: toastState.loading
+	loading: toastState.loading,
+	getActiveToasts: () => {
+		return toastState.toasts.filter((toast) => !toast.dismiss);
+	}
 });

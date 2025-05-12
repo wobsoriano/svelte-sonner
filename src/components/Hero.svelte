@@ -10,7 +10,8 @@
 	</div>
 	<h1 class="heading">Svelte Sonner</h1>
 	<p class="hero-description">
-		An opinionated toast component for Svelte.<br /> A port of Emil Kowalski's Sonner.
+		An opinionated toast component for Svelte.<br /> A port of Emil Kowalski's
+		Sonner.
 	</p>
 	<div class="buttons">
 		<button
