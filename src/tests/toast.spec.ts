@@ -1,10 +1,9 @@
 import { describe, it } from 'vitest';
-import type { ToastTestProps } from './ToastTest.svelte';
-import ToastTest from './ToastTest.svelte';
+import ToastTest, { type ToastTestProps } from './ToastTest.svelte';
 import { render, waitFor } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
-import { toastState } from '$lib/state';
-import { sleep } from './utils';
+import { userEvent } from '@testing-library/user-event';
+import { toastState } from '$lib/toast-state.svelte.js';
+import { sleep } from './utils.js';
 
 function setup(props: ToastTestProps) {
 	const user = userEvent.setup();

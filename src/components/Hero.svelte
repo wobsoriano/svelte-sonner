@@ -1,22 +1,23 @@
-<script>
-	import { toast } from '$lib';
+<script lang="ts">
+	import { toast } from '$lib/index.js';
 </script>
 
 <div class="wrapper">
 	<div class="toastWrapper">
-		<div class="toast" />
-		<div class="toast" />
-		<div class="toast" />
+		<div class="toast"></div>
+		<div class="toast"></div>
+		<div class="toast"></div>
 	</div>
 	<h1 class="heading">Svelte Sonner</h1>
 	<p class="hero-description">
-		An opinionated toast component for Svelte.<br /> A port of Emil Kowalski's Sonner.
+		An opinionated toast component for Svelte.<br /> A port of Emil Kowalski's
+		Sonner.
 	</p>
 	<div class="buttons">
 		<button
 			data-testid="default-button"
 			data-primary=""
-			on:click={() => {
+			onclick={() => {
 				toast('Sonner', {
 					description: 'An opinionated toast component for Svelte.'
 				});

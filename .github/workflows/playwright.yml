@@ -9,7 +9,7 @@ jobs:
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: oven-sh/setup-bun@v1
               with:
                   bun-version: latest
@@ -17,7 +17,7 @@ jobs:
             - run: bun run build
             - run: bun run playwright install --with-deps
             - run: bun run test || exit 1
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: playwright-report

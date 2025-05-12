@@ -3,6 +3,12 @@
 	"description": "An opinionated toast component for Svelte.",
 	"license": "MIT",
 	"author": "Robert Soriano <sorianorobertc@gmail.com>",
+	"homepage": "https://github.com/wobsoriano/svelte-sonner#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wobsoriano/svelte-sonner.git"
+	},
+	"bugs": "https://github.com/wobsoriano/svelte-sonner/issues",
 	"keywords": [
 		"svelte",
 		"toast"
@@ -35,45 +41,55 @@
 		"!dist/**/*.spec.*"
 	],
 	"peerDependencies": {
-		"svelte": "^3.0.0 || ^4.0.0 || ^5.0.0-next.1"
+		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.1",
 		"@playwright/test": "^1.38.0",
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/package": "^2.2.2",
-		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@sveltejs/adapter-auto": "^3.3.1",
+		"@sveltejs/kit": "^2.20.8",
+		"@sveltejs/package": "^2.3.11",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@svitejs/changesets-changelog-github-compact": "^1.1.0",
-		"@testing-library/dom": "9.3.1",
-		"@testing-library/jest-dom": "5.17.0",
-		"@testing-library/svelte": "4.0.5",
-		"@testing-library/user-event": "14.4.3",
+		"@testing-library/dom": "^10.3.1",
+		"@testing-library/jest-dom": "^6.4.6",
+		"@testing-library/svelte": "^5.2.3",
+		"@testing-library/user-event": "^14.5.2",
+		"@types/eslint": "^9.6.1",
 		"@types/jest-axe": "^3.5.9",
 		"@types/testing-library__jest-dom": "^5.14.9",
 		"@typescript-eslint/eslint-plugin": "^6.7.2",
 		"@typescript-eslint/parser": "^6.7.2",
-		"bumpp": "^9.2.0",
 		"copy-to-clipboard": "^3.3.3",
-		"eslint": "^8.49.0",
+		"eslint": "^9.12.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.33.2",
+		"eslint-plugin-svelte": "^2.44.1",
+		"globals": "^15.10.0",
 		"highlight.js": "^11.8.0",
-		"jsdom": "22.1.0",
-		"mode-watcher": "^0.1.2",
-		"prettier": "^3.1.1",
-		"prettier-plugin-svelte": "^3.1.2",
+		"jsdom": "^24.1.0",
+		"mode-watcher": "^0.4.1",
+		"prettier": "^3.5.3",
+		"prettier-plugin-svelte": "^3.3.3",
 		"publint": "^0.2.2",
-		"sass": "^1.67.0",
-		"svelte": "^4.2.0",
-		"svelte-check": "^3.5.2",
-		"svelte-preprocess": "^5.0.4",
-		"tslib": "^2.6.2",
-		"typescript": "^5.2.2",
-		"vite": "^5.0.0",
-		"vitest": "^1.0.0"
+		"runed": "^0.26.0",
+		"svelte": "^5.28.2",
+		"svelte-check": "^4.1.7",
+		"svelte-preprocess": "^6.0.3",
+		"tslib": "^2.8.0",
+		"typescript": "^5.6.2",
+		"typescript-eslint": "^8.8.0",
+		"vite": "^5.2.8",
+		"vitest": "^2.1.4"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module"
+	"type": "module",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@sveltejs/kit",
+			"esbuild",
+			"svelte-preprocess"
+		]
+	},
+	"packageManager": "pnpm@9.7.0"
 }

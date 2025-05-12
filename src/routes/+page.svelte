@@ -9,11 +9,17 @@
 	import Position from '../components/Position.svelte';
 	import Types from '../components/Types.svelte';
 	import Usage from '../components/Usage.svelte';
+	import { richColorsContext } from '$lib/internal/ctx.js';
 
-	let expand = false;
-	let position: PositionType = 'bottom-right';
-	let richColors = false;
-	let closeButton = false;
+	let expand = $state(false);
+	let position = $state<PositionType>('bottom-right');
+
+	let richColors = $state(false);
+	let closeButton = $state(false);
+
+	richColorsContext.set({
+		setRichColors: (value: boolean) => (richColors = value)
+	});
 </script>
 
 <svelte:head>
@@ -57,14 +63,11 @@
 		<Installation />
 		<Usage />
 		<Types />
-		<Position
-			{position}
-			on:setPosition={({ detail }) => (position = detail)}
-		/>
-		<Expand {expand} on:setExpand={({ detail }) => (expand = detail)} />
+		<Position {position} setPosition={(pos) => (position = pos)} />
+		<Expand {expand} setExpand={(exp) => (expand = exp)} />
 		<Other
 			bind:closeButton
-			on:setRichColors={({ detail }) => (richColors = detail)}
+			setRichColors={(value) => (richColors = value)}
 		/>
 	</div>
 </main>

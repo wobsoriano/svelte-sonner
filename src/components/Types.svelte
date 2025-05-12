@@ -1,19 +1,25 @@
 <script lang="ts">
-	import { toast } from '$lib';
+	import { toast } from '$lib/index.js';
 	import CodeBlock from './CodeBlock.svelte';
 	import Custom from './Custom.svelte';
+	import { richColorsContext } from '$lib/internal/ctx.js';
+
+	const richColors = richColorsContext.get();
 
 	const allTypes = [
 		{
 			name: 'Default',
 			snippet: "toast('Event has been created')",
-			action: () => toast('Event has been created')
+			action: () => {
+				richColors.setRichColors(false);
+				toast('Event has been created');
+			}
 		},
 		{
 			name: 'Description',
 			snippet: `toast.message('Event has been created', {
-  description: 'Monday, January 3rd at 6:00pm',
-})`,
+				description: 'Monday, January 3rd at 6:00pm',
+				})`,
 			action: () =>
 				toast('Event has been created', {
 					description: 'Monday, January 3rd at 6:00pm'
@@ -22,22 +28,34 @@
 		{
 			name: 'Success',
 			snippet: "toast.success('Event has been created')",
-			action: () => toast.success('Event has been created')
+			action: () => {
+				richColors.setRichColors(false);
+				toast.success('Event has been created');
+			}
 		},
 		{
 			name: 'Info',
 			snippet: "toast.info('Event will be created')",
-			action: () => toast.info('Event will be created')
+			action: () => {
+				richColors.setRichColors(false);
+				toast.info('Event will be created');
+			}
 		},
 		{
 			name: 'Warning',
 			snippet: "toast.warning('Event has warnings')",
-			action: () => toast.warning('Event has warnings')
+			action: () => {
+				richColors.setRichColors(false);
+				toast.warning('Event has warnings');
+			}
 		},
 		{
 			name: 'Error',
 			snippet: "toast.error('Event has not been created')",
-			action: () => toast.error('Event has not been created')
+			action: () => {
+				richColors.setRichColors(false);
+				toast.error('Event has not been created');
+			}
 		},
 		{
 			name: 'Action',
@@ -51,7 +69,6 @@
 				toast.message('Event has been created', {
 					action: {
 						label: 'Undo',
-						// eslint-disable-next-line no-console
 						onClick: () => console.log('Undo')
 					}
 				})
@@ -83,19 +100,12 @@ toast.promise(promise, {
 						),
 					{
 						loading: 'Loading...',
-						success: (data) => {
+						success: (data: { name: string }) => {
 							return `${data.name} toast has been added`;
 						},
 						error: 'Error... :( Try again!'
 					}
 				)
-		},
-		{
-			name: 'Loading',
-			snippet: "toast.loading('Loading...')",
-			action: () => {
-				toast.loading('Loading...');
-			}
 		},
 		{
 			name: 'Custom',
@@ -106,7 +116,7 @@ toast(Custom)`,
 		}
 	];
 
-	let activeType = allTypes[0];
+	let activeType = $state(allTypes[0]);
 </script>
 
 <div>
@@ -121,7 +131,7 @@ toast(Custom)`,
 				class="button"
 				data-testid={type.name}
 				data-active={activeType?.name === type.name}
-				on:click={() => {
+				onclick={() => {
 					type.action?.();
 					activeType = type;
 				}}
