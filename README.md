@@ -316,7 +316,7 @@ Offset from the edges of the screen.
 
 ### Programmatically remove toast
 
-To remove a toast programmatically use `toast.dismiss(id)`.
+To remove a toast programmatically use `toast.dismiss(id)`. The `toast()` function returns the id of the toast.
 
 ```js
 const toastId = toast('Event has been created');
@@ -324,20 +324,20 @@ const toastId = toast('Event has been created');
 toast.dismiss(toastId);
 ```
 
-To remove a toast from inside a custom component, dispatch `closeToast`:
-
-```js
-import { createEventDispatcher } from 'svelte';
-
-const dispatch = createEventDispatcher();
-
-dispatch('closeToast');
-```
-
 You can also dismiss all toasts at once by calling `toast.dismiss()` without an id.
 
 ```js
 toast.dismiss();
+```
+
+### `useSonner`
+
+You can use the `useSonner` hook to retrieve all visible toasts like below.
+
+```ts
+const sonner = useSonner();
+
+$effect(() => console.log(sonner.toasts));
 ```
 
 ### Duration
