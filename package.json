@@ -71,6 +71,7 @@
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.3.3",
 		"publint": "^0.2.2",
+		"runed": "^0.26.0",
 		"svelte": "^5.28.2",
 		"svelte-check": "^4.1.7",
 		"svelte-preprocess": "^6.0.3",

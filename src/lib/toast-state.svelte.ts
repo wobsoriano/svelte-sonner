@@ -1,4 +1,3 @@
-import { getContext, setContext } from 'svelte';
 import { isBrowser } from './internal/helpers.js';
 import type {
 	ExternalToast,
@@ -9,6 +8,7 @@ import type {
 	ToastT,
 	ToastTypes
 } from './types.js';
+import { sonnerContext } from './internal/ctx.js';
 
 let toastsCounter = 0;
 
@@ -258,12 +258,6 @@ export class SonnerState {
 	}
 }
 
-const SONNER_CONTEXT_KEY = Symbol('sonner-svelte-context');
-
-export function setSonnerContext() {
-	setContext(SONNER_CONTEXT_KEY, new SonnerState());
-}
-
 /**
  * A hook to get a reference to the sonner toast state.
  *
@@ -282,7 +276,7 @@ export function setSonnerContext() {
  * ```
  */
 export function useSonner(): SonnerState {
-	return getContext(SONNER_CONTEXT_KEY);
+	return sonnerContext.get();
 }
 
 const basicToast = toastFunction;

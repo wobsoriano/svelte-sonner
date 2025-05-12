@@ -75,7 +75,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { setSonnerContext, toastState } from './toast-state.svelte';
+	import { SonnerState, toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
 	import type { ToasterProps } from './types.js';
 	import type { Position } from './types.js';
@@ -90,6 +90,7 @@
 	import WarningIcon from './icons/WarningIcon.svelte';
 	import InfoIcon from './icons/InfoIcon.svelte';
 	import CloseIcon from './icons/CloseIcon.svelte';
+	import { sonnerContext } from './internal/ctx.js';
 
 	function getInitialTheme(t: string) {
 		if (t !== 'system') return t;
@@ -333,8 +334,7 @@
 		interacting = false;
 	};
 
-	// Set the context for `useSonner`
-	setSonnerContext();
+	sonnerContext.set(new SonnerState());
 </script>
 
 <section
