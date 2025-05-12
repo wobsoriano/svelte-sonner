@@ -16,7 +16,7 @@
 	<h2>Installation</h2>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<code class="code" on:click={onCopy}>
+	<code class="code" onclick={onCopy}>
 		npm install svelte-sonner{' '}
 		<button aria-label="Copy code" class="copy">
 			{#if copying}

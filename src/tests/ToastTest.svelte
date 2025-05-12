@@ -20,4 +20,4 @@
 
 <Toaster />
 
-<button data-testid="trigger" on:click={onClick}>Trigger</button>
+<button data-testid="trigger" onclick={onClick}>Trigger</button>
