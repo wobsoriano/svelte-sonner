@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      runed:
+        specifier: ^0.26.0
+        version: 0.26.0(svelte@5.28.2)
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
@@ -89,9 +93,6 @@ importers:
       publint:
         specifier: ^0.2.2
         version: 0.2.2
-      runed:
-        specifier: ^0.26.0
-        version: 0.26.0(svelte@5.28.2)
       svelte:
         specifier: ^5.28.2
         version: 5.28.2
