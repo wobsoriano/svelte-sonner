@@ -66,6 +66,10 @@ class ToastState {
 		const dismissable = data.dismissable === undefined ? true : data.dismissable;
 		const type = data.type === undefined ? 'default' : data.type;
 
+		// Avoid tracking access to state, namely `toasts`, so that
+		// toasts can be easily created in a $effect without
+		// special handling by users.
+		// See https://github.com/wobsoriano/svelte-sonner/issues/153
 		untrack(() => {
 			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
