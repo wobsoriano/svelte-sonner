@@ -84,16 +84,22 @@ class ToastState {
 	};
 
 	dismiss = (id?: number | string): string | number | undefined => {
-		if (id === undefined) {
-			// we're dismissing all the toasts
-			this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
-			return;
-		}
-		// we're dismissing a specific toast
-		const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
-		if (this.toasts[toastIdx]) {
-			this.toasts[toastIdx] = { ...this.toasts[toastIdx], dismiss: true };
-		}
+		// Avoid tracking access to state, namely `toasts`, so that
+		// toasts can be easily dismissed in a $effect without
+		// special handling by users.
+		// See https://github.com/wobsoriano/svelte-sonner/issues/153
+		untrack(() => {
+			if (id === undefined) {
+				// we're dismissing all the toasts
+				this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
+				return;
+			}
+			// we're dismissing a specific toast
+			const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
+			if (this.toasts[toastIdx]) {
+				this.toasts[toastIdx] = { ...this.toasts[toastIdx], dismiss: true };
+			}
+		});
 		return id;
 	};
 
