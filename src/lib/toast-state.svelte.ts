@@ -9,6 +9,7 @@ import type {
 	ToastTypes
 } from './types.js';
 import { sonnerContext } from './internal/ctx.js';
+import { untrack } from 'svelte';
 
 let toastsCounter = 0;
 
@@ -65,13 +66,15 @@ class ToastState {
 		const dismissable = data.dismissable === undefined ? true : data.dismissable;
 		const type = data.type === undefined ? 'default' : data.type;
 
-		const alreadyExists = this.toasts.find((toast) => toast.id === id);
+		untrack(() => {
+			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
-		if (alreadyExists) {
-			this.updateToast({ id, data, type, message, dismissable });
-		} else {
-			this.addToast({ ...rest, id, title: message, dismissable, type });
-		}
+			if (alreadyExists) {
+				this.updateToast({ id, data, type, message, dismissable });
+			} else {
+				this.addToast({ ...rest, id, title: message, dismissable, type });
+			}
+		});
 
 		return id;
 	};
