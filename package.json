@@ -13,7 +13,7 @@
 		"svelte",
 		"toast"
 	],
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
