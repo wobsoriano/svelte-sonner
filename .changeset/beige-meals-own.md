@@ -2,4 +2,4 @@
 "svelte-sonner": patch
 ---
 
-untrack state dependencies in toast create and dismiss calls
+Fixed an issue where usage of toast inside `$effect` causes an infinite loop
