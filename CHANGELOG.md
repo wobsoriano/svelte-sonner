@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.0.3
+
+### Patch Changes
+
+- be39b67: Avoid triggering nested $effect updates on dismissal
+
 ## 1.0.2
 
 ### Patch Changes
