@@ -270,11 +270,9 @@
 
 	$effect(() => {
 		if (toast.delete) {
-			// deleteToast reads and writes the heights and toasts state.
-			// Untrack the call to avoid triggering nested updates.
-			// See https://github.com/wobsoriano/svelte-sonner/issues/151
 			untrack(() => {
 				deleteToast();
+				toast.onDismiss?.(toast);
 			});
 		}
 	});
