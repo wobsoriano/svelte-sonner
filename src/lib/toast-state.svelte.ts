@@ -9,6 +9,7 @@ import type {
 	ToastTypes
 } from './types.js';
 import { sonnerContext } from './internal/ctx.js';
+import { untrack } from 'svelte';
 
 let toastsCounter = 0;
 
@@ -65,28 +66,40 @@ class ToastState {
 		const dismissable = data.dismissable === undefined ? true : data.dismissable;
 		const type = data.type === undefined ? 'default' : data.type;
 
-		const alreadyExists = this.toasts.find((toast) => toast.id === id);
+		// Avoid tracking access to state, namely `toasts`, so that
+		// toasts can be easily created in a $effect without
+		// special handling by users.
+		// See https://github.com/wobsoriano/svelte-sonner/issues/153
+		untrack(() => {
+			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
-		if (alreadyExists) {
-			this.updateToast({ id, data, type, message, dismissable });
-		} else {
-			this.addToast({ ...rest, id, title: message, dismissable, type });
-		}
+			if (alreadyExists) {
+				this.updateToast({ id, data, type, message, dismissable });
+			} else {
+				this.addToast({ ...rest, id, title: message, dismissable, type });
+			}
+		});
 
 		return id;
 	};
 
 	dismiss = (id?: number | string): string | number | undefined => {
-		if (id === undefined) {
-			// we're dismissing all the toasts
-			this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
-			return;
-		}
-		// we're dismissing a specific toast
-		const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
-		if (this.toasts[toastIdx]) {
-			this.toasts[toastIdx] = { ...this.toasts[toastIdx], dismiss: true };
-		}
+		// Avoid tracking access to state, namely `toasts`, so that
+		// toasts can be easily dismissed in a $effect without
+		// special handling by users.
+		// See https://github.com/wobsoriano/svelte-sonner/issues/153
+		untrack(() => {
+			if (id === undefined) {
+				// we're dismissing all the toasts
+				this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
+				return;
+			}
+			// we're dismissing a specific toast
+			const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
+			if (this.toasts[toastIdx]) {
+				this.toasts[toastIdx] = { ...this.toasts[toastIdx], dismiss: true };
+			}
+		});
 		return id;
 	};
 

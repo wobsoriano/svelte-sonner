@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ToastTypes } from '$lib/types.js';
 
-	export let type: ToastTypes = 'success';
+	const { type = 'success' }: { type: ToastTypes } = $props();
 </script>
 
 {#if type === 'success'}

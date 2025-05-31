@@ -1,11 +1,11 @@
 import { describe, it } from 'vitest';
-import ToastTest, { type ToastTestProps } from './ToastTest.svelte';
+import ToastTest from './ToastTest.svelte';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
-import { toastState } from '$lib/toast-state.svelte.js';
+import { toast, toastState } from '$lib/toast-state.svelte.js';
 import { sleep } from './utils.js';
 
-function setup(props: ToastTestProps) {
+function setup(props: { cb: (t: typeof toast) => void }) {
 	const user = userEvent.setup();
 	const returned = render(ToastTest, { props });
 	const trigger = returned.getByTestId('trigger');

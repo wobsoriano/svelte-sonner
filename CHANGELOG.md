@@ -1,5 +1,17 @@
 # svelte-sonner
 
+## 1.0.3
+
+### Patch Changes
+
+- be39b67: Avoid triggering nested $effect updates on dismissal
+
+## 1.0.2
+
+### Patch Changes
+
+- ae0b9fa: Fixed an issue where usage of toast inside `$effect` causes an infinite loop
+
 ## 1.0.1
 
 ### Patch Changes

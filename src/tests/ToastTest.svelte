@@ -1,17 +1,6 @@
-<script lang="ts" module>
-	type ToastFn = (t: typeof toast) => void;
-
-	export type ToastTestProps = {
-		cb: ToastFn;
-	};
-</script>
-
 <script lang="ts">
 	import { Toaster, toast } from '$lib/index.js';
-
-	type $$Props = ToastTestProps;
-
-	export let cb: $$Props['cb'];
+	const { cb }: { cb: (t: typeof toast) => void } = $props();
 
 	function onClick() {
 		cb(toast);
