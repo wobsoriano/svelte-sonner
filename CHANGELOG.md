@@ -1,5 +1,13 @@
 # svelte-sonner
 
+## 1.0.4
+
+### Patch Changes
+
+- 1a718f6: - Remove lift interaction
+  - Ensure `onDismiss` fires correctly
+- 61e932d: fix: increase specificity of toast styles by removing :where() to resolve issues with `richColors`
+
 ## 1.0.3
 
 ### Patch Changes
