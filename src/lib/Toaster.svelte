@@ -347,8 +347,6 @@
 	{#if toastState.toasts.length > 0}
 		{#each possiblePositions as position, index (position)}
 			{@const [y, x] = position.split('-')}
-			{@const isLifted =
-				expanded && toastState.toasts.length > 1 && !expand}
 			{@const offsetObject = getOffsetObject(offset, mobileOffset)}
 			<!-- eslint-disable-next-line svelte/valid-compile -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -360,7 +358,6 @@
 				data-sonner-toaster
 				data-sonner-theme={actualTheme}
 				data-y-position={y}
-				data-lifted={isLifted}
 				data-x-position={x}
 				style:--front-toast-height={`${toastState.heights[0]?.height}px`}
 				style:--width={`${TOAST_WIDTH}px`}
@@ -527,10 +524,6 @@
 		outline: none;
 		z-index: 999999999;
 		transition: transform 400ms ease;
-	}
-
-	:where([data-sonner-toaster][data-lifted='true']) {
-		transform: translateY(-8px);
 	}
 
 	@media (hover: none) and (pointer: coarse) {
