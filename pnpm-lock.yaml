@@ -37,17 +37,17 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@testing-library/dom':
-        specifier: ^10.3.1
-        version: 10.3.1
+        specifier: ^10.4.0
+        version: 10.4.0
       '@testing-library/jest-dom':
-        specifier: ^6.4.6
-        version: 6.4.6(@types/jest@29.5.11)(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))
+        specifier: ^6.6.3
+        version: 6.6.3
       '@testing-library/svelte':
-        specifier: ^5.2.3
-        version: 5.2.3(svelte@5.28.2)(vite@6.3.5(@types/node@20.10.5)(sass@1.67.0))(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))
+        specifier: ^5.2.4
+        version: 5.2.8(svelte@5.28.2)(vite@6.3.5(@types/node@20.10.5)(sass@1.67.0))(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))
       '@testing-library/user-event':
         specifier: ^14.5.2
-        version: 14.5.2(@testing-library/dom@10.3.1)
+        version: 14.5.2(@testing-library/dom@10.4.0)
       '@types/jest-axe':
         specifier: ^3.5.9
         version: 3.5.9
@@ -622,33 +622,16 @@ packages:
     resolution: {integrity: sha512-qhUGGDHcpbY2zpjW3SwqchuW8J/5EzlPFud7xNntHKA7f3a/mx5+g+ruJKFHSAiVZYo30PALt+AyhmPUNKH/Og==}
     engines: {node: ^14.13.1 || ^16.0.0 || >=18}
 
-  '@testing-library/dom@10.3.1':
-    resolution: {integrity: sha512-q/WL+vlXMpC0uXDyfsMtc1rmotzLV8Y0gq6q1gfrrDjQeHoeLrqHbxdPvPNAh1i+xuJl7+BezywcXArz7vLqKQ==}
+  '@testing-library/dom@10.4.0':
+    resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
     engines: {node: '>=18'}
 
-  '@testing-library/jest-dom@6.4.6':
-    resolution: {integrity: sha512-8qpnGVincVDLEcQXWaHOf6zmlbwTKc6Us6PPu4CRnPXCzo2OGBS5cwgMMOWdxDpEz1mkbvXHpEy99M5Yvt682w==}
+  '@testing-library/jest-dom@6.6.3':
+    resolution: {integrity: sha512-IteBhl4XqYNkM54f4ejhLRJiZNqcSCoXUOG2CPK7qbD322KjQozM4kHQOfkG2oln9b9HTYqs+Sae8vBATubxxA==}
     engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
-    peerDependencies:
-      '@jest/globals': '>= 28'
-      '@types/bun': latest
-      '@types/jest': '>= 28'
-      jest: '>= 28'
-      vitest: '>= 0.32'
-    peerDependenciesMeta:
-      '@jest/globals':
-        optional: true
-      '@types/bun':
-        optional: true
-      '@types/jest':
-        optional: true
-      jest:
-        optional: true
-      vitest:
-        optional: true
 
-  '@testing-library/svelte@5.2.3':
-    resolution: {integrity: sha512-y5eaD2Vp3hb729dAv3dOYNoZ9uNM0bQ0rd5AfXDWPvI+HiGmjl8ZMOuKzBopveyAkci1Kplb6kS53uZhPGEK+w==}
+  '@testing-library/svelte@5.2.8':
+    resolution: {integrity: sha512-ucQOtGsJhtawOEtUmbR4rRh53e6RbM1KUluJIXRmh6D4UzxR847iIqqjRtg9mHNFmGQ8Vkam9yVcR5d1mhIHKA==}
     engines: {node: '>= 10'}
     peerDependencies:
       svelte: ^3 || ^4 || ^5 || ^5.0.0-next.0
@@ -2822,7 +2805,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@testing-library/dom@10.3.1':
+  '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.23.5
       '@babel/runtime': 7.23.6
@@ -2833,31 +2816,27 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-  '@testing-library/jest-dom@6.4.6(@types/jest@29.5.11)(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))':
+  '@testing-library/jest-dom@6.6.3':
     dependencies:
       '@adobe/css-tools': 4.4.0
-      '@babel/runtime': 7.23.6
       aria-query: 5.3.2
       chalk: 3.0.0
       css.escape: 1.5.1
       dom-accessibility-api: 0.6.3
       lodash: 4.17.21
       redent: 3.0.0
-    optionalDependencies:
-      '@types/jest': 29.5.11
-      vitest: 3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0)
 
-  '@testing-library/svelte@5.2.3(svelte@5.28.2)(vite@6.3.5(@types/node@20.10.5)(sass@1.67.0))(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))':
+  '@testing-library/svelte@5.2.8(svelte@5.28.2)(vite@6.3.5(@types/node@20.10.5)(sass@1.67.0))(vitest@3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0))':
     dependencies:
-      '@testing-library/dom': 10.3.1
+      '@testing-library/dom': 10.4.0
       svelte: 5.28.2
     optionalDependencies:
       vite: 6.3.5(@types/node@20.10.5)(sass@1.67.0)
       vitest: 3.2.3(@types/node@20.10.5)(jsdom@24.1.0)(sass@1.67.0)
 
-  '@testing-library/user-event@14.5.2(@testing-library/dom@10.3.1)':
+  '@testing-library/user-event@14.5.2(@testing-library/dom@10.4.0)':
     dependencies:
-      '@testing-library/dom': 10.3.1
+      '@testing-library/dom': 10.4.0
 
   '@types/aria-query@5.0.4': {}
 

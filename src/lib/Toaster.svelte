@@ -74,7 +74,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { SonnerState, toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
 	import type { ToasterProps } from './types.js';
@@ -146,13 +146,16 @@
 		) as ToasterProps['dir'];
 
 		if (dirAttribute === 'auto' || !dirAttribute) {
-			dir =
-				(window.getComputedStyle(document.documentElement)
-					.direction as ToasterProps['dir']) ?? 'ltr';
+			untrack(
+				() =>
+					(dir =
+						(window.getComputedStyle(document.documentElement)
+							.direction as ToasterProps['dir']) ?? 'ltr')
+			);
 			return dir;
 		}
 
-		dir = dirAttribute;
+		untrack(() => (dir = dirAttribute));
 		return dirAttribute;
 	}
 

@@ -26,7 +26,7 @@
 	<h2>Position</h2>
 	<p>Swipe direction changes depending on the position.</p>
 	<div class="buttons">
-		{#each positions as pos}
+		{#each positions as pos (pos)}
 			<button
 				data-active={position === pos}
 				class="button"
