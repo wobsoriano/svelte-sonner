@@ -362,7 +362,6 @@
 
 	const handleDragEnd: DragEventHandler<HTMLOListElement> = (event) => {
 		ondragend?.(event);
-
 		expanded = false;
 	};
 
