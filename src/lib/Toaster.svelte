@@ -186,7 +186,7 @@
 	let listRef = $state<HTMLOListElement>();
 	let lastFocusedElementRef = $state<HTMLElement | null>(null);
 	let isFocusWithin = $state(false);
-	let lastMousePosition = $state<{ x: number; y: number } | null>(null);
+	let lastMousePosition: { x: number; y: number } | null = null;
 
 	const hotkeyLabel = $derived(
 		hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
