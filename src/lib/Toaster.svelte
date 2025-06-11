@@ -186,6 +186,7 @@
 	let listRef = $state<HTMLOListElement>();
 	let lastFocusedElementRef = $state<HTMLElement | null>(null);
 	let isFocusWithin = $state(false);
+	let lastMousePosition = $state<{ x: number; y: number } | null>(null);
 
 	const hotkeyLabel = $derived(
 		hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '')
@@ -331,23 +332,37 @@
 
 	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = (event) => {
 		onmouseenter?.(event);
+		lastMousePosition = { x: event.clientX, y: event.clientY };
 		expanded = true;
 	};
 
 	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = (event) => {
 		onmouseleave?.(event);
-		if (!interacting) {
+
+		// fix firefox firing mouseleave when the toast is closed by clicking
+		// the close button and the toast leaves the mouse position. This doesn't
+		// happen on other browsers, since the mouse wasn't moved by the user.
+		// so we only collapse if mouse actually moved from last known position
+		const currentPosition = { x: event.clientX, y: event.clientY };
+		const mouseActuallyMoved =
+			!lastMousePosition ||
+			Math.abs(currentPosition.x - lastMousePosition.x) > 1 ||
+			Math.abs(currentPosition.y - lastMousePosition.y) > 1;
+
+		if (!interacting && mouseActuallyMoved) {
 			expanded = false;
 		}
 	};
 
 	const handleMouseMove: MouseEventHandler<HTMLOListElement> = (event) => {
 		onmousemove?.(event);
+		lastMousePosition = { x: event.clientX, y: event.clientY };
 		expanded = true;
 	};
 
 	const handleDragEnd: DragEventHandler<HTMLOListElement> = (event) => {
 		ondragend?.(event);
+
 		expanded = false;
 	};
 
@@ -1008,6 +1023,13 @@
 		--normal-bg: #000;
 		--normal-border: hsl(0, 0%, 20%);
 		--normal-text: var(--gray1);
+	}
+
+	[data-sonner-toaster][data-sonner-theme='dark']
+		[data-sonner-toast][data-invert='true'] {
+		--normal-bg: #fff;
+		--normal-border: var(--gray3);
+		--normal-text: var(--gray12);
 	}
 
 	[data-sonner-toaster][data-sonner-theme='dark']
