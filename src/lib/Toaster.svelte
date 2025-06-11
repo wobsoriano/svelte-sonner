@@ -1025,6 +1025,13 @@
 		--normal-text: var(--gray1);
 	}
 
+	[data-sonner-toaster][data-sonner-theme='dark']
+		[data-sonner-toast][data-invert='true'] {
+		--normal-bg: #fff;
+		--normal-border: var(--gray3);
+		--normal-text: var(--gray12);
+	}
+
 	[data-sonner-toaster][data-sonner-theme='dark'] {
 		--normal-bg: #000;
 		--normal-bg-hover: hsl(0, 0%, 12%);
