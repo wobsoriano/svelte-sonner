@@ -91,6 +91,7 @@
 	import InfoIcon from './icons/InfoIcon.svelte';
 	import CloseIcon from './icons/CloseIcon.svelte';
 	import { sonnerContext } from './internal/ctx.js';
+	import { on } from 'svelte/events';
 
 	function getInitialTheme(t: string) {
 		if (t !== 'system') return t;
@@ -108,20 +109,6 @@
 		return LIGHT;
 	}
 
-	function getDocumentDirection(): ToasterProps['dir'] {
-		if (typeof window === 'undefined') return 'ltr';
-		if (typeof document === 'undefined') return 'ltr'; // For Fresh purpose
-
-		const dirAttribute = document.documentElement.getAttribute('dir');
-
-		if (dirAttribute === 'auto' || !dirAttribute) {
-			return window.getComputedStyle(document.documentElement)
-				.direction as ToasterProps['dir'];
-		}
-
-		return dirAttribute as ToasterProps['dir'];
-	}
-
 	let {
 		invert = false,
 		position = 'bottom-right',
@@ -135,7 +122,7 @@
 		duration = TOAST_LIFETIME,
 		visibleToasts = VISIBLE_TOASTS_AMOUNT,
 		toastOptions = {},
-		dir = getDocumentDirection(),
+		dir = 'auto',
 		gap = GAP,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
@@ -148,6 +135,26 @@
 		closeButtonAriaLabel = 'Close toast',
 		...restProps
 	}: ToasterProps = $props();
+
+	function getDocumentDirection(): ToasterProps['dir'] {
+		if (dir !== 'auto') return dir;
+		if (typeof window === 'undefined') return 'ltr';
+		if (typeof document === 'undefined') return 'ltr'; // For Fresh purpose
+
+		const dirAttribute = document.documentElement.getAttribute(
+			'dir'
+		) as ToasterProps['dir'];
+
+		if (dirAttribute === 'auto' || !dirAttribute) {
+			dir =
+				(window.getComputedStyle(document.documentElement)
+					.direction as ToasterProps['dir']) ?? 'ltr';
+			return dir;
+		}
+
+		dir = dirAttribute;
+		return dirAttribute;
+	}
 
 	const possiblePositions = $derived(
 		Array.from(
@@ -234,11 +241,7 @@
 			}
 		};
 
-		document.addEventListener('keydown', handleKeydown);
-
-		return () => {
-			document.removeEventListener('keydown', handleKeydown);
-		};
+		return on(document, 'keydown', handleKeydown);
 	});
 
 	$effect(() => {
@@ -337,9 +340,11 @@
 	sonnerContext.set(new SonnerState());
 </script>
 
+<!-- eslint-disable-next-line svelte/valid-compile -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <section
 	aria-label="{containerAriaLabel} {hotkeyLabel}"
-	tabIndex={-1}
+	tabindex={-1}
 	aria-live="polite"
 	aria-relevant="additions text"
 	aria-atomic="false"
@@ -352,7 +357,7 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ol
 				tabindex={-1}
-				dir={dir === 'auto' ? getDocumentDirection() : dir}
+				dir={getDocumentDirection()}
 				bind:this={listRef}
 				class={className}
 				data-sonner-toaster
