@@ -1,11 +1,18 @@
 # svelte-sonner
 
+## 1.0.5
+
+### Patch Changes
+
+- e441e34: perf: don't unnecessarily run expensive `getDocumentDirection`
+- e441e34: fix: allow event handlers to be passed as props and call them before the internal ones
+
 ## 1.0.4
 
 ### Patch Changes
 
 - 1a718f6: - Remove lift interaction
-  - Ensure `onDismiss` fires correctly
+    - Ensure `onDismiss` fires correctly
 - 61e932d: fix: increase specificity of toast styles by removing :where() to resolve issues with `richColors`
 
 ## 1.0.3
@@ -32,19 +39,19 @@
 
 - 1b1f5b3: Introducing Svelte Sonner v1! 🥳
 
-  This release brings compatibility with Svelte 5, a major internal refactor to use Svelte runes and snippets, and feature parity with the original package.
+    This release brings compatibility with Svelte 5, a major internal refactor to use Svelte runes and snippets, and feature parity with the original package.
 
-  Here's an example of using snippets to change the default loading icon:
+    Here's an example of using snippets to change the default loading icon:
 
-  ```svelte
-  <Toaster>
-  	{#snippet loadingIcon()}
-  		<LoadingIcon />
-  	{/snippet}
-  </Toaster>
-  ```
+    ```svelte
+    <Toaster>
+    	{#snippet loadingIcon()}
+    		<LoadingIcon />
+    	{/snippet}
+    </Toaster>
+    ```
 
-  Coming soon: Docs site 😉
+    Coming soon: Docs site 😉
 
 ## 0.3.26
 
