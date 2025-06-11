@@ -16,10 +16,10 @@
 	"version": "1.0.4",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && pnpm package",
+		"build": "vite build && npm run package",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
-		"prepublishOnly": "pnpm run build",
+		"prepublishOnly": "npm run build",
 		"test": "playwright test",
 		"test:unit": "vitest",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
