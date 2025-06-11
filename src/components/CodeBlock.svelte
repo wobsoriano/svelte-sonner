@@ -69,6 +69,7 @@
 
 	$effect(() => {
 		if (codeElement) {
+			// eslint-disable-next-line svelte/no-dom-manipulating
 			codeElement.innerHTML = highlightedCode;
 		}
 	});

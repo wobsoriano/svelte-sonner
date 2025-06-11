@@ -110,7 +110,7 @@
 <div>
 	<h2>Other</h2>
 	<div class="buttons">
-		{#each allTypes as type}
+		{#each allTypes as type (type.name)}
 			<button
 				class="button"
 				data-testid={`other-${type.name}`}

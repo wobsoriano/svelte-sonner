@@ -126,7 +126,7 @@ toast(Custom)`,
 		options object as the second argument.
 	</p>
 	<div class="buttons">
-		{#each allTypes as type}
+		{#each allTypes as type (type.name)}
 			<button
 				class="button"
 				data-testid={type.name}

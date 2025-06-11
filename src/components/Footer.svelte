@@ -3,7 +3,7 @@
 		<p class="p">
 			<img src="" alt="" />
 			<span>
-				Made by{' '}
+				Made by
 				<a href="https://twitter.com/wobsoriano" target="_blank">
 					wobsoriano.
 				</a>

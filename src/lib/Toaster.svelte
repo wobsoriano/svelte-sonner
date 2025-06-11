@@ -74,7 +74,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { SonnerState, toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
 	import type { ToasterProps } from './types.js';
@@ -91,6 +91,7 @@
 	import InfoIcon from './icons/InfoIcon.svelte';
 	import CloseIcon from './icons/CloseIcon.svelte';
 	import { sonnerContext } from './internal/ctx.js';
+	import { on } from 'svelte/events';
 
 	function getInitialTheme(t: string) {
 		if (t !== 'system') return t;
@@ -108,20 +109,6 @@
 		return LIGHT;
 	}
 
-	function getDocumentDirection(): ToasterProps['dir'] {
-		if (typeof window === 'undefined') return 'ltr';
-		if (typeof document === 'undefined') return 'ltr'; // For Fresh purpose
-
-		const dirAttribute = document.documentElement.getAttribute('dir');
-
-		if (dirAttribute === 'auto' || !dirAttribute) {
-			return window.getComputedStyle(document.documentElement)
-				.direction as ToasterProps['dir'];
-		}
-
-		return dirAttribute as ToasterProps['dir'];
-	}
-
 	let {
 		invert = false,
 		position = 'bottom-right',
@@ -135,7 +122,7 @@
 		duration = TOAST_LIFETIME,
 		visibleToasts = VISIBLE_TOASTS_AMOUNT,
 		toastOptions = {},
-		dir = getDocumentDirection(),
+		dir = 'auto',
 		gap = GAP,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
@@ -146,8 +133,39 @@
 		containerAriaLabel = 'Notifications',
 		class: className,
 		closeButtonAriaLabel = 'Close toast',
+		onblur,
+		onfocus,
+		onmouseenter,
+		onmousemove,
+		onmouseleave,
+		ondragend,
+		onpointerdown,
+		onpointerup,
 		...restProps
 	}: ToasterProps = $props();
+
+	function getDocumentDirection(): ToasterProps['dir'] {
+		if (dir !== 'auto') return dir;
+		if (typeof window === 'undefined') return 'ltr';
+		if (typeof document === 'undefined') return 'ltr'; // For Fresh purpose
+
+		const dirAttribute = document.documentElement.getAttribute(
+			'dir'
+		) as ToasterProps['dir'];
+
+		if (dirAttribute === 'auto' || !dirAttribute) {
+			untrack(
+				() =>
+					(dir =
+						(window.getComputedStyle(document.documentElement)
+							.direction as ToasterProps['dir']) ?? 'ltr')
+			);
+			return dir;
+		}
+
+		untrack(() => (dir = dirAttribute));
+		return dirAttribute;
+	}
 
 	const possiblePositions = $derived(
 		Array.from(
@@ -234,11 +252,7 @@
 			}
 		};
 
-		document.addEventListener('keydown', handleKeydown);
-
-		return () => {
-			document.removeEventListener('keydown', handleKeydown);
-		};
+		return on(document, 'keydown', handleKeydown);
 	});
 
 	$effect(() => {
@@ -276,6 +290,7 @@
 	});
 
 	const handleBlur: FocusEventHandler<HTMLOListElement> = (event) => {
+		onblur?.(event);
 		if (
 			isFocusWithin &&
 			!event.currentTarget.contains(event.relatedTarget as HTMLElement)
@@ -289,6 +304,7 @@
 	};
 
 	const handleFocus: FocusEventHandler<HTMLOListElement> = (event) => {
+		onfocus?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
 			event.target.dataset.dismissable === 'false';
@@ -304,6 +320,7 @@
 	const handlePointerDown: PointerEventHandler<HTMLOListElement> = (
 		event
 	) => {
+		onpointerdown?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
 			event.target.dataset.dismissable === 'false';
@@ -312,34 +329,41 @@
 		interacting = true;
 	};
 
-	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmouseenter?.(event);
 		expanded = true;
 	};
 
-	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmouseleave?.(event);
 		if (!interacting) {
 			expanded = false;
 		}
 	};
 
-	const handleMouseMove: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseMove: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmousemove?.(event);
 		expanded = true;
 	};
 
-	const handleDragEnd: DragEventHandler<HTMLOListElement> = () => {
+	const handleDragEnd: DragEventHandler<HTMLOListElement> = (event) => {
+		ondragend?.(event);
 		expanded = false;
 	};
 
-	const handlePointerUp: PointerEventHandler<HTMLOListElement> = () => {
+	const handlePointerUp: PointerEventHandler<HTMLOListElement> = (event) => {
+		onpointerup?.(event);
 		interacting = false;
 	};
 
 	sonnerContext.set(new SonnerState());
 </script>
 
+<!-- eslint-disable-next-line svelte/valid-compile -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <section
 	aria-label="{containerAriaLabel} {hotkeyLabel}"
-	tabIndex={-1}
+	tabindex={-1}
 	aria-live="polite"
 	aria-relevant="additions text"
 	aria-atomic="false"
@@ -352,7 +376,7 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ol
 				tabindex={-1}
-				dir={dir === 'auto' ? getDocumentDirection() : dir}
+				dir={getDocumentDirection()}
 				bind:this={listRef}
 				class={className}
 				data-sonner-toaster

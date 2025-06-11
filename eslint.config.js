@@ -7,9 +7,9 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
-	...svelte.configs['flat/recommended'],
+	...svelte.configs.recommended,
 	prettier,
-	...svelte.configs['flat/prettier'],
+	...svelte.configs.prettier,
 	{
 		languageOptions: {
 			globals: {
@@ -19,26 +19,29 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ['**/*.svelte'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {
+				extraFileExtensions: ['.svelte'], // Add support for additional file extensions, such as .svelte
 				parser: tseslint.parser
 			}
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/', '.changeset/', '.github/']
-	},
-	{
 		rules: {
-			'@typescript-eslint/no-unused-expressions': 'off',
 			'@typescript-eslint/no-unused-vars': [
-				'warn',
+				'error',
 				{
 					argsIgnorePattern: '^_',
 					varsIgnorePattern: '^_'
 				}
-			]
+			],
+			'@typescript-eslint/no-unused-expressions': 'off',
+			'@typescript-eslint/no-empty-object-type': 'off',
+			'prefer-const': 'off'
 		}
+	},
+	{
+		ignores: ['build/', '.svelte-kit/', 'dist/', '.svelte-kit/**/*']
 	}
 );
