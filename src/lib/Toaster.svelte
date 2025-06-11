@@ -133,6 +133,14 @@
 		containerAriaLabel = 'Notifications',
 		class: className,
 		closeButtonAriaLabel = 'Close toast',
+		onblur,
+		onfocus,
+		onmouseenter,
+		onmousemove,
+		onmouseleave,
+		ondragend,
+		onpointerdown,
+		onpointerup,
 		...restProps
 	}: ToasterProps = $props();
 
@@ -282,6 +290,7 @@
 	});
 
 	const handleBlur: FocusEventHandler<HTMLOListElement> = (event) => {
+		onblur?.(event);
 		if (
 			isFocusWithin &&
 			!event.currentTarget.contains(event.relatedTarget as HTMLElement)
@@ -295,6 +304,7 @@
 	};
 
 	const handleFocus: FocusEventHandler<HTMLOListElement> = (event) => {
+		onfocus?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
 			event.target.dataset.dismissable === 'false';
@@ -310,6 +320,7 @@
 	const handlePointerDown: PointerEventHandler<HTMLOListElement> = (
 		event
 	) => {
+		onpointerdown?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
 			event.target.dataset.dismissable === 'false';
@@ -318,25 +329,30 @@
 		interacting = true;
 	};
 
-	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmouseenter?.(event);
 		expanded = true;
 	};
 
-	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmouseleave?.(event);
 		if (!interacting) {
 			expanded = false;
 		}
 	};
 
-	const handleMouseMove: MouseEventHandler<HTMLOListElement> = () => {
+	const handleMouseMove: MouseEventHandler<HTMLOListElement> = (event) => {
+		onmousemove?.(event);
 		expanded = true;
 	};
 
-	const handleDragEnd: DragEventHandler<HTMLOListElement> = () => {
+	const handleDragEnd: DragEventHandler<HTMLOListElement> = (event) => {
+		ondragend?.(event);
 		expanded = false;
 	};
 
-	const handlePointerUp: PointerEventHandler<HTMLOListElement> = () => {
+	const handlePointerUp: PointerEventHandler<HTMLOListElement> = (event) => {
+		onpointerup?.(event);
 		interacting = false;
 	};
 
