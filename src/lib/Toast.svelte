@@ -121,23 +121,12 @@
 	const dismissable = $derived(toast.dismissable !== false);
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
-	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
-	const heightIndex = $derived(
-		toastState.heights.findIndex((height) => height.toastId === toast.id) ||
-			0
-	);
 	const closeButton = $derived(toast.closeButton ?? closeButtonFromToaster);
 	const duration = $derived(
 		toast.duration ?? durationFromToaster ?? TOAST_LIFETIME
 	);
 	let pointerStart: { x: number; y: number } | null = null;
 	const coords = $derived(position.split('-'));
-	const toastsHeightBefore = $derived(
-		toastState.heights.reduce((prev, curr, reducerIndex) => {
-			if (reducerIndex >= heightIndex) return prev;
-			return prev + curr.height;
-		}, 0)
-	);
 	const isDocumentHidden = useDocumentHidden();
 	const invert = $derived(toast.invert || invertFromToaster);
 	const disabled = $derived(toastType === 'loading');
@@ -150,7 +139,11 @@
 	let closeTimerStartTime = $state(0);
 	let lastCloseTimerStartTime = $state(0);
 
-	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
+	const offset = $derived.by(() => {
+		const thisIndex = toastState.toasts.findIndex(({ id }) => id === toast.id) || 0;
+		const toastsHeightBefore = toastState.toasts.slice(0, thisIndex).reduce((prev, curr) => prev + curr.height, 0);
+		return Math.round(thisIndex * GAP + toastsHeightBefore);
+	});
 
 	$effect(() => {
 		toastTitle;
@@ -190,7 +183,7 @@
 		// to avoid triggering this effect when those are modified. e.g. toasts
 		// added and removed.
 		untrack(() => {
-			toastState.setHeight({ toastId: toast.id, height: finalHeight });
+			toastState.setHeight(toast.id, finalHeight);
 		});
 	});
 
@@ -199,10 +192,10 @@
 		// save the offset for the exit swipe animation
 		offsetBeforeRemove = offset;
 
-		toastState.removeHeight(toast.id);
+		toastState.setHeight(toast.id, 0);
 
 		setTimeout(() => {
-			toastState.remove(toast.id);
+			toastState.toasts.splice(toastState.findToastIdx(toast.id), 1);
 		}, TIME_BEFORE_UNMOUNT);
 	}
 
@@ -258,14 +251,13 @@
 	onMount(() => {
 		mounted = true;
 
-		const height = toastRef?.getBoundingClientRect().height as number;
+		initialHeight = toastRef?.getBoundingClientRect().height as number;
 
-		initialHeight = height;
-		toastState.setHeight({ toastId: toast.id, height });
+		toastState.setHeight(toast.id, initialHeight);
 
 		return () => {
-			toastState.removeHeight(toast.id);
-		};
+			toastState.setHeight(toast.id, 0);
+		}
 	});
 
 	$effect(() => {

@@ -52,8 +52,10 @@ export function isAction(action: ToastAction | AnyComponent | undefined): action
 	return (action as ToastAction).label !== undefined;
 }
 
+export type ToastId = number | string;
+
 export type ToastT<T extends AnyComponent = AnyComponent> = {
-	id: number | string;
+	id: ToastId;
 	title?: string | AnyComponent;
 	type: ToastTypes;
 	icon?: AnyComponent | null;
@@ -79,6 +81,7 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	classes?: ToastClasses;
 	descriptionClass?: string;
 	position?: Position;
+	height: number;
 	dismiss?: boolean;
 	/**
 	 * @internal This is used to determine if the toast has been updated to determine when to reset timer. Hacky but works.
@@ -94,23 +97,13 @@ export type Position =
 	| 'top-center'
 	| 'bottom-center';
 
-export type HeightT = {
-	height: number;
-	toastId: number | string;
-};
-
 export type Theme = 'light' | 'dark';
-
-export type ToastToDismiss = {
-	id: number | string;
-	dismiss: boolean;
-};
 
 export type ExternalToast<T extends AnyComponent = AnyComponent> = Omit<
 	ToastT<T>,
-	'id' | 'type' | 'title' | 'promise' | 'updated'
+	'id' | 'type' | 'title' | 'promise' | 'updated' | 'height'
 > & {
-	id?: number | string;
+	id?: ToastId;
 };
 
 type Offset =
