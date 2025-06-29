@@ -1,12 +1,12 @@
 import { isBrowser } from './internal/helpers.js';
 import type {
 	ExternalToast,
-	HeightT,
 	PromiseData,
 	PromiseT,
 	AnyComponent,
 	ToastT,
-	ToastTypes
+	ToastTypes,
+	ToastId
 } from './types.js';
 import { sonnerContext } from './internal/ctx.js';
 import { untrack } from 'svelte';
@@ -14,7 +14,7 @@ import { untrack } from 'svelte';
 let toastsCounter = 0;
 
 type UpdateToastProps = {
-	id: number | string;
+	id: ToastId;
 	data: Partial<ToastT>;
 	type: ToastTypes;
 	message: string | AnyComponent | undefined;
@@ -23,12 +23,9 @@ type UpdateToastProps = {
 
 class ToastState {
 	toasts = $state<ToastT[]>([]);
-	heights = $state<HeightT[]>([]);
 
-	#findToastIdx = (id: number | string): number | null => {
-		const idx = this.toasts.findIndex((toast) => toast.id === id);
-		if (idx === -1) return null;
-		return idx;
+	findToastIdx = (id: ToastId) => {
+		return this.toasts.findIndex((toast) => toast.id === id);
 	};
 
 	addToast = (data: ToastT): void => {
@@ -37,17 +34,16 @@ class ToastState {
 	};
 
 	updateToast = ({ id, data, type, message }: UpdateToastProps): void => {
-		const toastIdx = this.toasts.findIndex((toast) => toast.id === id);
-		const toastToUpdate = this.toasts[toastIdx];
+		const toastIdx = this.findToastIdx(id);
 
 		this.toasts[toastIdx] = {
-			...toastToUpdate,
+			...this.toasts[toastIdx],
 			...data,
 			id,
 			title: message,
 			type,
-			updated: true
-		};
+			updated: true,
+		} as ToastT;
 	};
 
 	create = <T extends AnyComponent>(
@@ -72,14 +68,14 @@ class ToastState {
 			if (alreadyExists) {
 				this.updateToast({ id, data, type, message, dismissable });
 			} else {
-				this.addToast({ ...rest, id, title: message, dismissable, type });
+				this.addToast({ ...rest, id, title: message, dismissable, type } as ToastT);
 			}
 		});
 
 		return id;
 	};
 
-	dismiss = (id?: number | string): string | number | undefined => {
+	dismiss = (id?: ToastId): string | number | undefined => {
 		untrack(() => {
 			if (id === undefined) {
 				// we're dismissing all the toasts
@@ -92,19 +88,6 @@ class ToastState {
 				this.toasts[toastIdx] = { ...this.toasts[toastIdx], dismiss: true };
 			}
 		});
-		return id;
-	};
-
-	remove = (id?: number | string) => {
-		if (id === undefined) {
-			// remove all toasts
-			this.toasts = [];
-			return;
-		}
-		// remove a specific toast
-		const toastIdx = this.#findToastIdx(id);
-		if (toastIdx === null) return;
-		this.toasts.splice(toastIdx, 1);
 		return id;
 	};
 
@@ -217,22 +200,12 @@ class ToastState {
 		return id;
 	};
 
-	removeHeight = (id: number | string) => {
-		this.heights = this.heights.filter((height) => height.toastId !== id);
-	};
-
-	setHeight = (data: HeightT) => {
-		const toastIdx = this.#findToastIdx(data.toastId);
-		if (toastIdx === null) {
-			this.heights.push(data);
-			return;
-		}
-		this.heights[toastIdx] = data;
-	};
+	setHeight(id: ToastId, height: number) {
+		toastState.toasts[this.findToastIdx(id)]!.height = height;
+	}
 
 	reset = () => {
 		this.toasts = [];
-		this.heights = [];
 	};
 }
 

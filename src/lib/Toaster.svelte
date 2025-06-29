@@ -383,7 +383,7 @@
 				data-sonner-theme={actualTheme}
 				data-y-position={y}
 				data-x-position={x}
-				style:--front-toast-height={`${toastState.heights[0]?.height}px`}
+				style:--front-toast-height={`${toastState.toasts[0]?.height}px`}
 				style:--width={`${TOAST_WIDTH}px`}
 				style:--gap={`${gap}px`}
 				style:--offset-top={offsetObject['--offset-top']}
