@@ -217,11 +217,18 @@ export type ToasterProps = {
 	duration?: number;
 
 	/**
-	 * Gap between toasts when expanded, in pixels.
+	 * Gap between toasts when stacked, in pixels.
 	 *
-	 * @default '14px'
+	 * @default 14
 	 */
 	gap?: number;
+
+	/**
+	 * Gap between toasts when expanded, in pixels.
+	 *
+	 * @default 14
+	 */
+	expandedGap?: number;
 
 	/**
 	 * Amount of visible toasts
@@ -384,5 +391,6 @@ export type ToastProps = {
 	unstyled: boolean;
 	closeButtonAriaLabel: string;
 	defaultRichColors: boolean;
+	expandedGap?: number;
 } & HTMLAttributes<HTMLLIElement> &
 	ToastIcons;
