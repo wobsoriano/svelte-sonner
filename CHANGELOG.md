@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.0.6
+
+### Patch Changes
+
+- 065ac06: Restore expand functionality broken in v1.0.3
+
 ## 1.0.5
 
 ### Patch Changes
