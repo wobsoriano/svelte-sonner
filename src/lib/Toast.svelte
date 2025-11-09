@@ -186,12 +186,7 @@
 
 		initialHeight = finalHeight;
 
-		// setHeight reads heights and toasts state. Untrack the call
-		// to avoid triggering this effect when those are modified. e.g. toasts
-		// added and removed.
-		// untrack(() => {
 		toastState.setHeight({ toastId: toast.id, height: finalHeight });
-		// });
 	});
 
 	function deleteToast() {
