@@ -20,7 +20,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --prefer-offline
             - run: pnpm run build
-            - run: pnpm run playwright install --with-deps
+            - run: pnpm exec playwright install --with-deps
             - run: pnpm run test || exit 1
             - uses: actions/upload-artifact@v4
               if: always()
