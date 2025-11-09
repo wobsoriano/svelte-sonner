@@ -14,8 +14,11 @@
 	// Default toast width
 	const TOAST_WIDTH = 356;
 
-	// Default gap between toasts
+	// Default gap between stacked toasts
 	const GAP = 14;
+
+	// Default gap between expanded toasts
+	const EXPANDED_GAP = 14;
 
 	const DARK = 'dark';
 	const LIGHT = 'light';
@@ -124,6 +127,7 @@
 		toastOptions = {},
 		dir = 'auto',
 		gap = GAP,
+		expandedGap = EXPANDED_GAP,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
 		errorIcon: errorIconProp,
@@ -435,6 +439,7 @@
 							closeButtonAriaLabel}
 						expandByDefault={expand}
 						{expanded}
+						{expandedGap}
 						loadingIcon={loadingIconProp}
 					>
 						{#snippet successIcon()}
