@@ -24,7 +24,7 @@ jobs:
                   version: 10.20.0
             - uses: actions/setup-node@v4
               with:
-                  node-version: 22
+                  node-version: 20
                   cache: pnpm
 
             - name: Install dependencies
