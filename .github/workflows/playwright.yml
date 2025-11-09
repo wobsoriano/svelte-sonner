@@ -10,13 +10,18 @@ jobs:
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: oven-sh/setup-bun@v1
+            - uses: pnpm/action-setup@v4
               with:
-                  bun-version: latest
-            - run: bun install
-            - run: bun run build
-            - run: bun run playwright install --with-deps
-            - run: bun run test || exit 1
+                  version: 10.20.0
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: pnpm
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --prefer-offline
+            - run: pnpm run build
+            - run: pnpm run playwright install --with-deps
+            - run: pnpm run test || exit 1
             - uses: actions/upload-artifact@v4
               if: always()
               with:

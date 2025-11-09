@@ -92,5 +92,5 @@
 		]
 	},
 	"sideEffects": false,
-	"packageManager": "pnpm@9.7.0"
+	"packageManager": "pnpm@10.20.0"
 }
