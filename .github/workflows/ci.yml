@@ -15,14 +15,14 @@ jobs:
         name: Run svelte-check
         runs-on: macos-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: pnpm/action-setup@v4
               with:
                   version: 10.20.0
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 20
+                  node-version: 24
                   cache: pnpm
 
             - name: Install dependencies
@@ -35,14 +35,14 @@ jobs:
         runs-on: ubuntu-latest
         name: Lint
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: pnpm/action-setup@v4
               with:
                   version: 10.20.0
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 20
+                  node-version: 24
                   cache: pnpm
 
             - name: Install dependencies
@@ -53,14 +53,14 @@ jobs:
     Tests:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: pnpm/action-setup@v4
               with:
                   version: 10.20.0
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 20
+                  node-version: 24
                   cache: pnpm
 
             - name: Install dependencies
@@ -72,13 +72,13 @@ jobs:
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: pnpm/action-setup@v4
               with:
                   version: 10.20.0
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 20
+                  node-version: 24
                   cache: pnpm
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --prefer-offline
