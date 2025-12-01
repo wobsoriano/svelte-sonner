@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.0.7
+
+### Patch Changes
+
+- 27599d7: Switch to OIDC for npm publishing
+
 ## 1.0.6
 
 ### Patch Changes
