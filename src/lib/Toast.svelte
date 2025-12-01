@@ -2,8 +2,9 @@
 	// Default lifetime of a toasts (in ms)
 	const TOAST_LIFETIME = 4000;
 
-	// Default gap between toasts
-	const GAP = 14;
+
+	// Default gap between expanded toasts
+	const EXPANDED_GAP = 14;
 
 	// Threshold to dismiss a toast
 	const SWIPE_THRESHOLD = 45;
@@ -96,6 +97,7 @@
 		defaultRichColors = false,
 		swipeDirections: swipeDirectionsProp,
 		closeButtonAriaLabel,
+		expandedGap = EXPANDED_GAP,
 		...restProps
 	}: ToastProps = $props();
 
@@ -150,7 +152,7 @@
 	let closeTimerStartTime = $state(0);
 	let lastCloseTimerStartTime = $state(0);
 
-	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
+	const offset = $derived(Math.round(heightIndex * expandedGap + toastsHeightBefore));
 
 	$effect(() => {
 		toastTitle;
