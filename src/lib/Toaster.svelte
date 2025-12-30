@@ -277,6 +277,7 @@
 			);
 
 			const changeHandler = ({ matches }: MediaQueryListEvent) => {
+				if (theme !== 'system') return;
 				actualTheme = matches ? DARK : LIGHT;
 			};
 
