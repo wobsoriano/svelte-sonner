@@ -141,6 +141,12 @@
 	const isDocumentHidden = useDocumentHidden();
 	const invert = $derived(toast.invert || invertFromToaster);
 	const disabled = $derived(toastType === 'loading');
+	const swipeDirections = $derived(
+		swipeDirectionsProp ?? getDefaultSwipeDirections(position)
+	);
+	const swipeEnabled = $derived(
+		dismissable && !disabled && swipeDirections.length > 0
+	);
 
 	const classes = $derived({ ...defaultClasses, ...classesProp });
 
@@ -273,20 +279,20 @@
 	});
 
 	const handlePointerDown: PointerEventHandler<HTMLLIElement> = (event) => {
-		if (disabled) return;
+		if (!swipeEnabled) return;
 
 		offsetBeforeRemove = offset;
 		const target = event.target as HTMLElement;
 
 		// ensure we maintain correct pointer capture even when going outside of the toast (e.g. when swiping)
-		target.setPointerCapture(event.pointerId);
+		target.setPointerCapture?.(event.pointerId);
 		if (target.tagName === 'BUTTON') return;
 		swiping = true;
 		pointerStart = { x: event.clientX, y: event.clientY };
 	};
 
 	const handlePointerUp: PointerEventHandler<HTMLLIElement> = () => {
-		if (swipeOut || !dismissable) return;
+		if (swipeOut || !swipeEnabled) return;
 
 		pointerStart = null;
 		const swipeAmountX = Number(
@@ -330,7 +336,7 @@
 	};
 
 	const handlePointerMove: PointerEventHandler<HTMLLIElement> = (event) => {
-		if (!pointerStart || !dismissable) return;
+		if (!pointerStart || !swipeEnabled) return;
 
 		const isHighlighted =
 			(window.getSelection()?.toString().length ?? -1) > 0;
@@ -338,9 +344,6 @@
 
 		const yDelta = event.clientY - pointerStart.y;
 		const xDelta = event.clientX - pointerStart.x;
-
-		const swipeDirections =
-			swipeDirectionsProp ?? getDefaultSwipeDirections(position);
 
 		// Determine swipe direction if not already locked
 		if (!swipeDirection && (Math.abs(xDelta) > 1 || Math.abs(yDelta) > 1)) {
@@ -471,10 +474,10 @@
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
 	style:--initial-height={expandByDefault ? 'auto' : `${initialHeight}px`}
 	style={`${restProps.style} ${toast.style}`}
-	onpointermove={handlePointerMove}
-	onpointerup={handlePointerUp}
-	onpointerdown={handlePointerDown}
-	ondragend={handleDragEnd}
+	onpointermove={swipeEnabled ? handlePointerMove : undefined}
+	onpointerup={swipeEnabled ? handlePointerUp : undefined}
+	onpointerdown={swipeEnabled ? handlePointerDown : undefined}
+	ondragend={swipeEnabled ? handleDragEnd : undefined}
 >
 	{#if closeButton && !toast.component && toastType !== 'loading' && closeIcon !== null}
 		<button
