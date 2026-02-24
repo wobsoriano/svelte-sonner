@@ -121,6 +121,7 @@
 		richColors = false,
 		duration = TOAST_LIFETIME,
 		visibleToasts = VISIBLE_TOASTS_AMOUNT,
+		swipeDirections,
 		toastOptions = {},
 		dir = 'auto',
 		gap = GAP,
@@ -421,6 +422,7 @@
 						descriptionClass={toastOptions?.descriptionClass || ''}
 						{invert}
 						{visibleToasts}
+						{swipeDirections}
 						{closeButton}
 						{interacting}
 						{position}

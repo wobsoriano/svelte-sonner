@@ -1,18 +1,23 @@
 <script lang="ts">
 	import { Toaster } from '$lib/index.js';
-	import type { Position as PositionType } from '$lib/types.js';
+	import type {
+		Position as PositionType,
+		SwipeDirection
+	} from '$lib/types.js';
 	import Expand from '../components/Expand.svelte';
 	import Footer from '../components/Footer.svelte';
 	import Hero from '../components/Hero.svelte';
 	import Installation from '../components/Installation.svelte';
 	import Other from '../components/Other.svelte';
 	import Position from '../components/Position.svelte';
+	import SwipeDirections from '../components/SwipeDirections.svelte';
 	import Types from '../components/Types.svelte';
 	import Usage from '../components/Usage.svelte';
 	import { richColorsContext } from '$lib/internal/ctx.js';
 
 	let expand = $state(false);
 	let position = $state<PositionType>('bottom-right');
+	let swipeDirections = $state<SwipeDirection[] | undefined>(undefined);
 
 	let richColors = $state(false);
 	let closeButton = $state(false);
@@ -56,7 +61,7 @@
 	/>
 </svelte:head>
 
-<Toaster {expand} {position} {richColors} {closeButton} />
+<Toaster {expand} {position} {swipeDirections} {richColors} {closeButton} />
 <main class="container">
 	<Hero />
 	<div class="content">
@@ -64,6 +69,11 @@
 		<Usage />
 		<Types />
 		<Position {position} setPosition={(pos) => (position = pos)} />
+		<SwipeDirections
+			{position}
+			{swipeDirections}
+			setSwipeDirections={(value) => (swipeDirections = value)}
+		/>
 		<Expand {expand} setExpand={(exp) => (expand = exp)} />
 		<Other
 			bind:closeButton

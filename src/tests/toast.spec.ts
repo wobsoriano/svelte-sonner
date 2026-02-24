@@ -1,11 +1,15 @@
 import { describe, it } from 'vitest';
 import ToastTest from './ToastTest.svelte';
-import { render, waitFor } from '@testing-library/svelte';
+import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import { toast, toastState } from '$lib/toast-state.svelte.js';
+import type { ToasterProps } from '$lib/types.js';
 import { sleep } from './utils.js';
 
-function setup(props: { cb: (t: typeof toast) => void }) {
+function setup(props: {
+	cb: (t: typeof toast) => void;
+	toasterProps?: ToasterProps;
+}) {
 	const user = userEvent.setup();
 	const returned = render(ToastTest, { props });
 	const trigger = returned.getByTestId('trigger');
@@ -125,5 +129,38 @@ describe('Toast', () => {
 		expect(getByText('Finished loading!')).toBeVisible();
 		await sleep(2200);
 		expect(getByText('Finished loading!')).toBeVisible();
+	});
+
+	it('should disable swiping when swipeDirections is empty', async () => {
+		const { user, trigger, container, getByText } = setup({
+			cb: (toast) => toast('Hello world', { duration: 5000 }),
+			toasterProps: { swipeDirections: [] }
+		});
+
+		await user.click(trigger);
+		const toastEl = container.querySelector<HTMLElement>('[data-sonner-toast]');
+		expect(toastEl).not.toBeNull();
+		if (!toastEl) return;
+
+		await fireEvent.pointerDown(toastEl, {
+			clientX: 100,
+			clientY: 100,
+			pointerId: 1
+		});
+		await fireEvent.pointerMove(toastEl, {
+			clientX: 250,
+			clientY: 100,
+			pointerId: 1
+		});
+		await fireEvent.pointerUp(toastEl, {
+			clientX: 250,
+			clientY: 100,
+			pointerId: 1
+		});
+
+		expect(getByText('Hello world')).toBeVisible();
+		expect(toastEl.dataset.swiped).toBe('false');
+		expect(toastEl.style.getPropertyValue('--swipe-amount-x')).toBe('');
+		expect(toastEl.style.getPropertyValue('--swipe-amount-y')).toBe('');
 	});
 });
