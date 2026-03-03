@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.0.8
+
+### Patch Changes
+
+- 3cfc3c8: Ignore system theme change if theme has been set explicitly
+
 ## 1.0.7
 
 ### Patch Changes
