@@ -110,6 +110,7 @@
 	}
 
 	let {
+		children,
 		invert = false,
 		position = 'bottom-right',
 		hotkey = ['altKey', 'KeyT'],
@@ -483,6 +484,8 @@
 		{/each}
 	{/if}
 </section>
+
+{@render children?.()}
 
 <style global lang="postcss">
 	html[dir='ltr'],

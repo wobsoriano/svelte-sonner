@@ -165,6 +165,11 @@ type ToastIcons = {
 
 export type ToasterProps = {
 	/**
+	 * Children. Guaranteed to have a toaster context here.
+	 */
+	children?: Snippet<[]>;
+
+	/**
 	 * Dark toasts in light mode and vice versa.
 	 *
 	 * @default false
