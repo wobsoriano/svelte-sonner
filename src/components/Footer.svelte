@@ -4,7 +4,7 @@
 			<img src="" alt="" />
 			<span>
 				Ported by
-				<a href="https://twitter.com/wobsoriano" target="_blank">
+				<a href="https://x.com/wobsoriano" target="_blank">
 					wobsoriano.
 				</a>
 			</span>
