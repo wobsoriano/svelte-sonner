@@ -62,7 +62,12 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	richColors?: boolean;
 	invert?: boolean;
 	closeButton?: boolean;
+	dismissible?: boolean;
+	/**
+	 * @deprecated Use `dismissible` instead.
+	 */
 	dismissable?: boolean;
+	important?: boolean;
 	description?: string | AnyComponent;
 	duration?: number;
 	delete?: boolean;
@@ -259,6 +264,14 @@ export type ToasterProps = {
 	mobileOffset?: Offset;
 
 	/**
+	 * Pause the toast timer when the page is hidden, e.g. when the user switches
+	 * tabs. Toasts will not expire while the page is hidden.
+	 *
+	 * @default false
+	 */
+	pauseWhenPageIsHidden?: boolean;
+
+	/**
 	 * Directionality of toast's text
 	 *
 	 * @default 'auto'
@@ -358,6 +371,7 @@ export type ToastClasses = {
 	cancelButton?: string;
 	actionButton?: string;
 	icon?: string;
+	content?: string;
 } & ToastTypeClasses;
 
 type ToastTypeClasses = Partial<Record<ToastTypes, string>>;
@@ -384,5 +398,6 @@ export type ToastProps = {
 	unstyled: boolean;
 	closeButtonAriaLabel: string;
 	defaultRichColors: boolean;
+	pauseWhenPageIsHidden: boolean;
 } & HTMLAttributes<HTMLLIElement> &
 	ToastIcons;

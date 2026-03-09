@@ -124,6 +124,7 @@
 		toastOptions = {},
 		dir = 'auto',
 		gap = GAP,
+		pauseWhenPageIsHidden = false,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
 		errorIcon: errorIconProp,
@@ -308,7 +309,7 @@
 		onfocus?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
-			event.target.dataset.dismissable === 'false';
+			event.target.dataset.dismissible === 'false';
 
 		if (isNotDismissable) return;
 
@@ -324,7 +325,7 @@
 		onpointerdown?.(event);
 		const isNotDismissable =
 			event.target instanceof HTMLElement &&
-			event.target.dataset.dismissable === 'false';
+			event.target.dataset.dismissible === 'false';
 
 		if (isNotDismissable) return;
 		interacting = true;
@@ -436,6 +437,7 @@
 							closeButtonAriaLabel}
 						expandByDefault={expand}
 						{expanded}
+						{pauseWhenPageIsHidden}
 						loadingIcon={loadingIconProp}
 					>
 						{#snippet successIcon()}

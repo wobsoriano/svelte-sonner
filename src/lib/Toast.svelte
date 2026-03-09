@@ -96,6 +96,7 @@
 		defaultRichColors = false,
 		swipeDirections: swipeDirectionsProp,
 		closeButtonAriaLabel,
+		pauseWhenPageIsHidden,
 		...restProps
 	}: ToastProps = $props();
 
@@ -118,7 +119,11 @@
 	const isFront = $derived(index === 0);
 	const isVisible = $derived(index + 1 <= visibleToasts);
 	const toastType = $derived(toast.type);
-	const dismissable = $derived(toast.dismissable !== false);
+	const dismissible = $derived(
+		toast.dismissible !== undefined
+			? toast.dismissible !== false
+			: toast.dismissable !== false
+	);
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
@@ -240,7 +245,7 @@
 
 	$effect(() => {
 		if (!isPromiseLoadingOrInfiniteDuration) {
-			if (expanded || interacting || isDocumentHidden.current) {
+			if (expanded || interacting || (pauseWhenPageIsHidden && isDocumentHidden.current)) {
 				pauseTimer();
 			} else {
 				startTimer();
@@ -286,7 +291,7 @@
 	};
 
 	const handlePointerUp: PointerEventHandler<HTMLLIElement> = () => {
-		if (swipeOut || !dismissable) return;
+		if (swipeOut || !dismissible) return;
 
 		pointerStart = null;
 		const swipeAmountX = Number(
@@ -330,7 +335,7 @@
 	};
 
 	const handlePointerMove: PointerEventHandler<HTMLLIElement> = (event) => {
-		if (!pointerStart || !dismissable) return;
+		if (!pointerStart || !dismissible) return;
 
 		const isHighlighted =
 			(window.getSelection()?.toString().length ?? -1) > 0;
@@ -446,6 +451,8 @@
 		classes?.[toastType],
 		toast?.classes?.[toastType]
 	)}
+	aria-live={toast.important ? 'assertive' : 'polite'}
+	aria-atomic="true"
 	data-sonner-toast=""
 	data-rich-colors={toast.richColors ?? defaultRichColors}
 	data-styled={!(toast.component || toast.unstyled || unstyled)}
@@ -459,7 +466,7 @@
 	data-index={index}
 	data-front={isFront}
 	data-swiping={swiping}
-	data-dismissable={dismissable}
+	data-dismissible={dismissible}
 	data-type={toastType}
 	data-invert={invert}
 	data-swipe-out={swipeOut}
@@ -482,7 +489,7 @@
 			data-disabled={disabled}
 			data-close-button
 			onclick={() => {
-				if (disabled || !dismissable) return;
+				if (disabled || !dismissible) return;
 				deleteToast();
 				toast.onDismiss?.(toast);
 			}}
@@ -520,7 +527,7 @@
 				{/if}
 			</div>
 		{/if}
-		<div data-content="">
+		<div data-content="" class={cn(classes?.content, toast?.classes?.content)}>
 			<div
 				data-title=""
 				class={cn(classes?.title, toast?.classes?.title)}
@@ -567,7 +574,7 @@
 					)}
 					onclick={(event) => {
 						if (!isAction(toast.cancel)) return;
-						if (!dismissable) return;
+						if (!dismissible) return;
 						toast.cancel?.onClick?.(event);
 						deleteToast();
 					}}
