@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.1.0
+
+### Minor Changes
+
+- b059173: Add `pauseWhenPageIsHidden` prop and rename dismissable to dismissible (deprecated alias kept for backwards compatibility)
+
 ## 1.0.8
 
 ### Patch Changes
