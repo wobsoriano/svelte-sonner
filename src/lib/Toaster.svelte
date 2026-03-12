@@ -77,8 +77,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { SonnerState, toastState } from './toast-state.svelte';
 	import Toast from './Toast.svelte';
-	import type { ToasterProps } from './types.js';
-	import type { Position } from './types.js';
+	import type { ToastT, ToasterProps, Position } from './types.js';
 	import type {
 		DragEventHandler,
 		FocusEventHandler,
@@ -109,7 +108,15 @@
 		return LIGHT;
 	}
 
+	function isToastForToaster(toast: ToastT, toasterId: ToastT['toasterId']) {
+		// Untargeted toasts render only in the default/global toaster that does not have an
+		// explicit id
+		if (toast.toasterId === undefined) return toasterId === undefined;
+		return toast.toasterId === toasterId;
+	}
+
 	let {
+		id: toasterId,
 		invert = false,
 		position = 'bottom-right',
 		hotkey = ['altKey', 'KeyT'],
@@ -145,6 +152,10 @@
 		...restProps
 	}: ToasterProps = $props();
 
+	const toasts = $derived(
+		toastState.toasts.filter((toast) => isToastForToaster(toast, toasterId))
+	);
+
 	function getDocumentDirection(): ToasterProps['dir'] {
 		if (dir !== 'auto') return dir;
 		if (typeof window === 'undefined') return 'ltr';
@@ -173,7 +184,7 @@
 			new Set(
 				[
 					position,
-					...toastState.toasts
+					...toasts
 						.filter((toast) => toast.position)
 						.map((toast) => toast.position)
 				].filter(Boolean)
@@ -193,7 +204,7 @@
 	);
 
 	$effect(() => {
-		if (toastState.toasts.length <= 1) {
+		if (toasts.length <= 1) {
 			expanded = false;
 		}
 	});
@@ -370,7 +381,7 @@
 	aria-relevant="additions text"
 	aria-atomic="false"
 >
-	{#if toastState.toasts.length > 0}
+	{#if toasts.length > 0}
 		{#each possiblePositions as position, index (position)}
 			{@const [y, x] = position.split('-')}
 			{@const offsetObject = getOffsetObject(offset, mobileOffset)}
@@ -413,7 +424,7 @@
 				onpointerup={handlePointerUp}
 				{...restProps}
 			>
-				{#each toastState.toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
+				{#each toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
 					<Toast
 						{index}
 						{toast}
