@@ -61,7 +61,6 @@
 		"@testing-library/user-event": "^14.6.1",
 		"@types/jest-axe": "^3.5.9",
 		"@types/testing-library__jest-dom": "^5.14.9",
-		"copy-to-clipboard": "^3.3.3",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.13.0",

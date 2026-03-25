@@ -1,10 +1,8 @@
 <script lang="ts">
-	import copy from 'copy-to-clipboard';
-
 	let copying = $state(0);
 
-	function onCopy() {
-		copy('npm install svelte-sonner');
+	async function onCopy() {
+		await navigator.clipboard.writeText('npm install svelte-sonner');
 		copying++;
 		setTimeout(() => {
 			copying--;
