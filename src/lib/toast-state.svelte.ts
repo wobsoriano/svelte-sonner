@@ -228,12 +228,12 @@ class ToastState {
 	};
 
 	setHeight = (data: HeightT) => {
-		const toastIdx = this.#findToastIdx(data.toastId);
-		if (toastIdx === null) {
+		const heightIdx = this.heights.findIndex((h) => h.toastId === data.toastId);
+		if (heightIdx === -1) {
 			this.heights.push(data);
-			return;
+		} else {
+			this.heights[heightIdx] = data;
 		}
-		this.heights[toastIdx] = data;
 	};
 
 	reset = () => {
