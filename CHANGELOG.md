@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.1.1
+
+### Patch Changes
+
+- 828befe: Fix infinite-duration toasts being dismissed immediately when updated
+
 ## 1.1.0
 
 ### Minor Changes
