@@ -228,12 +228,18 @@ class ToastState {
 	};
 
 	setHeight = (data: HeightT) => {
-		const toastIdx = this.#findToastIdx(data.toastId);
-		if (toastIdx === null) {
+		// untrack the read so that callers inside $effect (e.g. Toast.svelte's
+		// height-measurement effect) don't subscribe to this.heights — which
+		// would re-trigger the effect when the subsequent push/assignment
+		// mutates the same array, causing effect_update_depth_exceeded.
+		const heightIdx = untrack(() =>
+			this.heights.findIndex((h) => h.toastId === data.toastId)
+		);
+		if (heightIdx === -1) {
 			this.heights.push(data);
-			return;
+		} else {
+			this.heights[heightIdx] = data;
 		}
-		this.heights[toastIdx] = data;
 	};
 
 	reset = () => {
