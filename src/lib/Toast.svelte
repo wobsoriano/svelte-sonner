@@ -239,7 +239,9 @@
 			// new duration
 			clearTimeout(timeoutId);
 			remainingTime = duration;
-			startTimer();
+			if (!isPromiseLoadingOrInfiniteDuration) {
+				startTimer();
+			}
 		}
 	});
 
