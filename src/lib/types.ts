@@ -54,6 +54,7 @@ export function isAction(action: ToastAction | AnyComponent | undefined): action
 
 export type ToastT<T extends AnyComponent = AnyComponent> = {
 	id: number | string;
+	toasterId?: string;
 	title?: string | AnyComponent;
 	type: ToastTypes;
 	icon?: AnyComponent | null;
@@ -169,6 +170,14 @@ type ToastIcons = {
 };
 
 export type ToasterProps = {
+	/**
+	 * Unique ID for this toaster instance.
+	 *
+	 * Use together with `toast(..., { toasterId })` to target specific toasters when
+	 * multiple are rendered.
+	 */
+	id?: string;
+
 	/**
 	 * Dark toasts in light mode and vice versa.
 	 *

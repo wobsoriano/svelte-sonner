@@ -182,6 +182,22 @@ You can change the position through the `position` prop on the `<Toaster />` com
 <Toaster position="top-center" />
 ```
 
+### Multiple Toasters
+
+You can render multiple toasters if you need this clear separation. This then enables you to point a toast to a specific toaster.
+
+```svelte
+<Toaster id="global" position="top-right" />
+<Toaster id="canvas" position="bottom-left" />
+
+<button onclick={() => toast('Global toast', { toasterId: 'global' })}>
+	Show in Global Toaster
+</button>
+<button onclick={() => toast('Canvas toast', { toasterId: 'canvas' })}>
+	Show in Canvas Toaster
+</button>
+```
+
 ### Expanded
 
 Toasts can also be expanded by default through the `expand` prop. You can also change the amount of visible toasts which is 3 by default.
