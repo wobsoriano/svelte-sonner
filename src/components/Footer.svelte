@@ -3,8 +3,8 @@
 		<p class="p">
 			<img src="" alt="" />
 			<span>
-				Made by
-				<a href="https://twitter.com/wobsoriano" target="_blank">
+				Ported by
+				<a href="https://x.com/wobsoriano" target="_blank">
 					wobsoriano.
 				</a>
 			</span>

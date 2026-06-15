@@ -18,7 +18,7 @@ type UpdateToastProps = {
 	data: Partial<ToastT>;
 	type: ToastTypes;
 	message: string | AnyComponent | undefined;
-	dismissable: boolean;
+	dismissible: boolean;
 };
 
 class ToastState {
@@ -63,16 +63,22 @@ class ToastState {
 				? data.id
 				: toastsCounter++;
 
-		const dismissable = data.dismissable === undefined ? true : data.dismissable;
+		// Support deprecated `dismissable` as a fallback for backwards compatibility
+		const dismissible =
+			data.dismissible !== undefined
+				? data.dismissible
+				: data.dismissable !== undefined
+					? data.dismissable
+					: true;
 		const type = data.type === undefined ? 'default' : data.type;
 
 		untrack(() => {
 			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
 			if (alreadyExists) {
-				this.updateToast({ id, data, type, message, dismissable });
+				this.updateToast({ id, data, type, message, dismissible });
 			} else {
-				this.addToast({ ...rest, id, title: message, dismissable, type });
+				this.addToast({ ...rest, id, title: message, dismissible, type });
 			}
 		});
 

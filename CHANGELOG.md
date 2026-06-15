@@ -1,5 +1,23 @@
 # svelte-sonner
 
+## 1.1.1
+
+### Patch Changes
+
+- 828befe: Fix infinite-duration toasts being dismissed immediately when updated
+
+## 1.1.0
+
+### Minor Changes
+
+- b059173: Add `pauseWhenPageIsHidden` prop and rename dismissable to dismissible (deprecated alias kept for backwards compatibility)
+
+## 1.0.8
+
+### Patch Changes
+
+- 3cfc3c8: Ignore system theme change if theme has been set explicitly
+
 ## 1.0.7
 
 ### Patch Changes
