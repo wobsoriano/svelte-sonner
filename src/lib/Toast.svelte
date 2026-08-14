@@ -127,10 +127,13 @@
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
-	const heightIndex = $derived(
-		toastState.heights.findIndex((height) => height.toastId === toast.id) ||
-			0
-	);
+	// findIndex returns -1 when not yet measured; -1 is truthy, so `|| 0` left a negative index in the offset math.
+	const heightIndex = $derived.by(() => {
+		const idx = toastState.heights.findIndex(
+			(height) => height.toastId === toast.id
+		);
+		return idx === -1 ? 0 : idx;
+	});
 	const closeButton = $derived(toast.closeButton ?? closeButtonFromToaster);
 	const duration = $derived(
 		toast.duration ?? durationFromToaster ?? TOAST_LIFETIME
