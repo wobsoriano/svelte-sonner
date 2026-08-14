@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.2.1
+
+### Patch Changes
+
+- f506748: fix: firefox mouseleave firing when mouse doesn't move
+
 ## 1.2.0
 
 ### Minor Changes
