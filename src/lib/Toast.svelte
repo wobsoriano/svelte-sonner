@@ -302,8 +302,8 @@
 		if (toast.delete) {
 			untrack(() => {
 				// `markDismissed` flips `delete` for dismissals that already ran
-				// `deleteToast` themselves (close button, swipe, auto-close) — don't
-				// re-enter and double-fire `onDismiss`.
+				// `deleteToast` themselves (close button, swipe, auto-close), so
+				// don't re-enter and double-fire `onDismiss`.
 				if (removed) return;
 				deleteToast();
 				toast.onDismiss?.(toast);

@@ -60,7 +60,7 @@ describe('Toaster', () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(MultiToasterTest, {
 			props: {
-				cb: (toast: typeof import('$lib/toast-state.svelte.js').toast) => {
+				cb: () => {
 					toast('For the default toaster');
 					toast('For the named toaster', { toasterId: 'secondary' });
 				}
@@ -82,7 +82,7 @@ describe('Toaster', () => {
 		const user = userEvent.setup();
 		const { getByTestId } = render(MultiToasterTest, {
 			props: {
-				cb: (toast: typeof import('$lib/toast-state.svelte.js').toast) => {
+				cb: () => {
 					toast('Default toast');
 					toast('Named toast', { toasterId: 'secondary' });
 					setTimeout(() => toast.dismiss(), 100);
