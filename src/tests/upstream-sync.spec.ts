@@ -168,9 +168,7 @@ describe('upstream sonner#777 parity', () => {
 		await user.click(trigger);
 		await sleep(500);
 		expect(getByText('Remounted toast')).toBeVisible();
-		expect(
-			document.querySelector('[data-sonner-toast][data-removed="true"]')
-		).toBeNull();
+		expect(document.querySelector('[data-sonner-toast][data-removed="true"]')).toBeNull();
 	});
 
 	it('treats an id reused after a close-button dismissal as a new toast', async () => {

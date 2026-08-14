@@ -133,7 +133,8 @@
 	const relevantHeights = $derived(
 		toastState.heights.filter(
 			(height) =>
-				height.toasterId === toast.toasterId && height.position === position
+				height.toasterId === toast.toasterId &&
+				height.position === position
 		)
 	);
 	// findIndex returns -1 when not yet measured; -1 is truthy, so `|| 0` left a negative index in the offset math.
@@ -265,7 +266,11 @@
 
 	$effect(() => {
 		if (!isPromiseLoadingOrInfiniteDuration) {
-			if (expanded || interacting || (pauseWhenPageIsHidden && isDocumentHidden.current)) {
+			if (
+				expanded ||
+				interacting ||
+				(pauseWhenPageIsHidden && isDocumentHidden.current)
+			) {
 				pauseTimer();
 			} else {
 				startTimer();
@@ -592,7 +597,10 @@
 				{/if}
 			</div>
 		{/if}
-		<div data-content="" class={cn(classes?.content, toast?.classes?.content)}>
+		<div
+			data-content=""
+			class={cn(classes?.content, toast?.classes?.content)}
+		>
 			<div
 				data-title=""
 				class={cn(classes?.title, toast?.classes?.title)}

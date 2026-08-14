@@ -16,8 +16,7 @@ let toastsCounter = 0;
 // A toast keeps the id it was given, otherwise it gets the next one from the counter.
 // `custom` needs the same id `create` would pick, as it hands it to the component.
 function getToastId(data?: { id?: number | string }): number | string {
-	return typeof data?.id === 'number' ||
-		(typeof data?.id === 'string' && data.id.length > 0)
+	return typeof data?.id === 'number' || (typeof data?.id === 'string' && data.id.length > 0)
 		? data.id
 		: toastsCounter++;
 }

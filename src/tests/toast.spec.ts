@@ -42,10 +42,10 @@ describe('Toast', () => {
 		expect(queryByText('Hello world')).toBeNull();
 
 		await user.click(trigger);
-		waitFor(() => expect(queryByText('Hello world')).not.toBeNull());
+		await waitFor(() => expect(queryByText('Hello world')).not.toBeNull());
 
-		await sleep(500);
-		expect(queryByText('Hello world')).toBeNull();
+		// duration (300ms) + exit animation (200ms), with margin for slow runs
+		await waitFor(() => expect(queryByText('Hello world')).toBeNull());
 	});
 
 	it('should focus the toast when hotkey is pressed', async () => {
