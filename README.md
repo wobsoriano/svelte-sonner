@@ -394,6 +394,22 @@ You can focus on the toast area by pressing ⌥/alt + T. You can override it by 
 <Toaster hotkey={['KeyC']} />
 ```
 
+## Troubleshooting
+
+svelte-sonner works in SvelteKit with no extra configuration. If your setup externalizes the package during SSR and you see `Unknown file extension ".svelte"`, add it to `ssr.noExternal` in `vite.config.ts`:
+
+```ts
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+	plugins: [sveltekit()],
+	ssr: {
+		noExternal: ['svelte-sonner']
+	}
+});
+```
+
 ## License
 
 MIT
