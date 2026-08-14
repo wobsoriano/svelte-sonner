@@ -31,6 +31,9 @@ class ToastState {
 		return idx;
 	};
 
+	#findHeightIdx = (toastId: number | string): number =>
+		this.heights.findIndex((height) => height.toastId === toastId);
+
 	addToast = (data: ToastT): void => {
 		if (!isBrowser) return;
 		this.toasts.unshift(data);
@@ -228,12 +231,16 @@ class ToastState {
 	};
 
 	setHeight = (data: HeightT) => {
-		const toastIdx = this.#findToastIdx(data.toastId);
-		if (toastIdx === null) {
-			this.heights.push(data);
-			return;
-		}
-		this.heights[toastIdx] = data;
+		// untrack: setHeight runs inside a $effect; a tracked read of this.heights
+		// would re-trigger it on the write below (effect_update_depth_exceeded).
+		untrack(() => {
+			const heightIdx = this.#findHeightIdx(data.toastId);
+			if (heightIdx === -1) {
+				this.heights.push(data);
+			} else {
+				this.heights[heightIdx] = data;
+			}
+		});
 	};
 
 	reset = () => {
