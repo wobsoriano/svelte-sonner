@@ -3,7 +3,6 @@
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import xml from 'highlight.js/lib/languages/xml';
 	import 'highlight.js/styles/github.css';
-	import copy from 'copy-to-clipboard';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	hljs.registerLanguage('javascript', javascript);
@@ -74,9 +73,9 @@
 		}
 	});
 
-	function onCopy() {
+	async function onCopy() {
 		if (!code) return;
-		copy(code);
+		await navigator.clipboard.writeText(code);
 		copying++;
 		setTimeout(() => {
 			copying--;

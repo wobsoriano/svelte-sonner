@@ -1,10 +1,8 @@
 <script lang="ts">
-	import copy from 'copy-to-clipboard';
+	let copying = $state(0);
 
-	let copying = 0;
-
-	function onCopy() {
-		copy('npm install svelte-sonner');
+	async function onCopy() {
+		await navigator.clipboard.writeText('npm install svelte-sonner');
 		copying++;
 		setTimeout(() => {
 			copying--;
@@ -14,8 +12,8 @@
 
 <div>
 	<h2>Installation</h2>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<code class="code" onclick={onCopy}>
 		npm install svelte-sonner
 		<button aria-label="Copy code" class="copy">
