@@ -84,6 +84,11 @@ export type ToastT<T extends AnyComponent = AnyComponent> = {
 	classes?: ToastClasses;
 	descriptionClass?: string;
 	position?: Position;
+	/**
+	 * The id of the `<Toaster />` this toast should be rendered in. Toasts without
+	 * a `toasterId` render in the toaster without an `id`.
+	 */
+	toasterId?: string;
 	dismiss?: boolean;
 	/**
 	 * @internal This is used to determine if the toast has been updated to determine when to reset timer. Hacky but works.
@@ -102,6 +107,8 @@ export type Position =
 export type HeightT = {
 	height: number;
 	toastId: number | string;
+	toasterId?: string;
+	position?: Position;
 };
 
 export type Theme = 'light' | 'dark';
@@ -169,6 +176,12 @@ type ToastIcons = {
 };
 
 export type ToasterProps = {
+	/**
+	 * Identifies this toaster so toasts can target it via `toast(..., { toasterId })`.
+	 * A toaster without an `id` renders only the toasts without a `toasterId`.
+	 */
+	id?: string;
+
 	/**
 	 * Dark toasts in light mode and vice versa.
 	 *
@@ -382,6 +395,7 @@ export type ToastProps = {
 	toast: ToastT;
 	index: number;
 	swipeDirections?: SwipeDirection[];
+	gap?: number;
 	expanded: boolean;
 	invert: boolean;
 	position: Position;

@@ -110,6 +110,7 @@
 	}
 
 	let {
+		id,
 		invert = false,
 		position = 'bottom-right',
 		hotkey = ['altKey', 'KeyT'],
@@ -169,12 +170,20 @@
 		return dirAttribute;
 	}
 
+	// The slice of the shared toast state this toaster renders: an id-less toaster
+	// shows only toasts without a toasterId (upstream sonner semantics).
+	const filteredToasts = $derived(
+		id
+			? toastState.toasts.filter((toast) => toast.toasterId === id)
+			: toastState.toasts.filter((toast) => !toast.toasterId)
+	);
+
 	const possiblePositions = $derived(
 		Array.from(
 			new Set(
 				[
 					position,
-					...toastState.toasts
+					...filteredToasts
 						.filter((toast) => toast.position)
 						.map((toast) => toast.position)
 				].filter(Boolean)
@@ -194,14 +203,14 @@
 	);
 
 	$effect(() => {
-		if (toastState.toasts.length <= 1) {
+		if (filteredToasts.length <= 1) {
 			expanded = false;
 		}
 	});
 
 	// Check for dismissed toasts and remove them. We need to do this to have dismiss animation.
 	$effect(() => {
-		const toastsToDismiss = toastState.toasts.filter(
+		const toastsToDismiss = filteredToasts.filter(
 			(toast) => toast.dismiss && !toast.delete
 		);
 
@@ -369,10 +378,13 @@
 	aria-relevant="additions text"
 	aria-atomic="false"
 >
-	{#if toastState.toasts.length > 0}
+	{#if filteredToasts.length > 0}
 		{#each possiblePositions as position, index (position)}
 			{@const [y, x] = position.split('-')}
 			{@const offsetObject = getOffsetObject(offset, mobileOffset)}
+			{@const frontHeight = toastState.heights.find(
+				(height) => height.toasterId === id && height.position === position
+			)?.height ?? 0}
 			<!-- eslint-disable-next-line svelte/valid-compile -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ol
@@ -384,7 +396,7 @@
 				data-sonner-theme={actualTheme}
 				data-y-position={y}
 				data-x-position={x}
-				style:--front-toast-height={`${toastState.heights[0]?.height}px`}
+				style:--front-toast-height={`${frontHeight}px`}
 				style:--width={`${TOAST_WIDTH}px`}
 				style:--gap={`${gap}px`}
 				style:--offset-top={offsetObject['--offset-top']}
@@ -412,7 +424,7 @@
 				onpointerup={handlePointerUp}
 				{...restProps}
 			>
-				{#each toastState.toasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
+				{#each filteredToasts.filter((toast) => (!toast.position && index === 0) || toast.position === position) as toast, index (toast.id)}
 					<Toast
 						{index}
 						{toast}
@@ -422,9 +434,10 @@
 						descriptionClass={toastOptions?.descriptionClass || ''}
 						{invert}
 						{visibleToasts}
-						{closeButton}
+						closeButton={toastOptions?.closeButton ?? closeButton}
 						{interacting}
 						{position}
+						{gap}
 						style={toastOptions?.style ?? ''}
 						classes={toastOptions.classes || {}}
 						unstyled={toastOptions.unstyled ?? false}

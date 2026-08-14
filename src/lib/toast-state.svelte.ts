@@ -292,7 +292,9 @@ class ToastState {
 		untrack(() => {
 			const heightIdx = this.#findHeightIdx(data.toastId);
 			if (heightIdx === -1) {
-				this.heights.push(data);
+				// Newest first: the offset math and --front-toast-height assume the
+				// front (most recent) toast's height entry is at the lowest index.
+				this.heights.unshift(data);
 			} else {
 				this.heights[heightIdx] = data;
 			}

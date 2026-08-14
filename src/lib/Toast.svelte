@@ -94,6 +94,7 @@
 		closeIcon,
 		infoIcon,
 		defaultRichColors = false,
+		gap = GAP,
 		swipeDirections: swipeDirectionsProp,
 		closeButtonAriaLabel,
 		pauseWhenPageIsHidden,
@@ -127,9 +128,17 @@
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
+	// Only the heights of this toaster + position matter for the offset math,
+	// otherwise toasts of another toaster (or another corner) push these around.
+	const relevantHeights = $derived(
+		toastState.heights.filter(
+			(height) =>
+				height.toasterId === toast.toasterId && height.position === position
+		)
+	);
 	// findIndex returns -1 when not yet measured; -1 is truthy, so `|| 0` left a negative index in the offset math.
 	const heightIndex = $derived.by(() => {
-		const idx = toastState.heights.findIndex(
+		const idx = relevantHeights.findIndex(
 			(height) => height.toastId === toast.id
 		);
 		return idx === -1 ? 0 : idx;
@@ -144,7 +153,7 @@
 		swipeDirectionsProp ?? getDefaultSwipeDirections(position)
 	);
 	const toastsHeightBefore = $derived(
-		toastState.heights.reduce((prev, curr, reducerIndex) => {
+		relevantHeights.reduce((prev, curr, reducerIndex) => {
 			if (reducerIndex >= heightIndex) return prev;
 			return prev + curr.height;
 		}, 0)
@@ -161,7 +170,7 @@
 	let closeTimerStartTime = $state(0);
 	let lastCloseTimerStartTime = $state(0);
 
-	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
+	const offset = $derived(Math.round(heightIndex * gap + toastsHeightBefore));
 
 	$effect(() => {
 		toastTitle;
@@ -181,7 +190,7 @@
 		const offsetHeight = toastEl.offsetHeight;
 		const rectHeight = toastEl.getBoundingClientRect().height;
 		const scaledRectHeight =
-			Math.round((rectHeight / scale + Number.EPSILON) & 100) / 100;
+			Math.round((rectHeight / scale + Number.EPSILON) * 100) / 100;
 
 		toastEl.style.removeProperty('height');
 
@@ -197,7 +206,12 @@
 
 		initialHeight = finalHeight;
 
-		toastState.setHeight({ toastId: toast.id, height: finalHeight });
+		toastState.setHeight({
+			toastId: toast.id,
+			height: finalHeight,
+			toasterId: toast.toasterId,
+			position
+		});
 	});
 
 	function deleteToast() {
@@ -267,7 +281,12 @@
 		const height = toastRef?.getBoundingClientRect().height as number;
 
 		initialHeight = height;
-		toastState.setHeight({ toastId: toast.id, height });
+		toastState.setHeight({
+			toastId: toast.id,
+			height,
+			toasterId: toast.toasterId,
+			position
+		});
 
 		return () => {
 			toastState.removeHeight(toast.id);
@@ -302,7 +321,12 @@
 				if (!isPromiseLoadingOrInfiniteDuration) {
 					startTimer();
 				}
-				toastState.setHeight({ toastId: toast.id, height: initialHeight });
+				toastState.setHeight({
+					toastId: toast.id,
+					height: initialHeight,
+					toasterId: toast.toasterId,
+					position
+				});
 			});
 		}
 	});
