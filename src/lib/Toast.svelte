@@ -233,6 +233,10 @@
 	);
 
 	function startTimer() {
+		// Both the timer effect and the `updated` effect can start a timer in the
+		// same flush (a recreated toast mounts with `updated` already set); clear
+		// first so only one runs.
+		clearTimeout(timeoutId);
 		closeTimerStartTime = new Date().getTime();
 		// let the toast know it has started
 		timeoutId = setTimeout(() => {
@@ -321,6 +325,12 @@
 				swipeOut = false;
 				isSwiped = false;
 				swiping = false;
+				swipeDirection = null;
+				swipeOutDirection = null;
+				pointerStart = null;
+				dragStartTime = null;
+				toastRef?.style.removeProperty('--swipe-amount-x');
+				toastRef?.style.removeProperty('--swipe-amount-y');
 				clearTimeout(timeoutId);
 				remainingTime = duration;
 				if (!isPromiseLoadingOrInfiniteDuration) {
@@ -339,6 +349,7 @@
 	const handlePointerDown: PointerEventHandler<HTMLLIElement> = (event) => {
 		if (disabled) return;
 
+		dragStartTime = new Date();
 		offsetBeforeRemove = offset;
 		const target = event.target as HTMLElement;
 

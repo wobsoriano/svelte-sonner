@@ -370,6 +370,22 @@ toast('Event has been created', {
 });
 ```
 
+## Multiple toasters
+
+Give a toaster an `id` and target it with the `toasterId` option. A toaster without an `id` renders only the toasts created without a `toasterId`.
+
+```svelte
+<Toaster />
+<Toaster id="top" position="top-center" />
+```
+
+```js
+toast('Renders in the default toaster');
+toast('Renders in the top toaster', { toasterId: 'top' });
+```
+
+`toast.dismiss()` with no arguments dismisses toasts across all toasters. Note that `id` identifies the toaster and is no longer forwarded to the rendered `<ol>` element.
+
 ## Keyboard focus
 
 You can focus on the toast area by pressing ⌥/alt + T. You can override it by providing an array of `event.code` values for each key.

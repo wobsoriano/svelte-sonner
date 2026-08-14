@@ -87,6 +87,23 @@ test('toast is dismissed by a fast swipe in an allowed direction', async ({ page
 	await expect(toast).toHaveCount(0, { timeout: 2000 });
 });
 
+test('toast is dismissed by a fast flick below the distance threshold', async ({ page }) => {
+	await page.goto('/test?position=top-center&swipeDirections=right');
+	await page.getByTestId('default-button').click();
+
+	const toast = page.locator('[data-sonner-toast]');
+	await toast.hover();
+	const box = await toast.boundingBox();
+	if (!box) throw new Error('Toast not rendered');
+
+	await page.mouse.down();
+	await page.mouse.move(box.x + box.width / 2 + 20, box.y + box.height / 2);
+	await page.mouse.up();
+
+	// The 20px movement is below SWIPE_THRESHOLD, so only velocity can dismiss it.
+	await expect(toast).toHaveCount(0, { timeout: 2000 });
+});
+
 test('description fills the width of the toast', async ({ page }) => {
 	await page.getByTestId('component-description').click();
 

@@ -99,6 +99,22 @@ describe('Toaster', () => {
 		).toBe(0);
 	});
 
+	it('registers heights newest-first when toasts mount in the same tick', async () => {
+		let olderId: string | number;
+		let newerId: string | number;
+		const { user, trigger } = setup({
+			cb: (toast) => {
+				olderId = toast('Older toast');
+				newerId = toast('Newer toast');
+			}
+		});
+
+		await user.click(trigger);
+
+		await waitFor(() => expect(toastState.heights.length).toBe(2));
+		expect(toastState.heights.map((height) => height.toastId)).toEqual([newerId!, olderId!]);
+	});
+
 	it('uses the gap prop in the offset math', async () => {
 		const { user, trigger, container } = setup({
 			cb: (toast) => {

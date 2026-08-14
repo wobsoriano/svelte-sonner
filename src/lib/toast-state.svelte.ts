@@ -128,9 +128,20 @@ class ToastState {
 			if (alreadyExists?.dismiss || alreadyExists?.delete) {
 				// The previous toast with this id was dismissed, so this is a brand new
 				// toast. Drop the old one instead of merging into it, otherwise its
-				// props (e.g. `action`) leak into the new one.
+				// props (e.g. `action`) leak into the new one. `updated` makes the still
+				// mounted component reset its auto-close timer: when the recreate happens
+				// in the same tick as the dismissal, the keyed each reuses the component
+				// before it ever processed the dismissal, so the old timer would
+				// otherwise keep running.
 				this.remove(id);
-				this.addToast({ ...rest, id, title: message, dismissible, type });
+				this.addToast({
+					...rest,
+					id,
+					title: message,
+					dismissible,
+					type,
+					updated: true
+				});
 			} else if (alreadyExists) {
 				this.updateToast({ id, data, type, message, dismissible });
 			} else {
@@ -290,12 +301,25 @@ class ToastState {
 		// would re-trigger it on the write below (effect_update_depth_exceeded).
 		untrack(() => {
 			const heightIdx = this.#findHeightIdx(data.toastId);
-			if (heightIdx === -1) {
-				// Newest first: the offset math and --front-toast-height assume the
-				// front (most recent) toast's height entry is at the lowest index.
-				this.heights.unshift(data);
-			} else {
+			if (heightIdx !== -1) {
 				this.heights[heightIdx] = data;
+				return;
+			}
+
+			// The offset math and --front-toast-height assume heights share the
+			// newest-first order of `toasts`, so insert at the matching position.
+			// With batched mounts (several toasts created in one tick, or created
+			// before the Toaster mounted) the components mount newest-first and a
+			// plain unshift would reverse them.
+			const order = new Map(this.toasts.map((toast, idx) => [toast.id, idx]));
+			const toastOrder = order.get(data.toastId) ?? -1;
+			const insertIdx = this.heights.findIndex(
+				(height) => (order.get(height.toastId) ?? Infinity) > toastOrder
+			);
+			if (insertIdx === -1) {
+				this.heights.push(data);
+			} else {
+				this.heights.splice(insertIdx, 0, data);
 			}
 		});
 	};

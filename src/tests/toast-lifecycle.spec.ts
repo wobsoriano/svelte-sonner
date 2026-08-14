@@ -137,6 +137,28 @@ describe('Toast lifecycle', () => {
 		expect(document.querySelector('[data-sonner-toast][data-removed="true"]')).toBeNull();
 	});
 
+	it('resets the auto-close timer when a dismissed id is recreated in the same tick', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('Short toast', { duration: 100 });
+				setTimeout(() => {
+					toast.dismiss(id);
+					toast('Longer toast', { id, duration: 600 });
+				}, 50);
+			}
+		});
+
+		await user.click(trigger);
+
+		// The short toast's 100ms timer would remove the replacement at ~150ms
+		// if the recreate didn't reset it
+		await sleep(400);
+		expect(getByText('Longer toast')).toBeVisible();
+
+		// The replacement's own 600ms duration still applies
+		await waitFor(() => expect(queryByText('Longer toast')).toBeNull());
+	});
+
 	it('treats an id reused after a close-button dismissal as a new toast', async () => {
 		let onDismissCalls = 0;
 		let toastId: string | number;
