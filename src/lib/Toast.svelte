@@ -94,6 +94,7 @@
 		closeIcon,
 		infoIcon,
 		defaultRichColors = false,
+		gap = GAP,
 		swipeDirections: swipeDirectionsProp,
 		closeButtonAriaLabel,
 		pauseWhenPageIsHidden,
@@ -127,9 +128,18 @@
 	const toastClass = $derived(toast.class || '');
 	const toastDescriptionClass = $derived(toast.descriptionClass || '');
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
+	// Only the heights of this toaster + position matter for the offset math,
+	// otherwise toasts of another toaster (or another corner) push these around.
+	const relevantHeights = $derived(
+		toastState.heights.filter(
+			(height) =>
+				height.toasterId === toast.toasterId &&
+				height.position === position
+		)
+	);
 	// findIndex returns -1 when not yet measured; -1 is truthy, so `|| 0` left a negative index in the offset math.
 	const heightIndex = $derived.by(() => {
-		const idx = toastState.heights.findIndex(
+		const idx = relevantHeights.findIndex(
 			(height) => height.toastId === toast.id
 		);
 		return idx === -1 ? 0 : idx;
@@ -140,8 +150,11 @@
 	);
 	let pointerStart: { x: number; y: number } | null = null;
 	const coords = $derived(position.split('-'));
+	const swipeDirections = $derived(
+		swipeDirectionsProp ?? getDefaultSwipeDirections(position)
+	);
 	const toastsHeightBefore = $derived(
-		toastState.heights.reduce((prev, curr, reducerIndex) => {
+		relevantHeights.reduce((prev, curr, reducerIndex) => {
 			if (reducerIndex >= heightIndex) return prev;
 			return prev + curr.height;
 		}, 0)
@@ -158,7 +171,7 @@
 	let closeTimerStartTime = $state(0);
 	let lastCloseTimerStartTime = $state(0);
 
-	const offset = $derived(Math.round(heightIndex * GAP + toastsHeightBefore));
+	const offset = $derived(Math.round(heightIndex * gap + toastsHeightBefore));
 
 	$effect(() => {
 		toastTitle;
@@ -178,7 +191,7 @@
 		const offsetHeight = toastEl.offsetHeight;
 		const rectHeight = toastEl.getBoundingClientRect().height;
 		const scaledRectHeight =
-			Math.round((rectHeight / scale + Number.EPSILON) & 100) / 100;
+			Math.round((rectHeight / scale + Number.EPSILON) * 100) / 100;
 
 		toastEl.style.removeProperty('height');
 
@@ -194,7 +207,12 @@
 
 		initialHeight = finalHeight;
 
-		toastState.setHeight({ toastId: toast.id, height: finalHeight });
+		toastState.setHeight({
+			toastId: toast.id,
+			height: finalHeight,
+			toasterId: toast.toasterId,
+			position
+		});
 	});
 
 	function deleteToast() {
@@ -203,10 +221,8 @@
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-
-		setTimeout(() => {
-			toastState.remove(toast.id);
-		}, TIME_BEFORE_UNMOUNT);
+		toastState.markDismissed(toast.id);
+		toastState.scheduleRemoval(toast.id, TIME_BEFORE_UNMOUNT);
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
@@ -217,6 +233,10 @@
 	);
 
 	function startTimer() {
+		// Both the timer effect and the `updated` effect can start a timer in the
+		// same flush (a recreated toast mounts with `updated` already set); clear
+		// first so only one runs.
+		clearTimeout(timeoutId);
 		closeTimerStartTime = new Date().getTime();
 		// let the toast know it has started
 		timeoutId = setTimeout(() => {
@@ -250,7 +270,11 @@
 
 	$effect(() => {
 		if (!isPromiseLoadingOrInfiniteDuration) {
-			if (expanded || interacting || (pauseWhenPageIsHidden && isDocumentHidden.current)) {
+			if (
+				expanded ||
+				interacting ||
+				(pauseWhenPageIsHidden && isDocumentHidden.current)
+			) {
 				pauseTimer();
 			} else {
 				startTimer();
@@ -266,7 +290,12 @@
 		const height = toastRef?.getBoundingClientRect().height as number;
 
 		initialHeight = height;
-		toastState.setHeight({ toastId: toast.id, height });
+		toastState.setHeight({
+			toastId: toast.id,
+			height,
+			toasterId: toast.toasterId,
+			position
+		});
 
 		return () => {
 			toastState.removeHeight(toast.id);
@@ -276,8 +305,43 @@
 	$effect(() => {
 		if (toast.delete) {
 			untrack(() => {
+				// `markDismissed` flips `delete` for dismissals that already ran
+				// `deleteToast` themselves (close button, swipe, auto-close), so
+				// don't re-enter and double-fire `onDismiss`.
+				if (removed) return;
 				deleteToast();
 				toast.onDismiss?.(toast);
+			});
+		}
+	});
+
+	// The toast was recreated with the same id while this instance's exit animation
+	// was running (`create` cancelled the pending removal). The keyed each reuses
+	// this component instance, so revive its local exit state.
+	$effect(() => {
+		if (!toast.delete && !toast.dismiss && removed) {
+			untrack(() => {
+				removed = false;
+				swipeOut = false;
+				isSwiped = false;
+				swiping = false;
+				swipeDirection = null;
+				swipeOutDirection = null;
+				pointerStart = null;
+				dragStartTime = null;
+				toastRef?.style.removeProperty('--swipe-amount-x');
+				toastRef?.style.removeProperty('--swipe-amount-y');
+				clearTimeout(timeoutId);
+				remainingTime = duration;
+				if (!isPromiseLoadingOrInfiniteDuration) {
+					startTimer();
+				}
+				toastState.setHeight({
+					toastId: toast.id,
+					height: initialHeight,
+					toasterId: toast.toasterId,
+					position
+				});
 			});
 		}
 	});
@@ -285,6 +349,7 @@
 	const handlePointerDown: PointerEventHandler<HTMLLIElement> = (event) => {
 		if (disabled) return;
 
+		dragStartTime = new Date();
 		offsetBeforeRemove = offset;
 		const target = event.target as HTMLElement;
 
@@ -316,8 +381,19 @@
 			swipeDirection === 'x' ? swipeAmountX : swipeAmountY;
 		const velocity = Math.abs(swipeAmount) / timeTaken;
 
+		// Movement towards a direction that isn't allowed is dampened, not blocked,
+		// so a fast flick can still pass the velocity check. Only dismiss if the
+		// direction is allowed.
+		const isAllowedDirection =
+			swipeDirection === 'x'
+				? swipeDirections.includes(swipeAmountX > 0 ? 'right' : 'left')
+				: swipeDirections.includes(swipeAmountY > 0 ? 'bottom' : 'top');
+
 		// remove only if threshold is met
-		if (Math.abs(swipeAmount) >= SWIPE_THRESHOLD || velocity > 0.11) {
+		if (
+			isAllowedDirection &&
+			(Math.abs(swipeAmount) >= SWIPE_THRESHOLD || velocity > 0.11)
+		) {
 			offsetBeforeRemove = offset;
 			toast.onDismiss?.(toast);
 
@@ -348,9 +424,6 @@
 
 		const yDelta = event.clientY - pointerStart.y;
 		const xDelta = event.clientX - pointerStart.x;
-
-		const swipeDirections =
-			swipeDirectionsProp ?? getDefaultSwipeDirections(position);
 
 		// Determine swipe direction if not already locked
 		if (!swipeDirection && (Math.abs(xDelta) > 1 || Math.abs(yDelta) > 1)) {
@@ -510,14 +583,17 @@
 	{:else}
 		{#if (toastType || toast.icon || toast.promise) && toast.icon !== null && (icon !== null || toast.icon)}
 			<div data-icon="" class={cn(classes?.icon, toast?.classes?.icon)}>
-				{#if toast.promise || toastType === 'loading'}
+				<!-- Promise toasts keep the loader mounted after they settle so it can animate out -->
+				{#if toastType === 'loading'}
 					{#if toast.icon}
 						<toast.icon />
 					{:else}
 						{@render LoadingIcon()}
 					{/if}
+				{:else if toast.promise}
+					{@render LoadingIcon()}
 				{/if}
-				{#if toast.type !== 'loading'}
+				{#if toastType !== 'loading'}
 					{#if toast.icon}
 						<toast.icon />
 					{:else if toastType === 'success'}
@@ -532,7 +608,10 @@
 				{/if}
 			</div>
 		{/if}
-		<div data-content="" class={cn(classes?.content, toast?.classes?.content)}>
+		<div
+			data-content=""
+			class={cn(classes?.content, toast?.classes?.content)}
+		>
 			<div
 				data-title=""
 				class={cn(classes?.title, toast?.classes?.title)}

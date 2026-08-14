@@ -13,6 +13,14 @@ import { untrack } from 'svelte';
 
 let toastsCounter = 0;
 
+// A toast keeps the id it was given, otherwise it gets the next one from the counter.
+// `custom` needs the same id `create` would pick, as it hands it to the component.
+function getToastId(data?: { id?: number | string }): number | string {
+	return typeof data?.id === 'number' || (typeof data?.id === 'string' && data.id.length > 0)
+		? data.id
+		: toastsCounter++;
+}
+
 type UpdateToastProps = {
 	id: number | string;
 	data: Partial<ToastT>;
@@ -24,6 +32,8 @@ type UpdateToastProps = {
 class ToastState {
 	toasts = $state<ToastT[]>([]);
 	heights = $state<HeightT[]>([]);
+	// Removals whose exit animation is running but whose entry hasn't been removed yet
+	#pendingRemovals = new Map<number | string, ReturnType<typeof setTimeout>>();
 
 	#findToastIdx = (id: number | string): number | null => {
 		const idx = this.toasts.findIndex((toast) => toast.id === id);
@@ -49,8 +59,44 @@ class ToastState {
 			id,
 			title: message,
 			type,
+			// A dismissal that hasn't been processed yet gets cancelled: the toast is
+			// still on screen, so this is an update of it rather than a new toast.
+			dismiss: false,
+			delete: false,
 			updated: true
 		};
+	};
+
+	// Flags a toast that was dismissed from inside the Toast component (close button,
+	// swipe, action/cancel click, auto-close) so `create` treats an id reuse as a new
+	// toast instead of merging the old props into it.
+	markDismissed = (id: number | string): void => {
+		const toastIdx = this.#findToastIdx(id);
+		if (toastIdx === null) return;
+		const toast = this.toasts[toastIdx];
+		if (!toast) return;
+		if (!toast.dismiss || !toast.delete) {
+			this.toasts[toastIdx] = { ...toast, dismiss: true, delete: true };
+		}
+	};
+
+	scheduleRemoval = (id: number | string, delay: number): void => {
+		this.cancelRemoval(id);
+		this.#pendingRemovals.set(
+			id,
+			setTimeout(() => {
+				this.#pendingRemovals.delete(id);
+				this.remove(id);
+			}, delay)
+		);
+	};
+
+	cancelRemoval = (id: number | string): void => {
+		const timeout = this.#pendingRemovals.get(id);
+		if (timeout !== undefined) {
+			clearTimeout(timeout);
+			this.#pendingRemovals.delete(id);
+		}
 	};
 
 	create = <T extends AnyComponent>(
@@ -61,10 +107,7 @@ class ToastState {
 		}
 	): string | number => {
 		const { message, ...rest } = data;
-		const id =
-			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
-				? data.id
-				: toastsCounter++;
+		const id = getToastId(data);
 
 		// Support deprecated `dismissable` as a fallback for backwards compatibility
 		const dismissible =
@@ -76,9 +119,30 @@ class ToastState {
 		const type = data.type === undefined ? 'default' : data.type;
 
 		untrack(() => {
+			// A removal that hasn't run yet gets cancelled: this create() supersedes it,
+			// otherwise the old toast's unmount timeout would remove the new one.
+			this.cancelRemoval(id);
+
 			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
-			if (alreadyExists) {
+			if (alreadyExists?.dismiss || alreadyExists?.delete) {
+				// The previous toast with this id was dismissed, so this is a brand new
+				// toast. Drop the old one instead of merging into it, otherwise its
+				// props (e.g. `action`) leak into the new one. `updated` makes the still
+				// mounted component reset its auto-close timer: when the recreate happens
+				// in the same tick as the dismissal, the keyed each reuses the component
+				// before it ever processed the dismissal, so the old timer would
+				// otherwise keep running.
+				this.remove(id);
+				this.addToast({
+					...rest,
+					id,
+					title: message,
+					dismissible,
+					type,
+					updated: true
+				});
+			} else if (alreadyExists) {
 				this.updateToast({ id, data, type, message, dismissible });
 			} else {
 				this.addToast({ ...rest, id, title: message, dismissible, type });
@@ -91,8 +155,10 @@ class ToastState {
 	dismiss = (id?: number | string): string | number | undefined => {
 		untrack(() => {
 			if (id === undefined) {
-				// we're dismissing all the toasts
-				this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
+				// we're dismissing all the active toasts
+				this.toasts = this.toasts.map((toast) =>
+					toast.dismiss ? toast : { ...toast, dismiss: true }
+				);
 				return;
 			}
 			// we're dismissing a specific toast
@@ -219,9 +285,9 @@ class ToastState {
 	};
 
 	custom = <T extends AnyComponent>(component: T, data?: ExternalToast<T>): string | number => {
-		const id = data?.id || toastsCounter++;
+		const id = getToastId(data);
 
-		this.create({ component, id, ...data });
+		this.create({ component, ...data, id });
 
 		return id;
 	};
@@ -235,10 +301,25 @@ class ToastState {
 		// would re-trigger it on the write below (effect_update_depth_exceeded).
 		untrack(() => {
 			const heightIdx = this.#findHeightIdx(data.toastId);
-			if (heightIdx === -1) {
+			if (heightIdx !== -1) {
+				this.heights[heightIdx] = data;
+				return;
+			}
+
+			// The offset math and --front-toast-height assume heights share the
+			// newest-first order of `toasts`, so insert at the matching position.
+			// With batched mounts (several toasts created in one tick, or created
+			// before the Toaster mounted) the components mount newest-first and a
+			// plain unshift would reverse them.
+			const order = new Map(this.toasts.map((toast, idx) => [toast.id, idx]));
+			const toastOrder = order.get(data.toastId) ?? -1;
+			const insertIdx = this.heights.findIndex(
+				(height) => (order.get(height.toastId) ?? Infinity) > toastOrder
+			);
+			if (insertIdx === -1) {
 				this.heights.push(data);
 			} else {
-				this.heights[heightIdx] = data;
+				this.heights.splice(insertIdx, 0, data);
 			}
 		});
 	};
@@ -246,6 +327,8 @@ class ToastState {
 	reset = () => {
 		this.toasts = [];
 		this.heights = [];
+		this.#pendingRemovals.forEach((timeout) => clearTimeout(timeout));
+		this.#pendingRemovals.clear();
 	};
 }
 
@@ -259,10 +342,7 @@ function constructPromiseErrorMessage(response: unknown) {
 export const toastState = new ToastState();
 
 function toastFunction<T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) {
-	return toastState.create({
-		message,
-		...data
-	});
+	return toastState.message(message, data);
 }
 
 export class SonnerState {

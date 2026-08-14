@@ -93,6 +93,11 @@ vi.mock('$app/stores', (): typeof stores => {
 
 Element.prototype.scrollIntoView = () => {};
 
+// jsdom doesn't implement the pointer capture API
+Element.prototype.setPointerCapture = () => {};
+Element.prototype.releasePointerCapture = () => {};
+Element.prototype.hasPointerCapture = () => false;
+
 export const mediaQueryState = {
 	matches: false
 };
