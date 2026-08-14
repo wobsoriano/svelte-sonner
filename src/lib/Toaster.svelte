@@ -499,7 +499,8 @@
 	{/if}
 </section>
 
-<style global lang="postcss">
+<style>
+	:global {
 	html[dir='ltr'],
 	[data-sonner-toaster][dir='ltr'] {
 		--toast-icon-margin-start: -3px;
@@ -916,7 +917,7 @@
 		animation-name: swipe-out-down;
 	}
 
-	@keyframes swipe-out-left {
+	@keyframes -global-swipe-out-left {
 		from {
 			transform: var(--y) translateX(var(--swipe-amount-x));
 			opacity: 1;
@@ -928,7 +929,7 @@
 		}
 	}
 
-	@keyframes swipe-out-right {
+	@keyframes -global-swipe-out-right {
 		from {
 			transform: var(--y) translateX(var(--swipe-amount-x));
 			opacity: 1;
@@ -940,7 +941,7 @@
 		}
 	}
 
-	@keyframes swipe-out-up {
+	@keyframes -global-swipe-out-up {
 		from {
 			transform: var(--y) translateY(var(--swipe-amount-y));
 			opacity: 1;
@@ -952,7 +953,7 @@
 		}
 	}
 
-	@keyframes swipe-out-down {
+	@keyframes -global-swipe-out-down {
 		from {
 			transform: var(--y) translateY(var(--swipe-amount-y));
 			opacity: 1;
@@ -1221,7 +1222,7 @@
 		transform: rotate(330deg) translate(146%);
 	}
 
-	@keyframes sonner-fade-in {
+	@keyframes -global-sonner-fade-in {
 		0% {
 			opacity: 0;
 			transform: scale(0.8);
@@ -1232,7 +1233,7 @@
 		}
 	}
 
-	@keyframes sonner-fade-out {
+	@keyframes -global-sonner-fade-out {
 		0% {
 			opacity: 1;
 			transform: scale(1);
@@ -1243,7 +1244,7 @@
 		}
 	}
 
-	@keyframes sonner-spin {
+	@keyframes -global-sonner-spin {
 		0% {
 			opacity: 1;
 		}
@@ -1275,5 +1276,6 @@
 	.sonner-loader[data-visible='false'] {
 		opacity: 0;
 		transform: scale(0.8) translate(-50%, -50%);
+	}
 	}
 </style>
