@@ -206,10 +206,8 @@
 		offsetBeforeRemove = offset;
 
 		toastState.removeHeight(toast.id);
-
-		setTimeout(() => {
-			toastState.remove(toast.id);
-		}, TIME_BEFORE_UNMOUNT);
+		toastState.markDismissed(toast.id);
+		toastState.scheduleRemoval(toast.id, TIME_BEFORE_UNMOUNT);
 	}
 
 	let timeoutId: ReturnType<typeof setTimeout>;
@@ -279,8 +277,32 @@
 	$effect(() => {
 		if (toast.delete) {
 			untrack(() => {
+				// `markDismissed` flips `delete` for dismissals that already ran
+				// `deleteToast` themselves (close button, swipe, auto-close) — don't
+				// re-enter and double-fire `onDismiss`.
+				if (removed) return;
 				deleteToast();
 				toast.onDismiss?.(toast);
+			});
+		}
+	});
+
+	// The toast was recreated with the same id while this instance's exit animation
+	// was running (`create` cancelled the pending removal). The keyed each reuses
+	// this component instance, so revive its local exit state.
+	$effect(() => {
+		if (!toast.delete && !toast.dismiss && removed) {
+			untrack(() => {
+				removed = false;
+				swipeOut = false;
+				isSwiped = false;
+				swiping = false;
+				clearTimeout(timeoutId);
+				remainingTime = duration;
+				if (!isPromiseLoadingOrInfiniteDuration) {
+					startTimer();
+				}
+				toastState.setHeight({ toastId: toast.id, height: initialHeight });
 			});
 		}
 	});

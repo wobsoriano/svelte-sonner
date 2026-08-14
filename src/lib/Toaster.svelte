@@ -232,8 +232,6 @@
 	});
 
 	onMount(() => {
-		toastState.reset();
-
 		const handleKeydown = (event: KeyboardEvent) => {
 			const isHotkeyPressed = hotkey.every(
 				(key) =>

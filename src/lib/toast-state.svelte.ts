@@ -33,6 +33,8 @@ type UpdateToastProps = {
 class ToastState {
 	toasts = $state<ToastT[]>([]);
 	heights = $state<HeightT[]>([]);
+	// Removals whose exit animation is running but whose entry hasn't been removed yet
+	#pendingRemovals = new Map<number | string, ReturnType<typeof setTimeout>>();
 
 	#findToastIdx = (id: number | string): number | null => {
 		const idx = this.toasts.findIndex((toast) => toast.id === id);
@@ -58,8 +60,44 @@ class ToastState {
 			id,
 			title: message,
 			type,
+			// A dismissal that hasn't been processed yet gets cancelled: the toast is
+			// still on screen, so this is an update of it rather than a new toast.
+			dismiss: false,
+			delete: false,
 			updated: true
 		};
+	};
+
+	// Flags a toast that was dismissed from inside the Toast component (close button,
+	// swipe, action/cancel click, auto-close) so `create` treats an id reuse as a new
+	// toast instead of merging the old props into it.
+	markDismissed = (id: number | string): void => {
+		const toastIdx = this.#findToastIdx(id);
+		if (toastIdx === null) return;
+		const toast = this.toasts[toastIdx];
+		if (!toast) return;
+		if (!toast.dismiss || !toast.delete) {
+			this.toasts[toastIdx] = { ...toast, dismiss: true, delete: true };
+		}
+	};
+
+	scheduleRemoval = (id: number | string, delay: number): void => {
+		this.cancelRemoval(id);
+		this.#pendingRemovals.set(
+			id,
+			setTimeout(() => {
+				this.#pendingRemovals.delete(id);
+				this.remove(id);
+			}, delay)
+		);
+	};
+
+	cancelRemoval = (id: number | string): void => {
+		const timeout = this.#pendingRemovals.get(id);
+		if (timeout !== undefined) {
+			clearTimeout(timeout);
+			this.#pendingRemovals.delete(id);
+		}
 	};
 
 	create = <T extends AnyComponent>(
@@ -82,9 +120,19 @@ class ToastState {
 		const type = data.type === undefined ? 'default' : data.type;
 
 		untrack(() => {
+			// A removal that hasn't run yet gets cancelled: this create() supersedes it,
+			// otherwise the old toast's unmount timeout would remove the new one.
+			this.cancelRemoval(id);
+
 			const alreadyExists = this.toasts.find((toast) => toast.id === id);
 
-			if (alreadyExists) {
+			if (alreadyExists?.dismiss || alreadyExists?.delete) {
+				// The previous toast with this id was dismissed, so this is a brand new
+				// toast. Drop the old one instead of merging into it, otherwise its
+				// props (e.g. `action`) leak into the new one.
+				this.remove(id);
+				this.addToast({ ...rest, id, title: message, dismissible, type });
+			} else if (alreadyExists) {
 				this.updateToast({ id, data, type, message, dismissible });
 			} else {
 				this.addToast({ ...rest, id, title: message, dismissible, type });
@@ -97,8 +145,10 @@ class ToastState {
 	dismiss = (id?: number | string): string | number | undefined => {
 		untrack(() => {
 			if (id === undefined) {
-				// we're dismissing all the toasts
-				this.toasts = this.toasts.map((toast) => ({ ...toast, dismiss: true }));
+				// we're dismissing all the active toasts
+				this.toasts = this.toasts.map((toast) =>
+					toast.dismiss ? toast : { ...toast, dismiss: true }
+				);
 				return;
 			}
 			// we're dismissing a specific toast
@@ -252,6 +302,8 @@ class ToastState {
 	reset = () => {
 		this.toasts = [];
 		this.heights = [];
+		this.#pendingRemovals.forEach((timeout) => clearTimeout(timeout));
+		this.#pendingRemovals.clear();
 	};
 }
 

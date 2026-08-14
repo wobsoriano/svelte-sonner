@@ -130,6 +130,74 @@ describe('upstream sonner#777 parity', () => {
 		);
 	});
 
+	it('shows a toast created before the Toaster mounts', async () => {
+		toast('Created before mount');
+
+		const { getByText } = setup({ cb: () => {} });
+
+		await waitFor(() => expect(getByText('Created before mount')).toBeVisible());
+	});
+
+	it('does not leak props into a new toast reusing a dismissed toast id', async () => {
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				const id = toast('With action', {
+					action: { label: 'Undo', onClick: () => {} }
+				});
+				toast.dismiss(id);
+				toast('Without action', { id });
+			}
+		});
+
+		await user.click(trigger);
+		await waitFor(() => expect(getByText('Without action')).toBeVisible());
+		expect(queryByText('Undo')).toBeNull();
+	});
+
+	it('keeps a toast recreated during the exit animation window on screen', async () => {
+		const { user, trigger, getByText } = setup({
+			cb: (toast) => {
+				const id = toast('Original toast');
+				toast.dismiss(id);
+				// recreate while the 200ms exit-animation removal is still pending
+				setTimeout(() => toast('Remounted toast', { id }), 100);
+			}
+		});
+
+		await user.click(trigger);
+		await sleep(500);
+		expect(getByText('Remounted toast')).toBeVisible();
+		expect(
+			document.querySelector('[data-sonner-toast][data-removed="true"]')
+		).toBeNull();
+	});
+
+	it('treats an id reused after a close-button dismissal as a new toast', async () => {
+		let onDismissCalls = 0;
+		let toastId: string | number;
+		const { user, trigger, container, getByText, queryByText } = setup({
+			cb: (toast) => {
+				toastId = toast('Closable toast', {
+					closeButton: true,
+					action: { label: 'Undo', onClick: () => {} },
+					onDismiss: () => onDismissCalls++
+				});
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Closable toast')).toBeVisible();
+
+		const closeButton = container.querySelector<HTMLButtonElement>('[data-close-button]');
+		await user.click(closeButton!);
+		expect(onDismissCalls).toBe(1);
+
+		toast('Recreated toast', { id: toastId! });
+		await waitFor(() => expect(getByText('Recreated toast')).toBeVisible());
+		expect(queryByText('Undo')).toBeNull();
+		expect(onDismissCalls).toBe(1);
+	});
+
 	it('keeps an explicit id of 0 in toast.custom()', async () => {
 		let returnedId: string | number | undefined;
 		const { user, trigger } = setup({
