@@ -10,3 +10,7 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vscode
+
+# Playwright output
+test-results
+playwright-report

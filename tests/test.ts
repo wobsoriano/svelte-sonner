@@ -37,11 +37,17 @@ test('render custom component in toast', async ({ page }) => {
 
 test('toast is removed after swiping down', async ({ page }) => {
 	await page.getByTestId('default-button').click();
-	await page.hover('[data-sonner-toast]');
+	const toast = page.locator('[data-sonner-toast]');
+	await toast.hover();
+	const box = await toast.boundingBox();
+	if (!box) throw new Error('Toast not rendered');
 	await page.mouse.down();
-	await page.mouse.move(0, 800);
+	// straight down, so the gesture locks to the y axis (down is an allowed
+	// direction for a bottom-positioned toast)
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 300, { steps: 5 });
 	await page.mouse.up();
-	await expect(page.locator('[data-sonner-toast]')).toHaveCount(0);
+	// Well below the 4s auto-close, so this only passes if the swipe dismissed it
+	await expect(toast).toHaveCount(0, { timeout: 2000 });
 });
 
 test('toast is not removed when hovered', async ({ page }) => {
