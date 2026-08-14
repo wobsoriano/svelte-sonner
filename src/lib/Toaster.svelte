@@ -124,6 +124,7 @@
 		toastOptions = {},
 		dir = 'auto',
 		gap = GAP,
+		swipeDirections,
 		pauseWhenPageIsHidden = false,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
@@ -437,6 +438,7 @@
 							closeButtonAriaLabel}
 						expandByDefault={expand}
 						{expanded}
+						{swipeDirections}
 						{pauseWhenPageIsHidden}
 						loadingIcon={loadingIconProp}
 					>
@@ -685,6 +687,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
+		/* Take the space the icon and the buttons leave, so a custom title or
+		   description isn't limited to the width of its text */
+		flex: 1;
+		min-width: 0;
 	}
 
 	[data-sonner-toast][data-styled='true'] [data-button] {

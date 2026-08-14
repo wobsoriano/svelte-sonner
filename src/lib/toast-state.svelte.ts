@@ -13,6 +13,15 @@ import { untrack } from 'svelte';
 
 let toastsCounter = 0;
 
+// A toast keeps the id it was given, otherwise it gets the next one from the counter.
+// `custom` needs the same id `create` would pick, as it hands it to the component.
+function getToastId(data?: { id?: number | string }): number | string {
+	return typeof data?.id === 'number' ||
+		(typeof data?.id === 'string' && data.id.length > 0)
+		? data.id
+		: toastsCounter++;
+}
+
 type UpdateToastProps = {
 	id: number | string;
 	data: Partial<ToastT>;
@@ -61,10 +70,7 @@ class ToastState {
 		}
 	): string | number => {
 		const { message, ...rest } = data;
-		const id =
-			typeof data?.id === 'number' || (data.id && data.id?.length > 0)
-				? data.id
-				: toastsCounter++;
+		const id = getToastId(data);
 
 		// Support deprecated `dismissable` as a fallback for backwards compatibility
 		const dismissible =
@@ -219,9 +225,9 @@ class ToastState {
 	};
 
 	custom = <T extends AnyComponent>(component: T, data?: ExternalToast<T>): string | number => {
-		const id = data?.id || toastsCounter++;
+		const id = getToastId(data);
 
-		this.create({ component, id, ...data });
+		this.create({ component, ...data, id });
 
 		return id;
 	};
@@ -259,10 +265,7 @@ function constructPromiseErrorMessage(response: unknown) {
 export const toastState = new ToastState();
 
 function toastFunction<T extends AnyComponent>(message: string | T, data?: ExternalToast<T>) {
-	return toastState.create({
-		message,
-		...data
-	});
+	return toastState.message(message, data);
 }
 
 export class SonnerState {

@@ -140,6 +140,9 @@
 	);
 	let pointerStart: { x: number; y: number } | null = null;
 	const coords = $derived(position.split('-'));
+	const swipeDirections = $derived(
+		swipeDirectionsProp ?? getDefaultSwipeDirections(position)
+	);
 	const toastsHeightBefore = $derived(
 		toastState.heights.reduce((prev, curr, reducerIndex) => {
 			if (reducerIndex >= heightIndex) return prev;
@@ -316,8 +319,19 @@
 			swipeDirection === 'x' ? swipeAmountX : swipeAmountY;
 		const velocity = Math.abs(swipeAmount) / timeTaken;
 
+		// Movement towards a direction that isn't allowed is dampened, not blocked,
+		// so a fast flick can still pass the velocity check. Only dismiss if the
+		// direction is allowed.
+		const isAllowedDirection =
+			swipeDirection === 'x'
+				? swipeDirections.includes(swipeAmountX > 0 ? 'right' : 'left')
+				: swipeDirections.includes(swipeAmountY > 0 ? 'bottom' : 'top');
+
 		// remove only if threshold is met
-		if (Math.abs(swipeAmount) >= SWIPE_THRESHOLD || velocity > 0.11) {
+		if (
+			isAllowedDirection &&
+			(Math.abs(swipeAmount) >= SWIPE_THRESHOLD || velocity > 0.11)
+		) {
 			offsetBeforeRemove = offset;
 			toast.onDismiss?.(toast);
 
@@ -348,9 +362,6 @@
 
 		const yDelta = event.clientY - pointerStart.y;
 		const xDelta = event.clientX - pointerStart.x;
-
-		const swipeDirections =
-			swipeDirectionsProp ?? getDefaultSwipeDirections(position);
 
 		// Determine swipe direction if not already locked
 		if (!swipeDirection && (Math.abs(xDelta) > 1 || Math.abs(yDelta) > 1)) {
@@ -510,14 +521,17 @@
 	{:else}
 		{#if (toastType || toast.icon || toast.promise) && toast.icon !== null && (icon !== null || toast.icon)}
 			<div data-icon="" class={cn(classes?.icon, toast?.classes?.icon)}>
-				{#if toast.promise || toastType === 'loading'}
+				<!-- Promise toasts keep the loader mounted after they settle so it can animate out -->
+				{#if toastType === 'loading'}
 					{#if toast.icon}
 						<toast.icon />
 					{:else}
 						{@render LoadingIcon()}
 					{/if}
+				{:else if toast.promise}
+					{@render LoadingIcon()}
 				{/if}
-				{#if toast.type !== 'loading'}
+				{#if toastType !== 'loading'}
 					{#if toast.icon}
 						<toast.icon />
 					{:else if toastType === 'success'}
