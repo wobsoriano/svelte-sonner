@@ -1,0 +1,1 @@
+I want a custom toast in Svelte 5 that renders my own <OrderToast /> component with an order number and a 'View order' button, fully my own markup, no sonner styling. Two problems: I tried toast(<OrderToast orderNumber={x} />) and it renders nothing, and when a toast does fire while our bits-ui dialog is open it shows up behind the dialog overlay. Fix both.

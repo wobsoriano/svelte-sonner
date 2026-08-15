@@ -1,0 +1,21 @@
+{
+	"name": "svelte-sonner",
+	"owner": {
+		"name": "Robert Soriano",
+		"email": "sorianorobertc@gmail.com"
+	},
+	"metadata": {
+		"description": "Claude Code plugin marketplace for svelte-sonner",
+		"pluginRoot": "./plugins"
+	},
+	"plugins": [
+		{
+			"name": "ask-sonner",
+			"source": "./plugins/ask-sonner",
+			"version": "1.0.0",
+			"description": "Guide skill for svelte-sonner — install and wire up the Toaster, pick the right toast() call, styling, theming, icons, positioning, multiple toasters, and troubleshooting.",
+			"category": "documentation",
+			"keywords": ["svelte", "svelte-sonner", "sonner", "toast", "sveltekit"]
+		}
+	]
+}
