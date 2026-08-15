@@ -1,0 +1,26 @@
+{
+	"skill_name": "ask-sonner",
+	"evals": [
+		{
+			"id": 0,
+			"name": "tailwind-classes-ignored",
+			"prompt": "we use svelte-sonner in our sveltekit app and i cannot get our toasts to match our design system. i'm passing toastOptions={{ classes: { toast: 'bg-graphite-900 border border-amber-500 rounded-none font-mono text-xs' } }} on the Toaster in +layout.svelte and literally nothing changes, the toasts still look like default sonner. also our app is dark-only and the toasts come out white. what am i doing wrong? give me the corrected Toaster markup.",
+			"expected_output": "Identifies that `classes` requires `unstyled: true` (default styles win the cascade), and that `theme` defaults to 'light' so it must be set to 'dark'/'system' or bound to theme state. Returns corrected <Toaster /> markup.",
+			"files": []
+		},
+		{
+			"id": 1,
+			"name": "notify-wrapper-icons-toasters-callbacks",
+			"prompt": "Building our notify() wrapper over svelte-sonner and I'm stuck on four things. (1) I want our own check glyph on success toasts globally — I tried passing successIcon={CheckIcon} on the Toaster and nothing changes. (2) Our chat panel needs its own toast stack pinned inside the panel while the rest of the app keeps the normal corner stack — right now every toast shows in both. (3) An alert toast that must stay until the user acts, then gets torn down from a websocket handler outside any component. (4) I need to log to analytics only when the user actually closed it, not when it timed out — right now my one handler fires for both. Show me the Toaster setup and the notify() module.",
+			"expected_output": "Icons are snippets on the Toaster ({#snippet successIcon()}), not a component prop. Multiple stacks need an `id` per Toaster plus `toasterId` in the toast() call. Persist via duration: Infinity and tear down with toast.dismiss(id) (works outside a component). onDismiss (user closed) is separate from onAutoClose (timed out) — there is no single closed callback.",
+			"files": []
+		},
+		{
+			"id": 2,
+			"name": "custom-component-toast-behind-dialog",
+			"prompt": "I want a custom toast in Svelte 5 that renders my own <OrderToast /> component with an order number and a 'View order' button, fully my own markup, no sonner styling. Two problems: I tried toast(<OrderToast orderNumber={x} />) and it renders nothing, and when a toast does fire while our bits-ui dialog is open it shows up behind the dialog overlay. Fix both.",
+			"expected_output": "Explains svelte-sonner takes a component reference + componentProps (no JSX), points to toast.custom for headless, and diagnoses the stacking-context/z-index issue — mount <Toaster /> at the root layout outside the dialog/portal container.",
+			"files": []
+		}
+	]
+}
