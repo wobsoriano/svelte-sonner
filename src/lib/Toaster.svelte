@@ -118,6 +118,8 @@
 		closeButton = false,
 		offset = VIEWPORT_OFFSET,
 		mobileOffset = MOBILE_VIEWPORT_OFFSET,
+		mobileBreakpoint = 600,
+		maxStackedPreview,
 		theme = 'light',
 		richColors = false,
 		duration = TOAST_LIFETIME,
@@ -342,8 +344,10 @@
 
 	const handleMouseEnter: MouseEventHandler<HTMLOListElement> = (event) => {
 		onmouseenter?.(event);
-		lastMousePosition = { x: event.clientX, y: event.clientY };
-		expanded = true;
+		if (filteredToasts.length > 1) {
+			lastMousePosition = { x: event.clientX, y: event.clientY };
+			expanded = true;
+		}
 	};
 
 	const handleMouseLeave: MouseEventHandler<HTMLOListElement> = (event) => {
@@ -366,8 +370,10 @@
 
 	const handleMouseMove: MouseEventHandler<HTMLOListElement> = (event) => {
 		onmousemove?.(event);
-		lastMousePosition = { x: event.clientX, y: event.clientY };
-		expanded = true;
+		if (filteredToasts.length > 1) {
+			lastMousePosition = { x: event.clientX, y: event.clientY };
+			expanded = true;
+		}
 	};
 
 	const handleDragEnd: DragEventHandler<HTMLOListElement> = (event) => {
@@ -412,6 +418,7 @@
 				data-sonner-theme={actualTheme}
 				data-y-position={y}
 				data-x-position={x}
+				data-mobile-disabled={mobileBreakpoint === false ? 'true' : undefined}
 				style:--front-toast-height={`${frontHeight}px`}
 				style:--width={`${TOAST_WIDTH}px`}
 				style:--gap={`${gap}px`}
@@ -450,6 +457,7 @@
 						descriptionClass={toastOptions?.descriptionClass || ''}
 						{invert}
 						{visibleToasts}
+						{maxStackedPreview}
 						closeButton={toastOptions?.closeButton ?? closeButton}
 						{interacting}
 						{position}
@@ -591,30 +599,38 @@
 
 		[data-sonner-toaster][data-x-position='right'] {
 			right: var(--offset-right);
+			left: auto;
 		}
 
 		[data-sonner-toaster][data-x-position='left'] {
 			left: var(--offset-left);
+			right: auto;
 		}
 
 		[data-sonner-toaster][data-x-position='center'] {
 			left: 50%;
+			right: auto;
 			transform: translateX(-50%);
 		}
 
 		[data-sonner-toaster][data-y-position='top'] {
 			top: var(--offset-top);
+			bottom: auto;
 		}
 
 		[data-sonner-toaster][data-y-position='bottom'] {
 			bottom: var(--offset-bottom);
+			top: auto;
 		}
 
+		[data-sonner-toaster] [data-sonner-toast],
 		[data-sonner-toast] {
 			--y: translateY(100%);
 			--lift-amount: calc(var(--lift) * var(--gap));
 			z-index: var(--z-index);
 			position: absolute;
+			margin: 0;
+			height: auto;
 			opacity: 0;
 			transform: var(--y);
 			touch-action: none;
@@ -650,6 +666,7 @@
 
 		[data-sonner-toast][data-y-position='top'] {
 			top: 0;
+			bottom: auto;
 			--y: translateY(-100%);
 			--lift: 1;
 			--lift-amount: calc(1 * var(--gap));
@@ -657,6 +674,7 @@
 
 		[data-sonner-toast][data-y-position='bottom'] {
 			bottom: 0;
+			top: auto;
 			--y: translateY(100%);
 			--lift: -1;
 			--lift-amount: calc(var(--lift) * var(--gap));
@@ -839,6 +857,11 @@
 			width: 100%;
 		}
 
+		[data-sonner-toast][data-y-position='top'][data-expanded='true']::after {
+			top: 100%;
+			bottom: auto;
+		}
+
 		[data-sonner-toast][data-mounted='true'] {
 			--y: translateY(0);
 			opacity: 1;
@@ -857,10 +880,12 @@
 
 		[data-sonner-toast][data-x-position='right'] {
 			right: 0;
+			left: auto;
 		}
 
 		[data-sonner-toast][data-x-position='left'] {
 			left: 0;
+			right: auto;
 		}
 
 		[data-sonner-toast][data-expanded='false'][data-front='false'][data-styled='true']
@@ -988,36 +1013,36 @@
 		}
 
 		@media (max-width: 600px) {
-			[data-sonner-toaster] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true']) {
 				position: fixed;
 				right: var(--mobile-offset-right);
 				left: var(--mobile-offset-left);
 				width: 100%;
 			}
 
-			[data-sonner-toaster][dir='rtl'] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true'])[dir='rtl'] {
 				left: calc(var(--mobile-offset-left) * -1);
 			}
 
-			[data-sonner-toaster] [data-sonner-toast] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true']) [data-sonner-toast] {
 				left: 0;
 				right: 0;
 				width: calc(100% - var(--mobile-offset-left) * 2);
 			}
 
-			[data-sonner-toaster][data-x-position='left'] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true'])[data-x-position='left'] {
 				left: var(--mobile-offset-left);
 			}
 
-			[data-sonner-toaster][data-y-position='bottom'] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true'])[data-y-position='bottom'] {
 				bottom: var(--mobile-offset-bottom);
 			}
 
-			[data-sonner-toaster][data-y-position='top'] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true'])[data-y-position='top'] {
 				top: var(--mobile-offset-top);
 			}
 
-			[data-sonner-toaster][data-x-position='center'] {
+			[data-sonner-toaster]:not([data-mobile-disabled='true'])[data-x-position='center'] {
 				left: var(--mobile-offset-left);
 				right: var(--mobile-offset-right);
 				transform: none;

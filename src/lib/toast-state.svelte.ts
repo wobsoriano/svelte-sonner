@@ -174,12 +174,14 @@ class ToastState {
 		if (id === undefined) {
 			// remove all toasts
 			this.toasts = [];
+			this.heights = [];
 			return;
 		}
 		// remove a specific toast
 		const toastIdx = this.#findToastIdx(id);
 		if (toastIdx === null) return;
 		this.toasts.splice(toastIdx, 1);
+		this.removeHeight(id);
 		return id;
 	};
 
