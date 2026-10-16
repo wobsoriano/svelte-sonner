@@ -78,6 +78,7 @@
 		invert: invertFromToaster,
 		position,
 		visibleToasts,
+		maxStackedPreview,
 		expandByDefault,
 		closeButton: closeButtonFromToaster,
 		interacting,
@@ -118,7 +119,11 @@
 		null
 	);
 	const isFront = $derived(index === 0);
-	const isVisible = $derived(index + 1 <= visibleToasts);
+	const isVisible = $derived(
+		expanded || expandByDefault
+			? index + 1 <= visibleToasts
+			: index + 1 <= Math.min(visibleToasts, maxStackedPreview ?? visibleToasts)
+	);
 	const toastType = $derived(toast.type);
 	const dismissible = $derived(
 		toast.dismissible !== undefined
@@ -130,19 +135,31 @@
 	// height index is used to calculate the offset as it gets updated before the toast array, which means we can calculate the new layout faster.
 	// Only the heights of this toaster + position matter for the offset math,
 	// otherwise toasts of another toaster (or another corner) push these around.
+	// Only active, currently existing toasts for this toaster and position count towards layout
+	const activeToasts = $derived(
+		toastState.toasts.filter(
+			(t) =>
+				!t.dismiss &&
+				!t.delete &&
+				((t.toasterId ?? undefined) === (toast.toasterId ?? undefined)) &&
+				((t.position ?? position) === position)
+		)
+	);
+	const activeToastIds = $derived(new Set(activeToasts.map((t) => t.id)));
 	const relevantHeights = $derived(
 		toastState.heights.filter(
 			(height) =>
+				activeToastIds.has(height.toastId) &&
 				height.toasterId === toast.toasterId &&
 				height.position === position
 		)
 	);
-	// findIndex returns -1 when not yet measured; -1 is truthy, so `|| 0` left a negative index in the offset math.
+	// findIndex returns -1 when not yet measured; fall back to the toast's current index in the visible list.
 	const heightIndex = $derived.by(() => {
 		const idx = relevantHeights.findIndex(
 			(height) => height.toastId === toast.id
 		);
-		return idx === -1 ? 0 : idx;
+		return idx === -1 ? index : idx;
 	});
 	const closeButton = $derived(toast.closeButton ?? closeButtonFromToaster);
 	const duration = $derived(
@@ -178,10 +195,13 @@
 		toastDescription;
 		let scale: number;
 
-		if (expanded || expandByDefault) {
+		const currentExpanded = untrack(() => expanded || expandByDefault);
+		const currentIndex = untrack(() => index);
+
+		if (currentExpanded) {
 			scale = 1;
 		} else {
-			scale = 1 - index * SCALE_MULTIPLIER;
+			scale = 1 - currentIndex * SCALE_MULTIPLIER;
 		}
 
 		const toastEl = untrack(() => toastRef);
@@ -286,16 +306,6 @@
 
 	onMount(() => {
 		mounted = true;
-
-		const height = toastRef?.getBoundingClientRect().height as number;
-
-		initialHeight = height;
-		toastState.setHeight({
-			toastId: toast.id,
-			height,
-			toasterId: toast.toasterId,
-			position
-		});
 
 		return () => {
 			toastState.removeHeight(toast.id);
@@ -554,7 +564,7 @@
 	style:--toasts-before={index}
 	style:--z-index={toastState.toasts.length - index}
 	style:--offset={`${removed ? offsetBeforeRemove : offset}px`}
-	style:--initial-height={expandByDefault ? 'auto' : `${initialHeight}px`}
+	style:--initial-height={expandByDefault || initialHeight === 0 ? 'auto' : `${initialHeight}px`}
 	style={`${restProps.style} ${toast.style}`}
 	onpointermove={handlePointerMove}
 	onpointerup={handlePointerUp}

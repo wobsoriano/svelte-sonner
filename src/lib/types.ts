@@ -277,6 +277,22 @@ export type ToasterProps = {
 	mobileOffset?: Offset;
 
 	/**
+	 * Breakpoint in pixels below which mobile layout applies.
+	 * Set to `false` to disable mobile layout completely (useful for desktop apps or compact overlays).
+	 *
+	 * @default 600
+	 */
+	mobileBreakpoint?: number | false;
+
+	/**
+	 * Maximum number of stacked toasts shown in preview when collapsed.
+	 * When expanded, up to `visibleToasts` will be displayed.
+	 *
+	 * @default visibleToasts
+	 */
+	maxStackedPreview?: number;
+
+	/**
 	 * Pause the toast timer when the page is hidden, e.g. when the user switches
 	 * tabs. Toasts will not expire while the page is hidden.
 	 *
@@ -400,6 +416,7 @@ export type ToastProps = {
 	invert: boolean;
 	position: Position;
 	visibleToasts: number;
+	maxStackedPreview?: number;
 	expandByDefault: boolean;
 	closeButton: boolean;
 	interacting: boolean;
