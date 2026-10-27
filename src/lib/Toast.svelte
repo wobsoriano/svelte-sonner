@@ -229,7 +229,7 @@
 
 	const isPromiseLoadingOrInfiniteDuration = $derived(
 		(toast.promise && toastType === 'loading') ||
-			duration === Number.POSITIVE_INFINITY
+			toast.duration === Number.POSITIVE_INFINITY
 	);
 
 	function startTimer() {
@@ -237,6 +237,9 @@
 		// same flush (a recreated toast mounts with `updated` already set); clear
 		// first so only one runs.
 		clearTimeout(timeoutId);
+		// setTimeout(fn, Infinity) fires immediately. An Infinity duration inherited
+		// from the Toaster gets past the check above, which only sees toast.duration.
+		if (remainingTime === Number.POSITIVE_INFINITY) return;
 		closeTimerStartTime = new Date().getTime();
 		// let the toast know it has started
 		timeoutId = setTimeout(() => {

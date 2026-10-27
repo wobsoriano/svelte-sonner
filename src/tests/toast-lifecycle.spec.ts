@@ -207,8 +207,7 @@ describe('Toast lifecycle', () => {
 		await user.click(trigger);
 		expect(getByText('Inherited infinite toast')).toBeVisible();
 
-		// an Infinity timeout fires right away, so give the (buggy) auto-close time to
-		// run plus the exit animation
+		// setTimeout(fn, Infinity) fires right away; wait past it plus the exit animation
 		await sleep(600);
 		expect(getByText('Inherited infinite toast')).toBeVisible();
 	});
