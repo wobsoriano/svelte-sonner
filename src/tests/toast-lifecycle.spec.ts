@@ -197,4 +197,45 @@ describe('Toast lifecycle', () => {
 		expect(returnedId).toBe(0);
 		expect(toastState.toasts[0]?.id).toBe(0);
 	});
+
+	it('does not auto-close a toast when the Toaster duration is Infinity', async () => {
+		const { user, trigger, getByText } = setup({
+			duration: Number.POSITIVE_INFINITY,
+			cb: (toast) => toast('Inherited infinite toast')
+		});
+
+		await user.click(trigger);
+		expect(getByText('Inherited infinite toast')).toBeVisible();
+
+		// an Infinity timeout fires right away, so give the (buggy) auto-close time to
+		// run plus the exit animation
+		await sleep(600);
+		expect(getByText('Inherited infinite toast')).toBeVisible();
+	});
+
+	it('does not auto-close a toast when toastOptions.duration is Infinity', async () => {
+		const { user, trigger, getByText } = setup({
+			toastOptions: { duration: Number.POSITIVE_INFINITY },
+			cb: (toast) => toast('Inherited infinite toast')
+		});
+
+		await user.click(trigger);
+		expect(getByText('Inherited infinite toast')).toBeVisible();
+
+		await sleep(600);
+		expect(getByText('Inherited infinite toast')).toBeVisible();
+	});
+
+	it('lets a toast override an Infinity Toaster duration with a finite one', async () => {
+		const { user, trigger, queryByText } = setup({
+			duration: Number.POSITIVE_INFINITY,
+			cb: (toast) => toast('Finite override', { duration: 300 })
+		});
+
+		await user.click(trigger);
+		await waitFor(() => expect(queryByText('Finite override')).not.toBeNull());
+
+		// duration (300ms) + exit animation (200ms), with margin for slow runs
+		await waitFor(() => expect(queryByText('Finite override')).toBeNull());
+	});
 });

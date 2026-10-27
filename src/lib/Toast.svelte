@@ -229,7 +229,7 @@
 
 	const isPromiseLoadingOrInfiniteDuration = $derived(
 		(toast.promise && toastType === 'loading') ||
-			toast.duration === Number.POSITIVE_INFINITY
+			duration === Number.POSITIVE_INFINITY
 	);
 
 	function startTimer() {
