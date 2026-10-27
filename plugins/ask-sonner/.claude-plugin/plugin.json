@@ -1,0 +1,13 @@
+{
+	"name": "ask-sonner",
+	"version": "1.0.0",
+	"description": "Guide skill for svelte-sonner — install and wire up the Toaster, pick the right toast() call, styling, theming, icons, positioning, multiple toasters, and troubleshooting.",
+	"author": {
+		"name": "Anthony",
+		"email": "anthony@linehaul.ai"
+	},
+	"homepage": "https://github.com/wobsoriano/svelte-sonner",
+	"repository": "https://github.com/wobsoriano/svelte-sonner",
+	"license": "MIT",
+	"keywords": ["svelte", "svelte-sonner", "sonner", "toast", "sveltekit"]
+}
