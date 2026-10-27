@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.2.2
+
+### Patch Changes
+
+- 814df17: Don't auto-close toasts that inherit an infinite duration from `<Toaster duration>` or `toastOptions.duration`
+
 ## 1.2.1
 
 ### Patch Changes
