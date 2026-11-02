@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      runed:
-        specifier: ^0.28.0
-        version: 0.28.0(svelte@5.43.5)
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.7
@@ -1794,11 +1790,6 @@ packages:
 
   runed@0.25.0:
     resolution: {integrity: sha512-7+ma4AG9FT2sWQEA0Egf6mb7PBT2vHyuHail1ie8ropfSjvZGtEAx8YTmUjv/APCsdRRxEVvArNjALk9zFSOrg==}
-    peerDependencies:
-      svelte: ^5.7.0
-
-  runed@0.28.0:
-    resolution: {integrity: sha512-k2xx7RuO9hWcdd9f+8JoBeqWtYrm5CALfgpkg2YDB80ds/QE4w0qqu34A7fqiAwiBBSBQOid7TLxwxVC27ymWQ==}
     peerDependencies:
       svelte: ^5.7.0
 
@@ -3906,11 +3897,6 @@ snapshots:
       svelte: 5.43.5
 
   runed@0.25.0(svelte@5.43.5):
-    dependencies:
-      esm-env: 1.2.2
-      svelte: 5.43.5
-
-  runed@0.28.0(svelte@5.43.5):
     dependencies:
       esm-env: 1.2.2
       svelte: 5.43.5
