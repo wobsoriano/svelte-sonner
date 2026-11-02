@@ -48,6 +48,7 @@
 		"@eslint/js": "^9.39.1",
 		"@playwright/test": "^1.56.1",
 		"@sveltejs/adapter-auto": "^3.3.1",
+		"@sveltejs/adapter-vercel": "^6.3.4",
 		"@sveltejs/kit": "^2.48.4",
 		"@sveltejs/package": "^2.5.4",
 		"@sveltejs/vite-plugin-svelte": "^5.1.1",
