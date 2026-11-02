@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { toast } from '$lib/index.js';
+	import { toast } from '#lib/index.js';
 	import CodeBlock from './CodeBlock.svelte';
 	import Custom from './Custom.svelte';
-	import { richColorsContext } from '$lib/internal/ctx.js';
+	import { richColorsContext } from '#lib/internal/ctx.js';
 
 	const richColors = richColorsContext.get();
 

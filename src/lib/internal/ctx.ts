@@ -1,4 +1,4 @@
-import { SonnerState } from '$lib/toast-state.svelte.js';
+import { SonnerState } from '#lib/toast-state.svelte.js';
 import { getContext, setContext } from 'svelte';
 
 class Context<T> {

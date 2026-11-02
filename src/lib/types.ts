@@ -1,5 +1,5 @@
 import type { Component, ComponentProps, Snippet } from 'svelte';
-import type { Expand } from '$lib/internal/types.js';
+import type { Expand } from '#lib/internal/types.js';
 import type { HTMLAttributes, HTMLOlAttributes, MouseEventHandler } from 'svelte/elements';
 
 export type FixMe = unknown;

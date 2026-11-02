@@ -1,5 +1,7 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
+	"extends": "$app/tsconfig",
+	"include": ["src", "tests", "*"],
+	"exclude": ["src/service-worker"],
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
@@ -12,6 +14,7 @@
 		"moduleResolution": "NodeNext",
 		"module": "NodeNext",
 		"noUncheckedIndexedAccess": true,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"types": ["$app/types", "vitest/globals", "@testing-library/jest-dom/vitest"]
 	}
 }

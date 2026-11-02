@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toast } from '$lib/index.js';
+	import { toast } from '#lib/index.js';
 </script>
 
 <div class="wrapper">

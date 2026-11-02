@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Toaster, toast } from '$lib/index.js';
-	import type { Position, SwipeDirection } from '$lib/types.js';
+	import { Toaster, toast } from '#lib/index.js';
+	import type { Position, SwipeDirection } from '#lib/types.js';
 	import CustomIcon from './CustomIcon.svelte';
 	import WideDescription from './WideDescription.svelte';
 

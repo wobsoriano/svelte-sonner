@@ -3,9 +3,9 @@ import PropsToastTest from './PropsToastTest.svelte';
 import MultiToasterTest from './MultiToasterTest.svelte';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
-import { toast, toastState } from '$lib/toast-state.svelte.js';
+import { toast, toastState } from '#lib/toast-state.svelte.js';
 import { sleep } from './utils.js';
-import type { ToasterProps } from '$lib/index.js';
+import type { ToasterProps } from '#lib/index.js';
 
 function setup(props: { cb: (t: typeof toast) => void } & ToasterProps) {
 	const user = userEvent.setup();

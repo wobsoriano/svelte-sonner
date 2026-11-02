@@ -2,7 +2,7 @@ import { describe, it } from 'vitest';
 import ToastTest from './ToastTest.svelte';
 import { render, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
-import { toast, toastState } from '$lib/toast-state.svelte.js';
+import { toast, toastState } from '#lib/toast-state.svelte.js';
 import { sleep } from './utils.js';
 
 function setup(props: { cb: (t: typeof toast) => void }) {
