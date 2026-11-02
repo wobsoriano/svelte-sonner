@@ -1,5 +1,11 @@
 # svelte-sonner
 
+## 1.2.3
+
+### Patch Changes
+
+- a73656d: Remove the `runed` dependency so apps no longer install a second copy of it alongside other Svelte libraries
+
 ## 1.2.2
 
 ### Patch Changes
