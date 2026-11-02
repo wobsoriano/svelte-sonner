@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Toaster, toast } from '$lib/index.js';
-	import type { ToasterProps } from '$lib/index.js';
+	import { Toaster, toast } from '#lib/index.js';
+	import type { ToasterProps } from '#lib/index.js';
 
 	const {
 		cb,

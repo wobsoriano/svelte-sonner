@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Toaster } from '$lib/index.js';
-	import type { Position as PositionType } from '$lib/types.js';
+	import { Toaster } from '#lib/index.js';
+	import type { Position as PositionType } from '#lib/types.js';
 	import Expand from '../components/Expand.svelte';
 	import Footer from '../components/Footer.svelte';
 	import Hero from '../components/Hero.svelte';
@@ -9,7 +9,7 @@
 	import Position from '../components/Position.svelte';
 	import Types from '../components/Types.svelte';
 	import Usage from '../components/Usage.svelte';
-	import { richColorsContext } from '$lib/internal/ctx.js';
+	import { richColorsContext } from '#lib/internal/ctx.js';
 
 	let expand = $state(false);
 	let position = $state<PositionType>('bottom-right');

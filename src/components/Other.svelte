@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toast } from '$lib/index.js';
+	import { toast } from '#lib/index.js';
 	import CodeBlock from './CodeBlock.svelte';
 	import Test from './Test.svelte';
 	import TestWithProps from './TestWithProps.svelte';

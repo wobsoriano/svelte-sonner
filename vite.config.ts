@@ -1,4 +1,6 @@
+import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vitest/config';
 import type { Plugin } from 'vite';
 
@@ -13,7 +15,13 @@ const vitestBrowserConditionPlugin: Plugin = {
 };
 
 export default defineConfig({
-	plugins: [vitestBrowserConditionPlugin, sveltekit()],
+	plugins: [
+		vitestBrowserConditionPlugin,
+		sveltekit({
+			preprocess: [vitePreprocess()],
+			adapter: adapter()
+		})
+	],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		// jest like globals

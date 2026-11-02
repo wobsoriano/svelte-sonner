@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ToastTypes } from '$lib/types.js';
+	import type { ToastTypes } from '#lib/types.js';
 
 	const { type = 'success' }: { type: ToastTypes } = $props();
 </script>
