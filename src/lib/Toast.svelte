@@ -120,6 +120,14 @@
 	const isFront = $derived(index === 0);
 	const isVisible = $derived(index + 1 <= visibleToasts);
 	const toastType = $derived(toast.type);
+
+	// A toast that has been loading animates its icon when it settles, whether it
+	// came from `toast.promise` or from `toast.loading` updated later by `id`.
+	let wasLoading = $state(false);
+	$effect.pre(() => {
+		if (toastType === 'loading') wasLoading = true;
+	});
+	const hasLoaded = $derived(Boolean(toast.promise) || wasLoading);
 	const dismissible = $derived(
 		toast.dismissible !== undefined
 			? toast.dismissible !== false
@@ -535,7 +543,7 @@
 	data-rich-colors={toast.richColors ?? defaultRichColors}
 	data-styled={!(toast.component || toast.unstyled || unstyled)}
 	data-mounted={mounted}
-	data-promise={Boolean(toast.promise)}
+	data-promise={hasLoaded}
 	data-swiped={isSwiped}
 	data-removed={removed}
 	data-visible={isVisible}
@@ -581,7 +589,7 @@
 		{@const Component = toast.component}
 		<Component {...toast.componentProps} closeToast={deleteToast} />
 	{:else}
-		{#if (toastType || toast.icon || toast.promise) && toast.icon !== null && (icon !== null || toast.icon)}
+		{#if (toastType || toast.icon || hasLoaded) && toast.icon !== null && (icon !== null || toast.icon)}
 			<div data-icon="" class={cn(classes?.icon, toast?.classes?.icon)}>
 				<!-- Promise toasts keep the loader mounted after they settle so it can animate out -->
 				{#if toastType === 'loading'}
@@ -590,7 +598,7 @@
 					{:else}
 						{@render LoadingIcon()}
 					{/if}
-				{:else if toast.promise}
+				{:else if hasLoaded}
 					{@render LoadingIcon()}
 				{/if}
 				{#if toastType !== 'loading'}
