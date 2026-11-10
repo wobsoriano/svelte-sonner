@@ -48,6 +48,38 @@ describe('Toast lifecycle', () => {
 		expect(getAllByTestId('custom-icon').length).toBe(1);
 	});
 
+	it('animates the icon when a loading toast is updated by id', async () => {
+		const { user, trigger, container, getByText } = setup({
+			cb: (toast) => {
+				const id = toast.loading('Loading...');
+				setTimeout(() => toast.success('Loaded', { id }), 100);
+			}
+		});
+
+		await user.click(trigger);
+		await waitFor(() => expect(getByText('Loaded')).toBeVisible());
+
+		const el = container.querySelector('[data-sonner-toast]');
+		expect(el).toHaveAttribute('data-promise', 'true');
+		// the loader stays mounted so it can animate out
+		expect(el!.querySelector('.sonner-loading-wrapper')).not.toBeNull();
+	});
+
+	it('does not animate the icon of a toast that was never loading', async () => {
+		const { user, trigger, container, getByText } = setup({
+			cb: (toast) => {
+				const id = toast.info('Info');
+				setTimeout(() => toast.success('Loaded', { id }), 100);
+			}
+		});
+
+		await user.click(trigger);
+		await waitFor(() => expect(getByText('Loaded')).toBeVisible());
+
+		const el = container.querySelector('[data-sonner-toast]');
+		expect(el).toHaveAttribute('data-promise', 'false');
+	});
+
 	it('hides default icons from assistive technology', async () => {
 		const { user, trigger, container } = setup({
 			cb: (toast) => toast.success('Success toast', { closeButton: true })
