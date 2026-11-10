@@ -3,6 +3,7 @@ import type {
 	ExternalToast,
 	HeightT,
 	PromiseData,
+	PromiseExtendedResult,
 	PromiseT,
 	AnyComponent,
 	ToastT,
@@ -257,18 +258,18 @@ class ToastState {
 				this.create({ id, type: 'error', message });
 			} else if (data.success !== undefined) {
 				shouldDismiss = false;
-				const message =
+				const result =
 					typeof data.success === 'function' ? data.success(response) : data.success;
-				this.create({ id, type: 'success', message });
+				this.create({ id, type: 'success', ...resolvePromiseResult(result) });
 			}
 		})
 			.catch((error) => {
 				if (data.error !== undefined) {
 					shouldDismiss = false;
-					const message =
+					const result =
 						typeof data.error === 'function' ? data.error(error) : data.error;
 
-					this.create({ id, type: 'error', message });
+					this.create({ id, type: 'error', ...resolvePromiseResult(result) });
 				}
 			})
 			.finally(() => {
@@ -330,6 +331,21 @@ class ToastState {
 		this.#pendingRemovals.forEach((timeout) => clearTimeout(timeout));
 		this.#pendingRemovals.clear();
 	};
+}
+
+// A promise state can be a plain message or an object with a message and a description.
+// The description is only included when set, so a description given to the toast
+// up front is kept otherwise.
+function resolvePromiseResult(result: string | AnyComponent | PromiseExtendedResult): {
+	message: string | AnyComponent;
+	description?: string | AnyComponent;
+} {
+	if (typeof result === 'object' && result !== null && 'message' in result) {
+		return result.description === undefined
+			? { message: result.message }
+			: { message: result.message, description: result.description };
+	}
+	return { message: result };
 }
 
 function constructPromiseErrorMessage(response: unknown) {

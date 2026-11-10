@@ -48,6 +48,88 @@ describe('Toast lifecycle', () => {
 		expect(getAllByTestId('custom-icon').length).toBe(1);
 	});
 
+	it('sets the description of a settled promise toast from the result', async () => {
+		let resolve: (value: { title: string; message: string }) => void;
+		const promise = new Promise<{ title: string; message: string }>((res) => {
+			resolve = res;
+		});
+
+		const { user, trigger, getByText, queryByText } = setup({
+			cb: (toast) => {
+				toast.promise(promise, {
+					loading: 'Loading...',
+					success: (data) => ({ message: data.title, description: data.message })
+				});
+			}
+		});
+
+		await user.click(trigger);
+		expect(getByText('Loading...')).toBeVisible();
+
+		resolve!({ title: 'Saved', message: 'Your changes are live' });
+		await waitFor(() => expect(getByText('Saved')).toBeVisible());
+		expect(getByText('Your changes are live')).toBeVisible();
+		expect(queryByText('Loading...')).toBeNull();
+	});
+
+	it('sets the description of a rejected promise toast from the error', async () => {
+		let reject: (reason: Error) => void;
+		const promise = new Promise<string>((_, rej) => {
+			reject = rej;
+		});
+
+		const { user, trigger, getByText } = setup({
+			cb: (toast) => {
+				toast.promise(promise, {
+					loading: 'Loading...',
+					error: (error) => ({
+						message: 'Could not save',
+						description: (error as Error).message
+					})
+				});
+			}
+		});
+
+		await user.click(trigger);
+		reject!(new Error('Network down'));
+
+		await waitFor(() => expect(getByText('Could not save')).toBeVisible());
+		expect(getByText('Network down')).toBeVisible();
+	});
+
+	it('accepts a static message and description object for a promise state', async () => {
+		const { user, trigger, getByText } = setup({
+			cb: (toast) => {
+				toast.promise(Promise.resolve('done'), {
+					loading: 'Loading...',
+					success: { message: 'Saved', description: 'All good' }
+				});
+			}
+		});
+
+		await user.click(trigger);
+
+		await waitFor(() => expect(getByText('Saved')).toBeVisible());
+		expect(getByText('All good')).toBeVisible();
+	});
+
+	it('keeps the description given up front when the promise state is only a message', async () => {
+		const { user, trigger, getByText } = setup({
+			cb: (toast) => {
+				toast.promise(Promise.resolve('done'), {
+					loading: 'Loading...',
+					success: 'Saved',
+					description: 'Set up front'
+				});
+			}
+		});
+
+		await user.click(trigger);
+
+		await waitFor(() => expect(getByText('Saved')).toBeVisible());
+		expect(getByText('Set up front')).toBeVisible();
+	});
+
 	it('hides default icons from assistive technology', async () => {
 		const { user, trigger, container } = setup({
 			cb: (toast) => toast.success('Success toast', { closeButton: true })
