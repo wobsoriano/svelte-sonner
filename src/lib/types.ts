@@ -20,6 +20,14 @@ export type ToastTypes =
 
 export type PromiseT<Data = unknown> = Promise<Data> | (() => Promise<Data>);
 
+/**
+ * A promise result that sets both the message and the description of the toast.
+ */
+export type PromiseExtendedResult = {
+	message: string | AnyComponent;
+	description?: string | AnyComponent;
+};
+
 export type PromiseData<ToastData = unknown> = ExternalToast & {
 	/**
 	 * The loading message or a function that returns the message or
@@ -28,14 +36,22 @@ export type PromiseData<ToastData = unknown> = ExternalToast & {
 	loading?: string | (() => AnyComponent | string);
 	/**
 	 * The success message or a function that returns the message or
-	 * a custom toast component.
+	 * a custom toast component. Return (or pass) an object with `message` and
+	 * `description` to also set the description, for example from the result.
 	 */
-	success?: string | ((data: ToastData) => AnyComponent | string);
+	success?:
+		| string
+		| PromiseExtendedResult
+		| ((data: ToastData) => AnyComponent | string | PromiseExtendedResult);
 	/**
 	 * The error message or a function that returns the message or
-	 * a custom toast component.
+	 * a custom toast component. Return (or pass) an object with `message` and
+	 * `description` to also set the description, for example from the error.
 	 */
-	error?: string | ((error: unknown) => AnyComponent | string);
+	error?:
+		| string
+		| PromiseExtendedResult
+		| ((error: unknown) => AnyComponent | string | PromiseExtendedResult);
 	/**
 	 * A function that is called when the promise is finally resolved or rejected.
 	 */

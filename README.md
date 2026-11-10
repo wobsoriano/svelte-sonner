@@ -119,6 +119,22 @@ toast.promise(promise, {
 });
 ```
 
+To also set the description from the result, return an object with `message` and `description` (or pass one directly). This works for both `success` and `error`.
+
+```js
+toast.promise(promise, {
+	loading: 'Loading...',
+	success: (data) => ({
+		message: `${data.name} has been added!`,
+		description: data.summary
+	}),
+	error: (error) => ({
+		message: 'Something went wrong',
+		description: error.message
+	})
+});
+```
+
 ### Custom Component
 
 You can pass a component as the first argument instead of a string to render custom component while maintaining default styling. You can use the headless version below for a custom, unstyled toast.
