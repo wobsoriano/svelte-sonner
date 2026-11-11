@@ -238,4 +238,38 @@ describe('Toast lifecycle', () => {
 		// duration (300ms) + exit animation (200ms), with margin for slow runs
 		await waitFor(() => expect(queryByText('Finite override')).toBeNull());
 	});
+
+	describe('when the page is hidden', () => {
+		function setPageHidden(hidden: boolean) {
+			Object.defineProperty(document, 'hidden', { configurable: true, value: hidden });
+			document.dispatchEvent(new Event('visibilitychange'));
+		}
+
+		afterEach(() => setPageHidden(false));
+
+		it('pauses the toast timer by default', async () => {
+			const { user, trigger, getByText } = setup({
+				cb: (toast) => toast('Paused toast', { duration: 300 })
+			});
+
+			await user.click(trigger);
+			setPageHidden(true);
+
+			// duration (300ms) + exit animation (200ms), with margin for slow runs
+			await sleep(600);
+			expect(getByText('Paused toast')).toBeVisible();
+		});
+
+		it('lets the toast expire when pauseWhenPageIsHidden is false', async () => {
+			const { user, trigger, queryByText } = setup({
+				pauseWhenPageIsHidden: false,
+				cb: (toast) => toast('Expiring toast', { duration: 300 })
+			});
+
+			await user.click(trigger);
+			setPageHidden(true);
+
+			await waitFor(() => expect(queryByText('Expiring toast')).toBeNull());
+		});
+	});
 });
