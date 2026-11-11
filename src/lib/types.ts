@@ -280,7 +280,7 @@ export type ToasterProps = {
 	 * Pause the toast timer when the page is hidden, e.g. when the user switches
 	 * tabs. Toasts will not expire while the page is hidden.
 	 *
-	 * @default false
+	 * @default true
 	 */
 	pauseWhenPageIsHidden?: boolean;
 

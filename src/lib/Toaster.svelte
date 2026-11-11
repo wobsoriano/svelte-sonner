@@ -126,7 +126,7 @@
 		dir = 'auto',
 		gap = GAP,
 		swipeDirections,
-		pauseWhenPageIsHidden = false,
+		pauseWhenPageIsHidden = true,
 		loadingIcon: loadingIconProp,
 		successIcon: successIconProp,
 		errorIcon: errorIconProp,
